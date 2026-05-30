@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー【完全自動同期版】</title>
-    <!-- Supabaseのシステムを読み込む -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -140,20 +138,17 @@
 <div class="grid" id="card-grid"></div>
 
 <script>
-// --- [重要] ここにあなたのSupabaseの情報を貼り付けます ---
-const SUPABASE_URL = "https://lwddylqiyhnubeakrner.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
-// const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-supabase.supabaseUrl = SUPABASE_URL; supabase.supabaseKey = SUPABASE_ANON_KEY;
-// const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// --- [解決版] 名前の衝突が絶対に起きない書き方に修正しました ---
+const MY_URL = "https://lwddylqiyhnubeakrner.supabase.co";
+const MY_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
+const database = supabase.createClient(MY_URL, MY_KEY);
 
 // 精霊データ（マージベース）
 const spiritData = [
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神と和解せよ カヌエ・デ・ヤシロ", "main": "火", "sub": "光"},
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神さま爆誕！ ソラ・ヒカル", "main": "水", "sub": "闇"},
     {"abbr": "13周年記念", "event": "魔法使いと黒猫のウィズ 13th Anniversary", "name": "未来を照らす歌姫 ガトリン・Ｇ・Ｕ", "main": "火", "sub": "光"},
-    {"abbr": "12周年記念", "event": "魔法使いと黒猫のウィズ 12th Anniversary", "name": "漆黒の魔王 アルドベリク", "main": "闇", "sub": "火"},
+    {"abbr": "12周年記念", "event": "魔法使いと黒猫のウィズ 12th Anniversary", "name": "漆黒 of 魔王 アルドベリク", "main": "闇", "sub": "火"},
     {"abbr": "10周年記念", "event": "魔法使いと黒猫のウィズ 10th Anniversary", "name": "世界の中心の少女 エニィ", "main": "水", "sub": "火"},
     {"abbr": "クロム・マグナI", "event": "学園魔道杯 クロム・マグナ", "name": "一樹の輝き リンカ・ワイアット", "main": "火", "sub": "火"},
     {"abbr": "ドルキマス1", "event": "空戦のドルキマス 漆黒の翼", "name": "孤高の総帥 ディートリヒ・ベルク", "main": "水", "sub": "闇"},
@@ -174,20 +169,23 @@ const statsDiv = document.getElementById('stats');
 
 // クラウド（Supabase）からデータをロードする関数
 async function loadCloudData() {
-    let { data, error } = await supabase.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
-    if (data) {
-        ownedIds = data.owned_ids || [];
-    } else {
-        // まだクラウドにデータがなければ新規作成
-        await supabase.from('spirits').insert([{ sync_key: mySyncKey, owned_ids: [] }]);
-        ownedIds = [];
+    try {
+        let { data, error } = await database.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
+        if (data) {
+            ownedIds = data.owned_ids || [];
+        } else {
+            await database.from('spirits').insert([{ sync_key: mySyncKey, owned_ids: [] }]);
+            ownedIds = [];
+        }
+    } catch (e) {
+        console.error(e);
     }
     renderCards();
 }
 
 // クラウドへデータを保存する関数
 async function saveCloudData() {
-    await supabase.from('spirits').update({ owned_ids: ownedIds }).eq('sync_key', mySyncKey);
+    await database.from('spirits').update({ owned_ids: ownedIds }).eq('sync_key', mySyncKey);
 }
 
 function renderCards() {
@@ -228,10 +226,9 @@ function toggleOwned(id) {
         ownedIds.push(id);
     }
     renderCards();
-    saveCloudData(); // クリックした瞬間にクラウドへ送信！
+    saveCloudData();
 }
 
-// 別の端末のコードと同期させるボタン
 document.getElementById('sync-connect-btn').addEventListener('click', async () => {
     const inputKey = document.getElementById('sync-key-input').value.trim();
     if(inputKey && confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
@@ -239,18 +236,16 @@ document.getElementById('sync-connect-btn').addEventListener('click', async () =
         localStorage.setItem('wiz_sync_key', mySyncKey);
         await loadCloudData();
         alert('同期に成功しました！今後はこの端末での操作も自動共有されます。');
-        // リアルタイムリスナーの再起動
         setupRealtimeListener();
     }
 });
 
-// 【超重要】相手が更新したのをリアルタイムでキャッチして画面を書き換える魔法のリスナー
 function setupRealtimeListener() {
-    supabase.channel('custom-all-channel')
-    .on('postgres_changes', { event: 'UPDATE', scheme: 'public', table: 'spirits', filter: `sync_key=eq.${mySyncKey}` }, (payload) => {
+    database.channel('custom-all-channel')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'spirits', filter: `sync_key=eq.${mySyncKey}` }, (payload) => {
         if(payload.new && payload.new.owned_ids) {
             ownedIds = payload.new.owned_ids;
-            renderCards(); // 画面を自動更新！
+            renderCards();
         }
     })
     .subscribe();
