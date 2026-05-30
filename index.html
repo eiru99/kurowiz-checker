@@ -138,12 +138,10 @@
 <div class="grid" id="card-grid"></div>
 
 <script>
-// --- [解決版] 名前の衝突が絶対に起きない書き方に修正しました ---
 const MY_URL = "https://lwddylqiyhnubeakrner.supabase.co";
 const MY_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
 const database = supabase.createClient(MY_URL, MY_KEY);
 
-// 精霊データ（マージベース）
 const spiritData = [
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神と和解せよ カヌエ・デ・ヤシロ", "main": "火", "sub": "光"},
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神さま爆誕！ ソラ・ヒカル", "main": "水", "sub": "闇"},
@@ -167,64 +165,37 @@ const searchInput = document.getElementById('search');
 const elementFilter = document.getElementById('filter-element');
 const statsDiv = document.getElementById('stats');
 
-// クラウド（Supabase）からデータをロードする関数
 async function loadCloudData() {
-// データベースからデータを取得
-    let { data, error } = await supabase.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
-    
-    // データがあればその内容を、なければ空のリストをセット
-    if (data) {
-        ownedIds = data.owned_ids || [];
-    } else {
-        ownedIds = [];
-    }
-    // データをロードしてから画面を描画する
+    let { data, error } = await database.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
+    ownedIds = data ? (data.owned_ids || []) : [];
     renderCards();
 }
 
-// クラウドへデータを保存する関数
 async function saveCloudData() {
-    // upsertを使うことで、レコードがなければ作成、あれば更新という確実な動作になります
-    await supabase.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
+    await database.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
 }
 
 function renderCards() {
     grid.innerHTML = '';
     const searchText = searchInput.value.toLowerCase();
     const selectedElement = elementFilter.value;
-
     spiritData.forEach((spirit, index) => {
         const matchesSearch = spirit.name.toLowerCase().includes(searchText) || spirit.event.toLowerCase().includes(searchText) || spirit.abbr.toLowerCase().includes(searchText);
         const matchesElement = !selectedElement || spirit.main === selectedElement || spirit.sub === selectedElement;
-
         if (matchesSearch && matchesElement) {
             const isOwned = ownedIds.includes(index);
             const card = document.createElement('div');
             card.className = `card ${isOwned ? 'owned' : ''}`;
-            card.innerHTML = `
-                <div class="event-tag">[${spirit.abbr}] ${spirit.event}</div>
-                <div class="spirit-name">${spirit.name}</div>
-                <div class="attributes">
-                    <span class="attr ${spirit.main}">${spirit.main}</span>
-                    <span class="attr ${spirit.sub}">${spirit.sub}</span>
-                </div>
-            `;
+            card.innerHTML = `<div class="event-tag">[${spirit.abbr}] ${spirit.event}</div><div class="spirit-name">${spirit.name}</div><div class="attributes"><span class="attr ${spirit.main}">${spirit.main}</span><span class="attr ${spirit.sub}">${spirit.sub}</span></div>`;
             card.addEventListener('click', () => toggleOwned(index));
             grid.appendChild(card);
         }
     });
-    const total = spiritData.length;
-    const owned = ownedIds.length;
-    const percent = total > 0 ? Math.round((owned / total) * 100) : 0;
-    statsDiv.textContent = `所持率: ${owned} / ${total} (${percent}%)`;
+    statsDiv.textContent = `所持率: ${ownedIds.length} / ${spiritData.length} (${Math.round((ownedIds.length / spiritData.length) * 100)}%)`;
 }
 
 function toggleOwned(id) {
-    if (ownedIds.includes(id)) {
-        ownedIds = ownedIds.filter(i => i !== id);
-    } else {
-        ownedIds.push(id);
-    }
+    ownedIds = ownedIds.includes(id) ? ownedIds.filter(i => i !== id) : [...ownedIds, id];
     renderCards();
     saveCloudData();
 }
@@ -235,7 +206,6 @@ document.getElementById('sync-connect-btn').addEventListener('click', async () =
         mySyncKey = inputKey;
         localStorage.setItem('wiz_sync_key', mySyncKey);
         await loadCloudData();
-        alert('同期に成功しました！今後はこの端末での操作も自動共有されます。');
         setupRealtimeListener();
     }
 });
@@ -262,7 +232,6 @@ document.getElementById('reset-btn').addEventListener('click', async () => {
 searchInput.addEventListener('input', renderCards);
 elementFilter.addEventListener('change', renderCards);
 
-// 初期起動
 loadCloudData();
 setupRealtimeListener();
 </script>
