@@ -172,7 +172,22 @@ async function loadCloudData() {
 }
 
 async function saveCloudData() {
-    await database.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
+    // 画面の更新が競合しないよう、保存中はボタンを無効化する等の工夫もできますが、
+    // まずは「保存が完了するまで待機」を徹底します。
+    try {
+        const { error } = await database
+            .from('spirits')
+            .upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
+        
+        if (error) {
+            console.error("保存失敗:", error);
+            alert("保存に失敗しました。インターネット接続を確認してください。");
+        } else {
+            console.log("保存成功！");
+        }
+    } catch (e) {
+        console.error("通信エラー:", e);
+    }
 }
 
 function renderCards() {
