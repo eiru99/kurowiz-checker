@@ -169,27 +169,23 @@ const statsDiv = document.getElementById('stats');
 
 // クラウド（Supabase）からデータをロードする関数
 async function loadCloudData() {
-    try {
-        let { data, error } = await database.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
-        if (data) {
-            ownedIds = data.owned_ids || [];
-        } else {
-            await database.from('spirits').insert([{ sync_key: mySyncKey, owned_ids: [] }]);
-            ownedIds = [];
-        }
-    } catch (e) {
-        console.error(e);
+// データベースからデータを取得
+    let { data, error } = await supabase.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
+    
+    // データがあればその内容を、なければ空のリストをセット
+    if (data) {
+        ownedIds = data.owned_ids || [];
+    } else {
+        ownedIds = [];
     }
+    // データをロードしてから画面を描画する
     renderCards();
 }
 
 // クラウドへデータを保存する関数
 async function saveCloudData() {
-// データが空の時は保存しないというガードを入れます
-    if (ownedIds.length === 0 && confirm('データが空です。保存しますか？')) return;
-    
-    // UPSERT（データがあれば更新、なければ新規作成）という安全な命令に変えます
-    await database.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
+    // upsertを使うことで、レコードがなければ作成、あれば更新という確実な動作になります
+    await supabase.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
 }
 
 function renderCards() {
