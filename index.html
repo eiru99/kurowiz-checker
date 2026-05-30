@@ -167,29 +167,27 @@ const statsDiv = document.getElementById('stats');
 
 // クラウド（Supabase）からデータをロードする関数
 async function loadCloudData() {
-    // 読み込み中であることと、確実なデータを取得する
     try {
+        // .maybeSingle() をやめて、配列として結果を取得するように変更
         let { data, error } = await database
             .from('spirits')
             .select('owned_ids')
-            .eq('sync_key', mySyncKey)
-            .maybeSingle();
+            .eq('sync_key', mySyncKey);
 
         if (error) {
             console.error("読み込みエラー:", error);
             return;
         }
 
-        // データが取得できた場合のみ、変数を更新する
-        if (data && data.owned_ids !== null) {
-            ownedIds = data.owned_ids;
+        // dataは配列で返ってくるので、一番最後の（最新の）ものを使う
+        if (data && data.length > 0) {
+            // 配列の最後から最新のものを取得
+            ownedIds = data[data.length - 1].owned_ids || [];
             console.log("読み込み成功、現在の所持ID:", ownedIds);
         } else {
-            // 初回などでデータがない場合は空のままにする
             ownedIds = [];
         }
         
-        // データを取得し終わってから、初めてカードを描画する
         renderCards();
         
     } catch (e) {
