@@ -144,8 +144,8 @@ const SUPABASE_URL = "https://lwddylqiyhnubeakrner.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
 // const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // supabase.supabaseUrl = SUPABASE_URL; supabase.supabaseKey = SUPABASE_ANON_KEY;
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 精霊データ（マージベース）
 const spiritData = [
