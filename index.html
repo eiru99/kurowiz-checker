@@ -185,7 +185,11 @@ async function loadCloudData() {
 
 // クラウドへデータを保存する関数
 async function saveCloudData() {
-    await database.from('spirits').update({ owned_ids: ownedIds }).eq('sync_key', mySyncKey);
+// データが空の時は保存しないというガードを入れます
+    if (ownedIds.length === 0 && confirm('データが空です。保存しますか？')) return;
+    
+    // UPSERT（データがあれば更新、なければ新規作成）という安全な命令に変えます
+    await database.from('spirits').upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
 }
 
 function renderCards() {
