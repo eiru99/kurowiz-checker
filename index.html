@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>黒ウィズ 限定精霊所持チェッカー</title>
+    <title>黒ウィズ 限定精霊所持チェッカー【完全自動同期版】</title>
+    <!-- Supabaseのシステムを読み込む -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -14,7 +16,7 @@
             --border-color: #cfd8dc;
         }
         body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -40,6 +42,16 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
+        }
+        .sync-section {
+            background: #efebe9;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            width: 100%;
         }
         input, select, button {
             padding: 8px 12px;
@@ -103,11 +115,17 @@
 <body>
 
 <header>
-    <h1>黒ウィズ 限定精霊所持チェッカー</h1>
+    <h1>黒ウィズ 限定精霊所持チェッカー 【全自動同期】</h1>
     <div class="stats" id="stats">所持率: 0 / 0 (0%)</div>
 </header>
 
 <div class="controls">
+    <div class="sync-section">
+        <span>🔑 同期コード: </span>
+        <input type="text" id="sync-key-input" style="max-width: 150px; font-weight: bold; text-align: center;">
+        <button id="sync-connect-btn">他端末と同期する</button>
+        <small style="color: #555; margin-left: 10px;">※このコードを別端末に入力すると自動同期されます</small>
+    </div>
     <input type="text" id="search" placeholder="精霊名やイベント名で検索...">
     <select id="filter-element">
         <option value="">全属性</option>
@@ -115,13 +133,18 @@
         <option value="水">水属性</option>
         <option value="雷">雷属性</option>
     </select>
-    <button id="reset-btn">チェックをすべてリセット</button>
+    <button id="reset-btn">すべてリセット</button>
 </div>
 
 <div class="grid" id="card-grid"></div>
 
 <script>
-// 精霊のマスターデータ（ここに全258体分のコアな一部をサンプル展開、実データは自動マージ版から生成）
+// --- [重要] ここにあなたのSupabaseの情報を貼り付けます ---
+const SUPABASE_URL = "https://lwddylqiyhnubeakrner.supabase.co"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 精霊データ（マージベース）
 const spiritData = [
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神と和解せよ カヌエ・デ・ヤシロ", "main": "火", "sub": "光"},
     {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神さま爆誕！ ソラ・ヒカル", "main": "水", "sub": "闇"},
@@ -133,23 +156,40 @@ const spiritData = [
     {"abbr": "幻魔特区スザク1", "event": "幻魔特区スザク", "name": "宿命を背負う少年 キワム・ハスラー", "main": "火", "sub": "火"},
     {"abbr": "覇眼戦線1", "event": "覇眼戦線", "name": "覇眼の戦乙女 リヴェータ・イレ", "main": "火", "sub": "火"},
     {"abbr": "黄昏メアレス1", "event": "黄昏メアレス I", "name": "夢と現の境界 リフィル・J・チェイサー", "main": "雷", "sub": "光"}
-    // ※AI限界を考慮し、主要・原点・周年を抜粋。必要に応じて下の行にどんどん追加可能！
 ];
 
-// ブラウザの保存機能（LocalStorage）から手持ちデータを読み込む
-let ownedIds = JSON.parse(localStorage.getItem('kurowiz_owned_spirits')) || [];
+let ownedIds = [];
+let mySyncKey = localStorage.getItem('wiz_sync_key') || 'wiz-' + Math.floor(100000 + Math.random() * 900000);
+localStorage.setItem('wiz_sync_key', mySyncKey);
+document.getElementById('sync-key-input').value = mySyncKey;
 
 const grid = document.getElementById('card-grid');
 const searchInput = document.getElementById('search');
 const elementFilter = document.getElementById('filter-element');
 const statsDiv = document.getElementById('stats');
-const resetBtn = document.getElementById('reset-btn');
+
+// クラウド（Supabase）からデータをロードする関数
+async function loadCloudData() {
+    let { data, error } = await supabase.from('spirits').select('owned_ids').eq('sync_key', mySyncKey).maybeSingle();
+    if (data) {
+        ownedIds = data.owned_ids || [];
+    } else {
+        // まだクラウドにデータがなければ新規作成
+        await supabase.from('spirits').insert([{ sync_key: mySyncKey, owned_ids: [] }]);
+        ownedIds = [];
+    }
+    renderCards();
+}
+
+// クラウドへデータを保存する関数
+async function saveCloudData() {
+    await supabase.from('spirits').update({ owned_ids: ownedIds }).eq('sync_key', mySyncKey);
+}
 
 function renderCards() {
     grid.innerHTML = '';
     const searchText = searchInput.value.toLowerCase();
     const selectedElement = elementFilter.value;
-    let matchCount = 0;
 
     spiritData.forEach((spirit, index) => {
         const matchesSearch = spirit.name.toLowerCase().includes(searchText) || spirit.event.toLowerCase().includes(searchText) || spirit.abbr.toLowerCase().includes(searchText);
@@ -171,7 +211,10 @@ function renderCards() {
             grid.appendChild(card);
         }
     });
-    updateStats();
+    const total = spiritData.length;
+    const owned = ownedIds.length;
+    const percent = total > 0 ? Math.round((owned / total) * 100) : 0;
+    statsDiv.textContent = `所持率: ${owned} / ${total} (${percent}%)`;
 }
 
 function toggleOwned(id) {
@@ -180,29 +223,49 @@ function toggleOwned(id) {
     } else {
         ownedIds.push(id);
     }
-    localStorage.setItem('kurowiz_owned_spirits', JSON.stringify(ownedIds));
     renderCards();
+    saveCloudData(); // クリックした瞬間にクラウドへ送信！
 }
 
-function updateStats() {
-    const total = spiritData.length;
-    const owned = ownedIds.filter(id => id < total).length; // データ削除時のバグ防止
-    const percent = total > 0 ? Math.round((owned / total) * 100) : 0;
-    statsDiv.textContent = `所持率: ${owned} / ${total} (${percent}%)`;
-}
-
-searchInput.addEventListener('input', renderCards);
-elementFilter.addEventListener('change', renderCards);
-resetBtn.addEventListener('click', () => {
-    if (confirm('本当にすべてのチェックをリセットしますか？')) {
-        ownedIds = [];
-        localStorage.setItem('kurowiz_owned_spirits', JSON.stringify(ownedIds));
-        renderCards();
+// 別の端末のコードと同期させるボタン
+document.getElementById('sync-connect-btn').addEventListener('click', async () => {
+    const inputKey = document.getElementById('sync-key-input').value.trim();
+    if(inputKey && confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
+        mySyncKey = inputKey;
+        localStorage.setItem('wiz_sync_key', mySyncKey);
+        await loadCloudData();
+        alert('同期に成功しました！今後はこの端末での操作も自動共有されます。');
+        // リアルタイムリスナーの再起動
+        setupRealtimeListener();
     }
 });
 
-// 初期実行
-renderCards();
+// 【超重要】相手が更新したのをリアルタイムでキャッチして画面を書き換える魔法のリスナー
+function setupRealtimeListener() {
+    supabase.channel('custom-all-channel')
+    .on('postgres_changes', { event: 'UPDATE', scheme: 'public', table: 'spirits', filter: `sync_key=eq.${mySyncKey}` }, (payload) => {
+        if(payload.new && payload.new.owned_ids) {
+            ownedIds = payload.new.owned_ids;
+            renderCards(); // 画面を自動更新！
+        }
+    })
+    .subscribe();
+}
+
+document.getElementById('reset-btn').addEventListener('click', async () => {
+    if (confirm('クラウド上のデータもすべてリセットされます。よろしいですか？')) {
+        ownedIds = [];
+        renderCards();
+        await saveCloudData();
+    }
+});
+
+searchInput.addEventListener('input', renderCards);
+elementFilter.addEventListener('change', renderCards);
+
+// 初期起動
+loadCloudData();
+setupRealtimeListener();
 </script>
 </body>
 </html>
