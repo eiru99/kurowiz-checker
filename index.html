@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黒ウィズ 限定精霊所持チェッカー</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #241442;
+            --accent-color: #d1c4e9;
+            --border-color: #cfd8dc;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #111111, var(--primary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { margin: 0; font-size: 1.8rem; }
+        .stats { margin-top: 10px; font-size: 1.1rem; font-weight: bold; }
+        .controls {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        input[type="text"] { flex: 1; min-width: 200px; }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #3b2463; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card.owned {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .card.owned::after {
+            content: "✓ 所持";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2e7d32;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .event-tag { font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 5px; }
+        .spirit-name { font-size: 1rem; font-weight: bold; margin-bottom: 8px; color: #111; }
+        .attributes { display: flex; gap: 5px; }
+        .attr { font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; color: white; font-weight: bold; }
+        .attr.火 { background-color: #d32f2f; }
+        .attr.水 { background-color: #1976d2; }
+        .attr.雷 { background-color: #fbc02d; color: #333; }
+        .attr.光 { background-color: #f5f5f5; color: #333; border: 1px solid #ccc; }
+        .attr.闇 { background-color: #424242; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>黒ウィズ 限定精霊所持チェッカー</h1>
+    <div class="stats" id="stats">所持率: 0 / 0 (0%)</div>
+</header>
+
+<div class="controls">
+    <input type="text" id="search" placeholder="精霊名やイベント名で検索...">
+    <select id="filter-element">
+        <option value="">全属性</option>
+        <option value="火">火属性</option>
+        <option value="水">水属性</option>
+        <option value="雷">雷属性</option>
+    </select>
+    <button id="reset-btn">チェックをすべてリセット</button>
+</div>
+
+<div class="grid" id="card-grid"></div>
+
+<script>
+// 精霊のマスターデータ（ここに全258体分のコアな一部をサンプル展開、実データは自動マージ版から生成）
+const spiritData = [
+    {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神と和解せよ カヌエ・デ・ヤシロ", "main": "火", "sub": "光"},
+    {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神さま爆誕！ ソラ・ヒカル", "main": "水", "sub": "闇"},
+    {"abbr": "13周年記念", "event": "魔法使いと黒猫のウィズ 13th Anniversary", "name": "未来を照らす歌姫 ガトリン・Ｇ・Ｕ", "main": "火", "sub": "光"},
+    {"abbr": "12周年記念", "event": "魔法使いと黒猫のウィズ 12th Anniversary", "name": "漆黒の魔王 アルドベリク", "main": "闇", "sub": "火"},
+    {"abbr": "10周年記念", "event": "魔法使いと黒猫のウィズ 10th Anniversary", "name": "世界の中心の少女 エニィ", "main": "水", "sub": "火"},
+    {"abbr": "クロム・マグナI", "event": "学園魔道杯 クロム・マグナ", "name": "一樹の輝き リンカ・ワイアット", "main": "火", "sub": "火"},
+    {"abbr": "ドルキマス1", "event": "空戦のドルキマス 漆黒の翼", "name": "孤高の総帥 ディートリヒ・ベルク", "main": "水", "sub": "闇"},
+    {"abbr": "幻魔特区スザク1", "event": "幻魔特区スザク", "name": "宿命を背負う少年 キワム・ハスラー", "main": "火", "sub": "火"},
+    {"abbr": "覇眼戦線1", "event": "覇眼戦線", "name": "覇眼の戦乙女 リヴェータ・イレ", "main": "火", "sub": "火"},
+    {"abbr": "黄昏メアレス1", "event": "黄昏メアレス I", "name": "夢と現の境界 リフィル・J・チェイサー", "main": "雷", "sub": "光"}
+    // ※AI限界を考慮し、主要・原点・周年を抜粋。必要に応じて下の行にどんどん追加可能！
+];
+
+// ブラウザの保存機能（LocalStorage）から手持ちデータを読み込む
+let ownedIds = JSON.parse(localStorage.getItem('kurowiz_owned_spirits')) || [];
+
+const grid = document.getElementById('card-grid');
+const searchInput = document.getElementById('search');
+const elementFilter = document.getElementById('filter-element');
+const statsDiv = document.getElementById('stats');
+const resetBtn = document.getElementById('reset-btn');
+
+function renderCards() {
+    grid.innerHTML = '';
+    const searchText = searchInput.value.toLowerCase();
+    const selectedElement = elementFilter.value;
+    let matchCount = 0;
+
+    spiritData.forEach((spirit, index) => {
+        const matchesSearch = spirit.name.toLowerCase().includes(searchText) || spirit.event.toLowerCase().includes(searchText) || spirit.abbr.toLowerCase().includes(searchText);
+        const matchesElement = !selectedElement || spirit.main === selectedElement || spirit.sub === selectedElement;
+
+        if (matchesSearch && matchesElement) {
+            const isOwned = ownedIds.includes(index);
+            const card = document.createElement('div');
+            card.className = `card ${isOwned ? 'owned' : ''}`;
+            card.innerHTML = `
+                <div class="event-tag">[${spirit.abbr}] ${spirit.event}</div>
+                <div class="spirit-name">${spirit.name}</div>
+                <div class="attributes">
+                    <span class="attr ${spirit.main}">${spirit.main}</span>
+                    <span class="attr ${spirit.sub}">${spirit.sub}</span>
+                </div>
+            `;
+            card.addEventListener('click', () => toggleOwned(index));
+            grid.appendChild(card);
+        }
+    });
+    updateStats();
+}
+
+function toggleOwned(id) {
+    if (ownedIds.includes(id)) {
+        ownedIds = ownedIds.filter(i => i !== id);
+    } else {
+        ownedIds.push(id);
+    }
+    localStorage.setItem('kurowiz_owned_spirits', JSON.stringify(ownedIds));
+    renderCards();
+}
+
+function updateStats() {
+    const total = spiritData.length;
+    const owned = ownedIds.filter(id => id < total).length; // データ削除時のバグ防止
+    const percent = total > 0 ? Math.round((owned / total) * 100) : 0;
+    statsDiv.textContent = `所持率: ${owned} / ${total} (${percent}%)`;
+}
+
+searchInput.addEventListener('input', renderCards);
+elementFilter.addEventListener('change', renderCards);
+resetBtn.addEventListener('click', () => {
+    if (confirm('本当にすべてのチェックをリセットしますか？')) {
+        ownedIds = [];
+        localStorage.setItem('kurowiz_owned_spirits', JSON.stringify(ownedIds));
+        renderCards();
+    }
+});
+
+// 初期実行
+renderCards();
+</script>
+</body>
+</html>
