@@ -207,6 +207,13 @@ async function handleSubmit(event) {
     }
 }
 
+function formatSupabaseError(error) {
+    if (!error) return '不明なエラー';
+    return [error.message, error.details, error.hint, error.code]
+        .filter(Boolean)
+        .join('\n');
+}
+
 export async function openAddDialog() {
     if (!ensureAdminAccess()) return;
 
@@ -216,7 +223,15 @@ export async function openAddDialog() {
         dialog.showModal();
     } catch (error) {
         console.error(error);
-        alert('管理画面の準備に失敗しました。supabase/catalog.sql を実行済みか確認してください。');
+        alert(
+            '管理画面の準備に失敗しました。\n\n'
+            + `原因:\n${formatSupabaseError(error)}\n\n`
+            + '対処:\n'
+            + '1. Supabase → SQL Editor で supabase/catalog_fix.sql を開く\n'
+            + '2. 右下の Run（緑ボタン）を押す\n'
+            + '3. Results に catalog_sections=3 などと出るか確認\n'
+            + '4. サイトを再読み込みして Add を再試行'
+        );
     }
 }
 
@@ -250,7 +265,7 @@ export async function openEditDialog(spiritId) {
         dialog.showModal();
     } catch (error) {
         console.error(error);
-        alert('編集画面を開けませんでした。');
+        alert(`編集画面を開けませんでした。\n\n${formatSupabaseError(error)}`);
     }
 }
 

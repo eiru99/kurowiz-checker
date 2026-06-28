@@ -1,42 +1,18 @@
 -- =============================================================================
--- 精霊マスタ（カタログ）+ 画像ストレージ — Supabase セットアップ
+-- catalog 修復用 SQL（Add ボタンが開けないときに実行）
 -- =============================================================================
 --
--- 【実行手順】
--- 1. supabase/setup.sql を実行済みであること
--- 2. このファイルを SQL Editor に貼り付けて Run
+-- 【手順】
+-- 1. Supabase → SQL Editor → New query
+-- 2. このファイルをすべて貼り付け
+-- 3. 右下の Run（緑ボタン）を押す
+-- 4. 成功したら Results に "Success. No rows returned" などと出る
+-- 5. サイトを再読み込みして Add を再度試す
 --
--- 【内容】
--- - イベント・精霊マスタ用テーブル
--- - 画像用 Storage バケット (spirit-images)
--- - 既存 data/spirits.json 相当の初期データ
+-- ※ 2枚目のスクショで "Click Run to execute" のままだと未実行です
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS public.catalog_sections (
-    id         text        PRIMARY KEY,
-    title      text        NOT NULL,
-    sort_order integer     NOT NULL DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS public.catalog_events (
-    id         text        PRIMARY KEY,
-    section_id text        NOT NULL REFERENCES public.catalog_sections(id),
-    abbr       text        NOT NULL,
-    title      text        NOT NULL,
-    subtitle   text        NOT NULL DEFAULT '',
-    sort_order integer     NOT NULL DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS public.catalog_spirits (
-    id          text        PRIMARY KEY,
-    event_id    text        NOT NULL REFERENCES public.catalog_events(id),
-    name        text        NOT NULL,
-    main        text        NOT NULL DEFAULT '火',
-    sub         text        NOT NULL DEFAULT '火',
-    image_path  text,
-    sort_order  integer     NOT NULL DEFAULT 0
-);
-
+-- 不足している列があれば追加
 ALTER TABLE public.catalog_sections
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 
@@ -58,10 +34,12 @@ ALTER TABLE public.catalog_spirits
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS image_path text;
 
+-- RLS を有効化
 ALTER TABLE public.catalog_sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.catalog_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.catalog_spirits ENABLE ROW LEVEL SECURITY;
 
+-- ポリシーを作り直し（anon から読み書き可能に）
 DROP POLICY IF EXISTS "anon read catalog_sections" ON public.catalog_sections;
 DROP POLICY IF EXISTS "anon insert catalog_sections" ON public.catalog_sections;
 DROP POLICY IF EXISTS "anon update catalog_sections" ON public.catalog_sections;
@@ -74,18 +52,28 @@ DROP POLICY IF EXISTS "anon read catalog_spirits" ON public.catalog_spirits;
 DROP POLICY IF EXISTS "anon insert catalog_spirits" ON public.catalog_spirits;
 DROP POLICY IF EXISTS "anon update catalog_spirits" ON public.catalog_spirits;
 
-CREATE POLICY "anon read catalog_sections" ON public.catalog_sections FOR SELECT TO anon USING (true);
-CREATE POLICY "anon insert catalog_sections" ON public.catalog_sections FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon update catalog_sections" ON public.catalog_sections FOR UPDATE TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "anon read catalog_sections"
+    ON public.catalog_sections FOR SELECT TO anon USING (true);
+CREATE POLICY "anon insert catalog_sections"
+    ON public.catalog_sections FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "anon update catalog_sections"
+    ON public.catalog_sections FOR UPDATE TO anon USING (true) WITH CHECK (true);
 
-CREATE POLICY "anon read catalog_events" ON public.catalog_events FOR SELECT TO anon USING (true);
-CREATE POLICY "anon insert catalog_events" ON public.catalog_events FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon update catalog_events" ON public.catalog_events FOR UPDATE TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "anon read catalog_events"
+    ON public.catalog_events FOR SELECT TO anon USING (true);
+CREATE POLICY "anon insert catalog_events"
+    ON public.catalog_events FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "anon update catalog_events"
+    ON public.catalog_events FOR UPDATE TO anon USING (true) WITH CHECK (true);
 
-CREATE POLICY "anon read catalog_spirits" ON public.catalog_spirits FOR SELECT TO anon USING (true);
-CREATE POLICY "anon insert catalog_spirits" ON public.catalog_spirits FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon update catalog_spirits" ON public.catalog_spirits FOR UPDATE TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "anon read catalog_spirits"
+    ON public.catalog_spirits FOR SELECT TO anon USING (true);
+CREATE POLICY "anon insert catalog_spirits"
+    ON public.catalog_spirits FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "anon update catalog_spirits"
+    ON public.catalog_spirits FOR UPDATE TO anon USING (true) WITH CHECK (true);
 
+-- Storage バケット
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('spirit-images', 'spirit-images', true)
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
@@ -110,6 +98,7 @@ CREATE POLICY "anon update spirit images"
     USING (bucket_id = 'spirit-images')
     WITH CHECK (bucket_id = 'spirit-images');
 
+-- 初期データ（空のときだけ入る）
 INSERT INTO public.catalog_sections (id, title, sort_order) VALUES
     ('latest', '最新ガチャ', 1),
     ('recent', '直近ガチャ', 2),
@@ -140,3 +129,10 @@ INSERT INTO public.catalog_spirits (id, event_id, name, main, sub, image_path, s
     ('haigan-1-riveta', 'haigan-1', '覇眼の戦乙女 リヴェータ・イレ', '火', '火', 'images/spirits/haigan-1-riveta.png', 1),
     ('twilight-mares-1-refill', 'twilight-mares-1', '夢と現の境界 リフィル・J・チェイサー', '雷', '光', 'images/spirits/twilight-mares-1-refill.png', 1)
 ON CONFLICT (id) DO NOTHING;
+
+-- 確認用（Results に件数が出れば OK）
+SELECT 'catalog_sections' AS table_name, count(*) AS rows FROM public.catalog_sections
+UNION ALL
+SELECT 'catalog_events', count(*) FROM public.catalog_events
+UNION ALL
+SELECT 'catalog_spirits', count(*) FROM public.catalog_spirits;
