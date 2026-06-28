@@ -22,13 +22,26 @@
 -- テーブルが無ければ作成
 CREATE TABLE IF NOT EXISTS public.spirits (
     sync_key   text        PRIMARY KEY,
-    owned_ids  integer[]   NOT NULL DEFAULT '{}',
+    owned_ids  text[]      NOT NULL DEFAULT '{}',
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 -- 既存テーブルに列が無ければ追加
 ALTER TABLE public.spirits
     ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+
+-- 所持IDを text[] に統一（精霊ごとの固定ID文字列を保存）
+ALTER TABLE public.spirits
+    ALTER COLUMN owned_ids TYPE text[]
+    USING (
+        CASE
+            WHEN owned_ids IS NULL THEN '{}'::text[]
+            ELSE '{}'::text[]
+        END
+    );
+
+ALTER TABLE public.spirits
+    ALTER COLUMN owned_ids SET DEFAULT '{}'::text[];
 
 -- 重複 sync_key があれば古い行を削除（最新 updated_at を残す）
 DELETE FROM public.spirits a

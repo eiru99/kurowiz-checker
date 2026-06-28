@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "id": "latest",
+      "title": "最新ガチャ",
+      "events": [
+        {
+          "id": "kamisanpo3",
+          "abbr": "かみさんぽっ3",
+          "title": "神域をさんぽする至高の神々 3",
+          "subtitle": "かみさんぽっ!人と妖精の国アイリー",
+          "spirits": [
+            {
+              "id": "kamisanpo3-kanue",
+              "name": "神と和解せよ カヌエ・デ・ヤシロ",
+              "main": "火",
+              "sub": "光",
+              "image": "images/spirits/kamisanpo3-kanue.png"
+            },
+            {
+              "id": "kamisanpo3-sora",
+              "name": "神さま爆誕！ ソラ・ヒカル",
+              "main": "水",
+              "sub": "闇",
+              "image": "images/spirits/kamisanpo3-sora.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recent",
+      "title": "直近ガチャ",
+      "events": [
+        {
+          "id": "anniversary13",
+          "abbr": "13周年記念",
+          "title": "魔法使いと黒猫のウィズ 13th Anniversary",
+          "subtitle": "13th ANIVERSARY",
+          "spirits": [
+            {
+              "id": "anniversary13-gatlin",
+              "name": "未来を照らす歌姫 ガトリン・Ｇ・Ｕ",
+              "main": "火",
+              "sub": "光",
+              "image": "images/spirits/anniversary13-gatlin.png"
+            }
+          ]
+        },
+        {
+          "id": "anniversary12",
+          "abbr": "12周年記念",
+          "title": "魔法使いと黒猫のウィズ 12th Anniversary",
+          "subtitle": "THE LEGENDS of WIZ Ⅳ",
+          "spirits": [
+            {
+              "id": "anniversary12-aldverik",
+              "name": "漆黒 of 魔王 アルドベリク",
+              "main": "闇",
+              "sub": "火",
+              "image": "images/spirits/anniversary12-aldverik.png"
+            }
+          ]
+        },
+        {
+          "id": "anniversary10",
+          "abbr": "10周年記念",
+          "title": "魔法使いと黒猫のウィズ 10th Anniversary",
+          "subtitle": "10th Anniversary",
+          "spirits": [
+            {
+              "id": "anniversary10-eny",
+              "name": "世界の中心の少女 エニィ",
+              "main": "水",
+              "sub": "火",
+              "image": "images/spirits/anniversary10-eny.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "charapre",
+      "title": "キャラプレ対象のイベントガチャ",
+      "events": [
+        {
+          "id": "chrom-magna-1",
+          "abbr": "クロム・マグナI",
+          "title": "学園魔道杯 クロム・マグナ",
+          "subtitle": "クロム・マグナ",
+          "spirits": [
+            {
+              "id": "chrom-magna-1-linka",
+              "name": "一樹の輝き リンカ・ワイアット",
+              "main": "火",
+              "sub": "火",
+              "image": "images/spirits/chrom-magna-1-linka.png"
+            }
+          ]
+        },
+        {
+          "id": "dorukimas-1",
+          "abbr": "ドルキマス1",
+          "title": "空戦のドルキマス 漆黒の翼",
+          "subtitle": "空戦のドルキマス",
+          "spirits": [
+            {
+              "id": "dorukimas-1-dietrich",
+              "name": "孤高の総帥 ディートリヒ・ベルク",
+              "main": "水",
+              "sub": "闇",
+              "image": "images/spirits/dorukimas-1-dietrich.png"
+            }
+          ]
+        },
+        {
+          "id": "suzaku-1",
+          "abbr": "幻魔特区スザク1",
+          "title": "幻魔特区スザク",
+          "subtitle": "幻魔特区スザク",
+          "spirits": [
+            {
+              "id": "suzaku-1-kivam",
+              "name": "宿命を背負う少年 キワム・ハスラー",
+              "main": "火",
+              "sub": "火",
+              "image": "images/spirits/suzaku-1-kivam.png"
+            }
+          ]
+        },
+        {
+          "id": "haigan-1",
+          "abbr": "覇眼戦線1",
+          "title": "覇眼戦線",
+          "subtitle": "覇眼戦線",
+          "spirits": [
+            {
+              "id": "haigan-1-riveta",
+              "name": "覇眼の戦乙女 リヴェータ・イレ",
+              "main": "火",
+              "sub": "火",
+              "image": "images/spirits/haigan-1-riveta.png"
+            }
+          ]
+        },
+        {
+          "id": "twilight-mares-1",
+          "abbr": "黄昏メアレス1",
+          "title": "黄昏メアレス I",
+          "subtitle": "黄昏メアレス I",
+          "spirits": [
+            {
+              "id": "twilight-mares-1-refill",
+              "name": "夢と現の境界 リフィル・J・チェイサー",
+              "main": "雷",
+              "sub": "光",
+              "image": "images/spirits/twilight-mares-1-refill.png"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

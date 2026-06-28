@@ -3,314 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>黒ウィズ 限定精霊所持チェッカー【完全自動同期版】</title>
+    <title>黒ウィズ 限定精霊所持チェッカー</title>
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --primary-color: #241442;
-            --accent-color: #d1c4e9;
-            --border-color: #cfd8dc;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-        }
-        header {
-            background: linear-gradient(135deg, #111111, var(--primary-color));
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        h1 { margin: 0; font-size: 1.8rem; }
-        .stats { margin-top: 10px; font-size: 1.1rem; font-weight: bold; }
-        .controls {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .sync-section {
-            background: #efebe9;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            width: 100%;
-        }
-        input, select, button {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        input[type="text"] { flex: 1; min-width: 200px; }
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #3b2463; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-        }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .card.owned {
-            background-color: #e8f5e9;
-            border-color: #81c784;
-        }
-        .card.owned::after {
-            content: "✓ 所持";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #2e7d32;
-            color: white;
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .event-tag { font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 5px; }
-        .spirit-name { font-size: 1rem; font-weight: bold; margin-bottom: 8px; color: #111; }
-        .attributes { display: flex; gap: 5px; }
-        .attr { font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; color: white; font-weight: bold; }
-        .attr.火 { background-color: #d32f2f; }
-        .attr.水 { background-color: #1976d2; }
-        .attr.雷 { background-color: #fbc02d; color: #333; }
-        .attr.光 { background-color: #f5f5f5; color: #333; border: 1px solid #ccc; }
-        .attr.闇 { background-color: #424242; }
-    </style>
 </head>
 <body>
+    <header>
+        <h1>黒ウィズ 限定精霊所持チェッカー</h1>
+        <div class="stats" id="stats">所持率: 0 / 0 (0%)</div>
+    </header>
 
-<header>
-    <h1>黒ウィズ 限定精霊所持チェッカー 【全自動同期】</h1>
-    <div class="stats" id="stats">所持率: 0 / 0 (0%)</div>
-</header>
-
-<div class="controls">
-    <div class="sync-section">
-        <span>🔑 同期コード: </span>
-        <input type="text" id="sync-key-input" style="max-width: 150px; font-weight: bold; text-align: center;">
-        <button id="sync-connect-btn">他端末と同期する</button>
-        <small style="color: #555; margin-left: 10px;">※このコードを別端末に入力すると自動同期されます</small>
+    <div class="controls">
+        <div class="sync-section">
+            <span>🔑 同期コード:</span>
+            <input type="text" id="sync-key-input" style="max-width: 150px; font-weight: bold; text-align: center;">
+            <button type="button" id="sync-connect-btn">他端末と同期する</button>
+            <span class="hint">※同じコードをスマホ・PCで入力すると自動同期されます</span>
+        </div>
+        <input type="text" id="search" placeholder="精霊名・イベント名で検索...">
+        <select id="filter-element">
+            <option value="">全属性</option>
+            <option value="火">火属性</option>
+            <option value="水">水属性</option>
+            <option value="雷">雷属性</option>
+            <option value="光">光属性</option>
+            <option value="闇">闇属性</option>
+        </select>
+        <button type="button" id="reset-btn">すべてリセット</button>
     </div>
-    <input type="text" id="search" placeholder="精霊名やイベント名で検索...">
-    <select id="filter-element">
-        <option value="">全属性</option>
-        <option value="火">火属性</option>
-        <option value="水">水属性</option>
-        <option value="雷">雷属性</option>
-    </select>
-    <button id="reset-btn">すべてリセット</button>
-</div>
 
-<div class="grid" id="card-grid"></div>
+    <main id="catalog" class="catalog">
+        <div class="loading-message">読み込み中...</div>
+    </main>
 
-<script>
-const MY_URL = "https://lwddylqiyhnubeakrner.supabase.co";
-const MY_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZGR5bHFpeWhudWJlYWtybmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTQxNjksImV4cCI6MjA5NTczMDE2OX0.PZs50EuI78GoXMBe-1cX16FNA8ddZ708l0_sob3AWko";
-const database = supabase.createClient(MY_URL, MY_KEY);
-
-const spiritData = [
-    {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神と和解せよ カヌエ・デ・ヤシロ", "main": "火", "sub": "光"},
-    {"abbr": "かみさんぽっ3", "event": "神域をさんぽする至高の神々 3", "name": "神さま爆誕！ ソラ・ヒカル", "main": "水", "sub": "闇"},
-    {"abbr": "13周年記念", "event": "魔法使いと黒猫のウィズ 13th Anniversary", "name": "未来を照らす歌姫 ガトリン・Ｇ・Ｕ", "main": "火", "sub": "光"},
-    {"abbr": "12周年記念", "event": "魔法使いと黒猫のウィズ 12th Anniversary", "name": "漆黒 of 魔王 アルドベリク", "main": "闇", "sub": "火"},
-    {"abbr": "10周年記念", "event": "魔法使いと黒猫のウィズ 10th Anniversary", "name": "世界の中心の少女 エニィ", "main": "水", "sub": "火"},
-    {"abbr": "クロム・マグナI", "event": "学園魔道杯 クロム・マグナ", "name": "一樹の輝き リンカ・ワイアット", "main": "火", "sub": "火"},
-    {"abbr": "ドルキマス1", "event": "空戦のドルキマス 漆黒の翼", "name": "孤高の総帥 ディートリヒ・ベルク", "main": "水", "sub": "闇"},
-    {"abbr": "幻魔特区スザク1", "event": "幻魔特区スザク", "name": "宿命を背負う少年 キワム・ハスラー", "main": "火", "sub": "火"},
-    {"abbr": "覇眼戦線1", "event": "覇眼戦線", "name": "覇眼の戦乙女 リヴェータ・イレ", "main": "火", "sub": "火"},
-    {"abbr": "黄昏メアレス1", "event": "黄昏メアレス I", "name": "夢と現の境界 リフィル・J・チェイサー", "main": "雷", "sub": "光"}
-];
-
-let ownedIds = [];
-let mySyncKey = localStorage.getItem('wiz_sync_key');
-let realtimeChannel = null;
-let isSaving = false;
-
-function createSyncKey() {
-    const suffix = Math.floor(100000 + Math.random() * 900000);
-    return `wiz-${suffix}`;
-}
-
-if (!mySyncKey) {
-    mySyncKey = createSyncKey();
-    localStorage.setItem('wiz_sync_key', mySyncKey);
-}
-document.getElementById('sync-key-input').value = mySyncKey;
-
-const grid = document.getElementById('card-grid');
-const searchInput = document.getElementById('search');
-const elementFilter = document.getElementById('filter-element');
-const statsDiv = document.getElementById('stats');
-
-function normalizeOwnedIds(value) {
-    if (!Array.isArray(value)) return [];
-    return [...new Set(value.filter(id => Number.isInteger(id) && id >= 0 && id < spiritData.length))];
-}
-
-async function loadCloudData() {
-    try {
-        const { data, error } = await database
-            .from('spirits')
-            .select('owned_ids')
-            .eq('sync_key', mySyncKey)
-            .maybeSingle();
-
-        if (error) {
-            console.error('読み込みエラー:', error);
-            alert('データの読み込みに失敗しました。Supabase の RLS 設定を確認してください。');
-            return;
-        }
-
-        ownedIds = normalizeOwnedIds(data?.owned_ids);
-        renderCards();
-    } catch (e) {
-        console.error('読み込み失敗:', e);
-    }
-}
-
-async function saveCloudData() {
-    if (isSaving) return;
-    isSaving = true;
-
-    try {
-        const { error } = await database
-            .from('spirits')
-            .upsert(
-                { sync_key: mySyncKey, owned_ids: ownedIds },
-                { onConflict: 'sync_key' }
-            );
-
-        if (error) {
-            console.error('保存失敗:', error);
-            alert('保存に失敗しました。Supabase の RLS 設定を確認してください。');
-        }
-    } catch (e) {
-        console.error('通信エラー:', e);
-    } finally {
-        isSaving = false;
-    }
-}
-
-function renderCards() {
-    grid.innerHTML = '';
-    const searchText = searchInput.value.toLowerCase();
-    const selectedElement = elementFilter.value;
-    spiritData.forEach((spirit, index) => {
-        const matchesSearch = spirit.name.toLowerCase().includes(searchText) || spirit.event.toLowerCase().includes(searchText) || spirit.abbr.toLowerCase().includes(searchText);
-        const matchesElement = !selectedElement || spirit.main === selectedElement || spirit.sub === selectedElement;
-        if (matchesSearch && matchesElement) {
-            const isOwned = ownedIds.includes(index);
-            const card = document.createElement('div');
-            card.className = `card ${isOwned ? 'owned' : ''}`;
-            card.innerHTML = `<div class="event-tag">[${spirit.abbr}] ${spirit.event}</div><div class="spirit-name">${spirit.name}</div><div class="attributes"><span class="attr ${spirit.main}">${spirit.main}</span><span class="attr ${spirit.sub}">${spirit.sub}</span></div>`;
-            card.addEventListener('click', () => toggleOwned(index));
-            grid.appendChild(card);
-        }
-    });
-    statsDiv.textContent = `所持率: ${ownedIds.length} / ${spiritData.length} (${Math.round((ownedIds.length / spiritData.length) * 100)}%)`;
-}
-
-async function toggleOwned(id) {
-    ownedIds = ownedIds.includes(id) ? ownedIds.filter(i => i !== id) : [...ownedIds, id];
-    renderCards();
-    await saveCloudData();
-}
-
-document.getElementById('sync-connect-btn').addEventListener('click', async () => {
-    const inputKey = document.getElementById('sync-key-input').value.trim();
-    if (!inputKey) return;
-
-    if (inputKey.length < 6) {
-        alert('同期コードは6文字以上で入力してください。');
-        return;
-    }
-
-    if (confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
-        mySyncKey = inputKey;
-        localStorage.setItem('wiz_sync_key', mySyncKey);
-        await loadCloudData();
-        setupRealtimeListener();
-    }
-});
-
-function applyRemoteOwnedIds(nextOwnedIds) {
-    ownedIds = normalizeOwnedIds(nextOwnedIds);
-    renderCards();
-}
-
-function setupRealtimeListener() {
-    if (realtimeChannel) {
-        database.removeChannel(realtimeChannel);
-        realtimeChannel = null;
-    }
-
-    realtimeChannel = database
-        .channel(`spirits-sync-${mySyncKey}`)
-        .on(
-            'postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'spirits',
-                filter: `sync_key=eq.${mySyncKey}`
-            },
-            (payload) => {
-                const nextOwnedIds = payload.new?.owned_ids;
-                if (nextOwnedIds) {
-                    applyRemoteOwnedIds(nextOwnedIds);
-                }
-            }
-        )
-        .subscribe();
-}
-
-document.getElementById('reset-btn').addEventListener('click', async () => {
-    if (confirm('クラウド上のデータもすべてリセットされます。よろしいですか？')) {
-        ownedIds = [];
-        renderCards();
-        await saveCloudData();
-    }
-});
-
-searchInput.addEventListener('input', renderCards);
-elementFilter.addEventListener('change', renderCards);
-
-loadCloudData();
-setupRealtimeListener();
-</script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

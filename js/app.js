@@ -1,0 +1,312 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SPIRITS_CATALOG_URL } from './config.js';
+
+const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const catalogEl = document.getElementById('catalog');
+const statsEl = document.getElementById('stats');
+const searchInput = document.getElementById('search');
+const elementFilter = document.getElementById('filter-element');
+const syncKeyInput = document.getElementById('sync-key-input');
+
+let catalog = null;
+let spiritById = new Map();
+let allSpiritIds = [];
+let ownedSpiritIds = [];
+let mySyncKey = localStorage.getItem('wiz_sync_key');
+let realtimeChannel = null;
+let isSaving = false;
+
+function createSyncKey() {
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    return `wiz-${suffix}`;
+}
+
+function flattenCatalog(catalogData) {
+    const byId = new Map();
+    const ids = [];
+
+    for (const section of catalogData.sections ?? []) {
+        for (const event of section.events ?? []) {
+            for (const spirit of event.spirits ?? []) {
+                byId.set(spirit.id, { ...spirit, event, section });
+                ids.push(spirit.id);
+            }
+        }
+    }
+
+    return { byId, ids };
+}
+
+function normalizeOwnedSpiritIds(value) {
+    if (!Array.isArray(value)) return [];
+    const validIds = new Set(allSpiritIds);
+    return [...new Set(value.filter(id => typeof id === 'string' && validIds.has(id)))];
+}
+
+function showMessage(className, message) {
+    catalogEl.innerHTML = `<div class="${className}">${message}</div>`;
+}
+
+async function loadCatalog() {
+    showMessage('loading-message', '精霊データを読み込み中...');
+
+    const response = await fetch(SPIRITS_CATALOG_URL);
+    if (!response.ok) {
+        throw new Error('精霊データの読み込みに失敗しました');
+    }
+
+    catalog = await response.json();
+    const flattened = flattenCatalog(catalog);
+    spiritById = flattened.byId;
+    allSpiritIds = flattened.ids;
+}
+
+async function loadCloudData() {
+    const { data, error } = await database
+        .from('spirits')
+        .select('owned_ids')
+        .eq('sync_key', mySyncKey)
+        .maybeSingle();
+
+    if (error) {
+        console.error('読み込みエラー:', error);
+        alert('データの読み込みに失敗しました。Supabase の RLS 設定を確認してください。');
+        return;
+    }
+
+    ownedSpiritIds = normalizeOwnedSpiritIds(data?.owned_ids);
+    renderCatalog();
+}
+
+async function saveCloudData() {
+    if (isSaving) return;
+    isSaving = true;
+
+    try {
+        const { error } = await database
+            .from('spirits')
+            .upsert(
+                { sync_key: mySyncKey, owned_ids: ownedSpiritIds },
+                { onConflict: 'sync_key' }
+            );
+
+        if (error) {
+            console.error('保存失敗:', error);
+            alert('保存に失敗しました。Supabase の RLS 設定を確認してください。');
+        }
+    } catch (error) {
+        console.error('通信エラー:', error);
+    } finally {
+        isSaving = false;
+    }
+}
+
+function matchesFilters(spirit) {
+    const searchText = searchInput.value.trim().toLowerCase();
+    const selectedElement = elementFilter.value;
+
+    const matchesSearch = !searchText || [
+        spirit.name,
+        spirit.event.abbr,
+        spirit.event.title,
+        spirit.event.subtitle,
+        spirit.section.title
+    ].some(text => (text ?? '').toLowerCase().includes(searchText));
+
+    const matchesElement = !selectedElement
+        || spirit.main === selectedElement
+        || spirit.sub === selectedElement;
+
+    return matchesSearch && matchesElement;
+}
+
+function createSpiritTile(spirit) {
+    const isOwned = ownedSpiritIds.includes(spirit.id);
+    const tile = document.createElement('button');
+    tile.type = 'button';
+    tile.className = `spirit-tile${isOwned ? ' owned' : ''}`;
+    tile.title = spirit.name;
+    tile.setAttribute('aria-pressed', String(isOwned));
+    tile.setAttribute('aria-label', `${spirit.name} ${isOwned ? '所持' : '未所持'}`);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'spirit-thumb';
+
+    const image = document.createElement('img');
+    image.src = spirit.image;
+    image.alt = spirit.name;
+    image.loading = 'lazy';
+    image.addEventListener('error', () => {
+        image.remove();
+        const placeholder = document.createElement('div');
+        placeholder.className = 'spirit-placeholder';
+        placeholder.textContent = '画像未設定';
+        thumb.appendChild(placeholder);
+    });
+
+    thumb.appendChild(image);
+
+    const name = document.createElement('div');
+    name.className = 'spirit-name';
+    name.textContent = spirit.name;
+
+    tile.appendChild(thumb);
+    tile.appendChild(name);
+    tile.addEventListener('click', () => toggleOwned(spirit.id));
+
+    return tile;
+}
+
+function renderCatalog() {
+    if (!catalog) return;
+
+    catalogEl.innerHTML = '';
+    const searchText = searchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    for (const section of catalog.sections) {
+        const visibleEvents = [];
+
+        for (const event of section.events) {
+            const visibleSpirits = event.spirits
+                .map(spirit => spiritById.get(spirit.id))
+                .filter(spirit => spirit && matchesFilters(spirit));
+
+            if (visibleSpirits.length > 0) {
+                visibleEvents.push({ event, visibleSpirits });
+                visibleCount += visibleSpirits.length;
+            }
+        }
+
+        if (visibleEvents.length === 0) continue;
+
+        const sectionBlock = document.createElement('section');
+        sectionBlock.className = 'section-block';
+
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = section.title;
+        sectionBlock.appendChild(sectionTitle);
+
+        for (const { event, visibleSpirits } of visibleEvents) {
+            const eventBlock = document.createElement('article');
+            eventBlock.className = 'event-block';
+
+            const header = document.createElement('div');
+            header.className = 'event-header';
+            header.innerHTML = `
+                <h3 class="event-abbr">${event.abbr}</h3>
+                <p class="event-title">${event.title}${event.subtitle ? ` / ${event.subtitle}` : ''}</p>
+            `;
+
+            const row = document.createElement('div');
+            row.className = 'spirit-row';
+            visibleSpirits.forEach(spirit => row.appendChild(createSpiritTile(spirit)));
+
+            eventBlock.appendChild(header);
+            eventBlock.appendChild(row);
+            sectionBlock.appendChild(eventBlock);
+        }
+
+        catalogEl.appendChild(sectionBlock);
+    }
+
+    if (visibleCount === 0) {
+        showMessage(
+            'empty-message',
+            searchText ? '検索条件に一致する精霊がありません。' : '表示できる精霊がありません。'
+        );
+    }
+
+    const ownedCount = ownedSpiritIds.length;
+    const totalCount = allSpiritIds.length;
+    const rate = totalCount === 0 ? 0 : Math.round((ownedCount / totalCount) * 100);
+    statsEl.textContent = `所持率: ${ownedCount} / ${totalCount} (${rate}%)`;
+}
+
+async function toggleOwned(spiritId) {
+    ownedSpiritIds = ownedSpiritIds.includes(spiritId)
+        ? ownedSpiritIds.filter(id => id !== spiritId)
+        : [...ownedSpiritIds, spiritId];
+
+    renderCatalog();
+    await saveCloudData();
+}
+
+function applyRemoteOwnedIds(nextOwnedIds) {
+    ownedSpiritIds = normalizeOwnedSpiritIds(nextOwnedIds);
+    renderCatalog();
+}
+
+function setupRealtimeListener() {
+    if (realtimeChannel) {
+        database.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+    }
+
+    realtimeChannel = database
+        .channel(`spirits-sync-${mySyncKey}`)
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'spirits',
+                filter: `sync_key=eq.${mySyncKey}`
+            },
+            payload => {
+                const nextOwnedIds = payload.new?.owned_ids;
+                if (nextOwnedIds) {
+                    applyRemoteOwnedIds(nextOwnedIds);
+                }
+            }
+        )
+        .subscribe();
+}
+
+document.getElementById('sync-connect-btn').addEventListener('click', async () => {
+    const inputKey = syncKeyInput.value.trim();
+    if (!inputKey) return;
+
+    if (inputKey.length < 6) {
+        alert('同期コードは6文字以上で入力してください。');
+        return;
+    }
+
+    if (confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
+        mySyncKey = inputKey;
+        localStorage.setItem('wiz_sync_key', mySyncKey);
+        await loadCloudData();
+        setupRealtimeListener();
+    }
+});
+
+document.getElementById('reset-btn').addEventListener('click', async () => {
+    if (confirm('クラウド上のデータもすべてリセットされます。よろしいですか？')) {
+        ownedSpiritIds = [];
+        renderCatalog();
+        await saveCloudData();
+    }
+});
+
+searchInput.addEventListener('input', renderCatalog);
+elementFilter.addEventListener('change', renderCatalog);
+
+async function init() {
+    if (!mySyncKey) {
+        mySyncKey = createSyncKey();
+        localStorage.setItem('wiz_sync_key', mySyncKey);
+    }
+    syncKeyInput.value = mySyncKey;
+
+    try {
+        await loadCatalog();
+        await loadCloudData();
+        setupRealtimeListener();
+    } catch (error) {
+        console.error(error);
+        showMessage('error-message', error.message);
+    }
+}
+
+init();
