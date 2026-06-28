@@ -112,6 +112,109 @@ function findCardRectByWhiteEdges(data, width, height, region) {
     return { minX: left, minY: top, maxX: right, maxY: bottom };
 }
 
+function findNearestCardPixel(data, width, height, x, y) {
+    const cx = Math.round(Math.max(0, Math.min(width - 1, x)));
+    const cy = Math.round(Math.max(0, Math.min(height - 1, y)));
+    if (!isWhiteGutter(...getPixel(data, width, cx, cy))) {
+        return { x: cx, y: cy };
+    }
+
+    const maxRadius = Math.min(width, height);
+    for (let radius = 1; radius < maxRadius; radius += 1) {
+        for (let dx = -radius; dx <= radius; dx += 1) {
+            for (let dy = -radius; dy <= radius; dy += 1) {
+                if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
+                const nx = cx + dx;
+                const ny = cy + dy;
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                if (!isWhiteGutter(...getPixel(data, width, nx, ny))) {
+                    return { x: nx, y: ny };
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+const OUTWARD_WHITE_THRESHOLD = 0.45;
+
+/** クリック位置から指定方向へ走査し、白すき間に達する手前までの距離を返す */
+function scanOutwardToWhiteGutterEdge(data, width, height, ax, ay, dx, dy, maxDist) {
+    let lastInside = 0;
+
+    for (let step = 1; step <= maxDist; step += 1) {
+        const px = ax + dx * step;
+        const py = ay + dy * step;
+
+        if (px < 0 || py < 0 || px >= width || py >= height) {
+            return lastInside;
+        }
+
+        const span = Math.min(step * 2 + 10, Math.max(width, height));
+        const whiteRatio = dx !== 0
+            ? lineWhiteGutterRatio(data, width, px, Math.max(0, ay - span), Math.min(height, ay + span + 1), 'x')
+            : lineWhiteGutterRatio(data, width, py, Math.max(0, ax - span), Math.min(width, ax + span + 1), 'y');
+
+        if (whiteRatio >= OUTWARD_WHITE_THRESHOLD) {
+            return lastInside;
+        }
+        lastInside = step;
+    }
+
+    return lastInside;
+}
+
+function rectToInitialSquare(rect, width, height) {
+    const boxWidth = rect.maxX - rect.minX + 1;
+    const boxHeight = rect.maxY - rect.minY + 1;
+    const size = Math.max(boxWidth, boxHeight);
+    const cx = (rect.minX + rect.maxX) / 2;
+    const cy = (rect.minY + rect.maxY) / 2;
+    return clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
+}
+
+function finalizeSquareCrop(data, width, height, initial) {
+    if (!initial) return null;
+    return tightenSquareToWhiteEdgeRule(data, width, height, initial);
+}
+
+/**
+ * クリック位置から四方へ走査し、白背景の内側で正方形を構成して切り抜く。
+ * @returns {{ x: number, y: number, size: number } | null}
+ */
+export function detectSpiritCropRectAtClick(imageData, width, height, clickX, clickY) {
+    const anchor = findNearestCardPixel(imageData.data, width, height, clickX, clickY);
+    if (!anchor) return null;
+
+    const maxScan = Math.floor(Math.min(width, height) * 0.45);
+    const left = scanOutwardToWhiteGutterEdge(imageData.data, width, height, anchor.x, anchor.y, -1, 0, maxScan);
+    const right = scanOutwardToWhiteGutterEdge(imageData.data, width, height, anchor.x, anchor.y, 1, 0, maxScan);
+    const up = scanOutwardToWhiteGutterEdge(imageData.data, width, height, anchor.x, anchor.y, 0, -1, maxScan);
+    const down = scanOutwardToWhiteGutterEdge(imageData.data, width, height, anchor.x, anchor.y, 0, 1, maxScan);
+
+    const minScan = Math.max(8, Math.floor(Math.min(width, height) * 0.04));
+    if (Math.max(left + right, up + down) < minScan) {
+        const estimated = Math.max(48, Math.round(Math.min(width, height) * 0.22));
+        const regionSize = estimated + Math.round(estimated * 0.8);
+        return detectSpiritCropRectInRegion(imageData, width, height, {
+            x: anchor.x - regionSize / 2,
+            y: anchor.y - regionSize / 2,
+            w: regionSize,
+            h: regionSize
+        });
+    }
+
+    const initial = rectToInitialSquare({
+        minX: anchor.x - left,
+        minY: anchor.y - up,
+        maxX: anchor.x + right,
+        maxY: anchor.y + down
+    }, width, height);
+
+    return finalizeSquareCrop(imageData.data, width, height, initial);
+}
+
 function squareEdgeWhiteRatios(data, width, x, y, size) {
     const right = x + size - 1;
     const bottom = y + size - 1;
@@ -205,20 +308,13 @@ export function detectSpiritCropRectInRegion(imageData, width, height, region) {
         ?? findCardRectByProjection(imageData.data, width, height, clipped);
     if (!rect) return null;
 
+    const minSize = Math.max(16, Math.floor(Math.min(clipped.w, clipped.h) * 0.25));
     const boxWidth = rect.maxX - rect.minX + 1;
     const boxHeight = rect.maxY - rect.minY + 1;
-    const minSize = Math.max(16, Math.floor(Math.min(clipped.w, clipped.h) * 0.25));
-    let size = Math.max(boxWidth, boxHeight);
+    if (Math.max(boxWidth, boxHeight) < minSize) return null;
 
-    if (size < minSize) return null;
-
-    const cx = (rect.minX + rect.maxX) / 2;
-    const cy = (rect.minY + rect.maxY) / 2;
-
-    const initial = clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
-    if (!initial) return null;
-
-    return tightenSquareToWhiteEdgeRule(imageData.data, width, height, initial);
+    const initial = rectToInitialSquare(rect, width, height);
+    return finalizeSquareCrop(imageData.data, width, height, initial);
 }
 
 function clampRegion(region, width, height) {

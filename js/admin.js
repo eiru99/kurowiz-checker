@@ -9,7 +9,7 @@ import {
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
-    detectSpiritCropRectInRegion,
+    detectSpiritCropRectAtClick,
     imageNeedsCropMode,
     loadImageFromFile,
     normalizeImageElement,
@@ -42,17 +42,12 @@ const imageDropzone = document.getElementById('admin-image-dropzone');
 const imageInput = document.getElementById('admin-spirit-image');
 const imagePreviewStage = document.getElementById('admin-image-preview-stage');
 const imagePreview = document.getElementById('admin-image-preview');
-const cropSelection = document.getElementById('admin-crop-selection');
 const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
 
 let previewObjectUrl = null;
 let pendingCropImage = null;
 let pendingCropObjectUrl = null;
-let cropDragStart = null;
-let cropDragActive = false;
-
-const MIN_SELECTION_IMAGE_PX = 24;
 
 const IMAGE_MIME_EXTENSIONS = {
     'image/png': 'png',
@@ -67,21 +62,12 @@ function extensionFromMime(mime) {
 
 function clearPendingCrop() {
     pendingCropImage = null;
-    cropDragStart = null;
-    cropDragActive = false;
     if (pendingCropObjectUrl) {
         URL.revokeObjectURL(pendingCropObjectUrl);
         pendingCropObjectUrl = null;
     }
     imageDropzone.classList.remove('crop-mode');
-    imagePreviewStage.removeEventListener('pointerdown', handleCropPointerDown);
-    document.removeEventListener('pointermove', handleCropPointerMove);
-    document.removeEventListener('pointerup', handleCropPointerUp);
-    cropSelection.hidden = true;
-    cropSelection.style.width = '';
-    cropSelection.style.height = '';
-    cropSelection.style.left = '';
-    cropSelection.style.top = '';
+    imagePreviewStage.removeEventListener('click', handleCropClick);
 }
 
 function getImageFitMetrics() {
@@ -126,27 +112,9 @@ function clientToImagePoint(clientX, clientY) {
     }
 
     return {
-        displayX,
-        displayY,
         imageX: displayX / metrics.scale,
         imageY: displayY / metrics.scale
     };
-}
-
-function updateCropSelectionBox(start, end) {
-    const metrics = getImageFitMetrics();
-    if (!metrics || !start || !end) return;
-
-    const left = metrics.offsetLeft + Math.min(start.displayX, end.displayX);
-    const top = metrics.offsetTop + Math.min(start.displayY, end.displayY);
-    const width = Math.abs(end.displayX - start.displayX);
-    const height = Math.abs(end.displayY - start.displayY);
-
-    cropSelection.hidden = false;
-    cropSelection.style.left = `${left}px`;
-    cropSelection.style.top = `${top}px`;
-    cropSelection.style.width = `${width}px`;
-    cropSelection.style.height = `${height}px`;
 }
 
 function clearImagePreview() {
@@ -171,7 +139,6 @@ function showImagePreview(file) {
     imagePreviewStage.hidden = false;
     imageDropzone.classList.add('has-image');
     imageDropzone.classList.remove('crop-mode');
-    cropSelection.hidden = true;
 }
 
 function assignSpiritImageFile(file) {
@@ -196,97 +163,22 @@ function enterCropMode(image, objectUrl) {
     imagePreview.src = objectUrl;
     imagePreviewStage.hidden = false;
     imageDropzone.classList.add('has-image', 'crop-mode');
-    imageHint.textContent = '精霊の周りをドラッグして囲んでください（枠の外側の白い余白も少し含める）';
-    cropSelection.hidden = true;
-    imagePreviewStage.addEventListener('pointerdown', handleCropPointerDown);
+    imageHint.textContent = '切り抜きたい精霊をクリックしてください';
+    imagePreviewStage.addEventListener('click', handleCropClick);
 }
 
-function handleCropPointerDown(event) {
-    if (!pendingCropImage || event.button !== 0) return;
+async function handleCropClick(event) {
+    if (!pendingCropImage) return;
     event.preventDefault();
+    event.stopPropagation();
 
     const point = clientToImagePoint(event.clientX, event.clientY);
     if (!point) return;
 
-    cropDragActive = true;
-    cropDragStart = point;
-    imagePreviewStage.setPointerCapture(event.pointerId);
-    updateCropSelectionBox(point, point);
-    document.addEventListener('pointermove', handleCropPointerMove);
-    document.addEventListener('pointerup', handleCropPointerUp);
-}
-
-function handleCropPointerMove(event) {
-    if (!cropDragActive || !cropDragStart) return;
-
-    const metrics = getImageFitMetrics();
-    if (!metrics) return;
-
-    const stageRect = imagePreviewStage.getBoundingClientRect();
-    const rawDisplayX = event.clientX - stageRect.left - metrics.offsetLeft;
-    const rawDisplayY = event.clientY - stageRect.top - metrics.offsetTop;
-    const displayX = Math.max(0, Math.min(metrics.displayWidth, rawDisplayX));
-    const displayY = Math.max(0, Math.min(metrics.displayHeight, rawDisplayY));
-
-    updateCropSelectionBox(cropDragStart, {
-        displayX,
-        displayY,
-        imageX: displayX / metrics.scale,
-        imageY: displayY / metrics.scale
-    });
-}
-
-async function handleCropPointerUp(event) {
-    if (!cropDragActive || !cropDragStart || !pendingCropImage) return;
-
-    cropDragActive = false;
-    document.removeEventListener('pointermove', handleCropPointerMove);
-    document.removeEventListener('pointerup', handleCropPointerUp);
-
-    if (imagePreviewStage.hasPointerCapture(event.pointerId)) {
-        imagePreviewStage.releasePointerCapture(event.pointerId);
-    }
-
-    const metrics = getImageFitMetrics();
-    const end = metrics
-        ? (() => {
-            const stageRect = imagePreviewStage.getBoundingClientRect();
-            const rawDisplayX = event.clientX - stageRect.left - metrics.offsetLeft;
-            const rawDisplayY = event.clientY - stageRect.top - metrics.offsetTop;
-            const displayX = Math.max(0, Math.min(metrics.displayWidth, rawDisplayX));
-            const displayY = Math.max(0, Math.min(metrics.displayHeight, rawDisplayY));
-            return {
-                displayX,
-                displayY,
-                imageX: displayX / metrics.scale,
-                imageY: displayY / metrics.scale
-            };
-        })()
-        : null;
-
-    if (!end) {
-        cropDragStart = null;
-        cropSelection.hidden = true;
-        return;
-    }
-
-    const region = {
-        x: Math.min(cropDragStart.imageX, end.imageX),
-        y: Math.min(cropDragStart.imageY, end.imageY),
-        w: Math.abs(end.imageX - cropDragStart.imageX),
-        h: Math.abs(end.imageY - cropDragStart.imageY)
-    };
-    cropDragStart = null;
-    cropSelection.hidden = true;
-
-    if (region.w < MIN_SELECTION_IMAGE_PX || region.h < MIN_SELECTION_IMAGE_PX) {
-        return;
-    }
-
     const { imageData, width, height } = readImageDataFromElement(pendingCropImage);
-    const cropRect = detectSpiritCropRectInRegion(imageData, width, height, region);
+    const cropRect = detectSpiritCropRectAtClick(imageData, width, height, point.imageX, point.imageY);
     if (!cropRect) {
-        alert('精霊アイコンを検出できませんでした。枠全体が入るよう、もう少し大きく囲んでください。');
+        alert('精霊アイコンを検出できませんでした。アイコンの中央付近をクリックしてください。');
         return;
     }
 
@@ -446,7 +338,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など（必須）。スクショは精霊＋周囲の白余白を囲んでドラッグ';
+    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊をクリックで切り抜き';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
@@ -504,7 +396,7 @@ async function handleSubmit(event) {
         }
 
         if (pendingCropImage) {
-            throw new Error('精霊の周りをドラッグして切り抜いてください。');
+            throw new Error('切り抜きたい精霊をクリックしてください。');
         }
 
         const eventId = await resolveEventId();
