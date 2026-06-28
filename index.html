@@ -156,8 +156,19 @@ const spiritData = [
 ];
 
 let ownedIds = [];
-let mySyncKey = localStorage.getItem('wiz_sync_key') || 'wiz-' + Math.floor(100000 + Math.random() * 900000);
-localStorage.setItem('wiz_sync_key', mySyncKey);
+let mySyncKey = localStorage.getItem('wiz_sync_key');
+let realtimeChannel = null;
+let isSaving = false;
+
+function createSyncKey() {
+    const suffix = Math.floor(100000 + Math.random() * 900000);
+    return `wiz-${suffix}`;
+}
+
+if (!mySyncKey) {
+    mySyncKey = createSyncKey();
+    localStorage.setItem('wiz_sync_key', mySyncKey);
+}
 document.getElementById('sync-key-input').value = mySyncKey;
 
 const grid = document.getElementById('card-grid');
@@ -165,52 +176,52 @@ const searchInput = document.getElementById('search');
 const elementFilter = document.getElementById('filter-element');
 const statsDiv = document.getElementById('stats');
 
-// クラウド（Supabase）からデータをロードする関数
+function normalizeOwnedIds(value) {
+    if (!Array.isArray(value)) return [];
+    return [...new Set(value.filter(id => Number.isInteger(id) && id >= 0 && id < spiritData.length))];
+}
+
 async function loadCloudData() {
     try {
-        // .maybeSingle() をやめて、配列として結果を取得するように変更
-        let { data, error } = await database
+        const { data, error } = await database
             .from('spirits')
             .select('owned_ids')
-            .eq('sync_key', mySyncKey);
+            .eq('sync_key', mySyncKey)
+            .maybeSingle();
 
         if (error) {
-            console.error("読み込みエラー:", error);
+            console.error('読み込みエラー:', error);
+            alert('データの読み込みに失敗しました。Supabase の RLS 設定を確認してください。');
             return;
         }
 
-        // dataは配列で返ってくるので、一番最後の（最新の）ものを使う
-        if (data && data.length > 0) {
-            // 配列の最後から最新のものを取得
-            ownedIds = data[data.length - 1].owned_ids || [];
-            console.log("読み込み成功、現在の所持ID:", ownedIds);
-        } else {
-            ownedIds = [];
-        }
-        
+        ownedIds = normalizeOwnedIds(data?.owned_ids);
         renderCards();
-        
     } catch (e) {
-        console.error("読み込み失敗:", e);
+        console.error('読み込み失敗:', e);
     }
 }
 
 async function saveCloudData() {
-    // 画面の更新が競合しないよう、保存中はボタンを無効化する等の工夫もできますが、
-    // まずは「保存が完了するまで待機」を徹底します。
+    if (isSaving) return;
+    isSaving = true;
+
     try {
         const { error } = await database
             .from('spirits')
-            .upsert({ sync_key: mySyncKey, owned_ids: ownedIds });
-        
+            .upsert(
+                { sync_key: mySyncKey, owned_ids: ownedIds },
+                { onConflict: 'sync_key' }
+            );
+
         if (error) {
-            console.error("保存失敗:", error);
-            alert("保存に失敗しました。インターネット接続を確認してください。");
-        } else {
-            console.log("保存成功！");
+            console.error('保存失敗:', error);
+            alert('保存に失敗しました。Supabase の RLS 設定を確認してください。');
         }
     } catch (e) {
-        console.error("通信エラー:", e);
+        console.error('通信エラー:', e);
+    } finally {
+        isSaving = false;
     }
 }
 
@@ -233,15 +244,22 @@ function renderCards() {
     statsDiv.textContent = `所持率: ${ownedIds.length} / ${spiritData.length} (${Math.round((ownedIds.length / spiritData.length) * 100)}%)`;
 }
 
-function toggleOwned(id) {
+async function toggleOwned(id) {
     ownedIds = ownedIds.includes(id) ? ownedIds.filter(i => i !== id) : [...ownedIds, id];
     renderCards();
-    saveCloudData();
+    await saveCloudData();
 }
 
 document.getElementById('sync-connect-btn').addEventListener('click', async () => {
     const inputKey = document.getElementById('sync-key-input').value.trim();
-    if(inputKey && confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
+    if (!inputKey) return;
+
+    if (inputKey.length < 6) {
+        alert('同期コードは6文字以上で入力してください。');
+        return;
+    }
+
+    if (confirm('指定された同期コードのデータとリアルタイム同期を開始しますか？')) {
         mySyncKey = inputKey;
         localStorage.setItem('wiz_sync_key', mySyncKey);
         await loadCloudData();
@@ -249,15 +267,35 @@ document.getElementById('sync-connect-btn').addEventListener('click', async () =
     }
 });
 
+function applyRemoteOwnedIds(nextOwnedIds) {
+    ownedIds = normalizeOwnedIds(nextOwnedIds);
+    renderCards();
+}
+
 function setupRealtimeListener() {
-    database.channel('custom-all-channel')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'spirits', filter: `sync_key=eq.${mySyncKey}` }, (payload) => {
-        if(payload.new && payload.new.owned_ids) {
-            ownedIds = payload.new.owned_ids;
-            renderCards();
-        }
-    })
-    .subscribe();
+    if (realtimeChannel) {
+        database.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+    }
+
+    realtimeChannel = database
+        .channel(`spirits-sync-${mySyncKey}`)
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'spirits',
+                filter: `sync_key=eq.${mySyncKey}`
+            },
+            (payload) => {
+                const nextOwnedIds = payload.new?.owned_ids;
+                if (nextOwnedIds) {
+                    applyRemoteOwnedIds(nextOwnedIds);
+                }
+            }
+        )
+        .subscribe();
 }
 
 document.getElementById('reset-btn').addEventListener('click', async () => {
