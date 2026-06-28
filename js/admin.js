@@ -30,8 +30,80 @@ const spiritNameInput = document.getElementById('admin-spirit-name');
 const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
 const imageInput = document.getElementById('admin-spirit-image');
+const imagePreview = document.getElementById('admin-image-preview');
 const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
+
+let previewObjectUrl = null;
+
+const IMAGE_MIME_EXTENSIONS = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/webp': 'webp',
+    'image/gif': 'gif'
+};
+
+function extensionFromMime(mime) {
+    return IMAGE_MIME_EXTENSIONS[mime] ?? 'png';
+}
+
+function clearImagePreview() {
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+    imagePreview.removeAttribute('src');
+    imagePreview.hidden = true;
+}
+
+function showImagePreview(file) {
+    clearImagePreview();
+    previewObjectUrl = URL.createObjectURL(file);
+    imagePreview.src = previewObjectUrl;
+    imagePreview.hidden = false;
+}
+
+function assignSpiritImageFile(file) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    imageInput.files = dataTransfer.files;
+    showImagePreview(file);
+}
+
+function normalizePastedImageFile(file) {
+    if (file.name && file.name.includes('.')) return file;
+    const extension = extensionFromMime(file.type);
+    return new File([file], `screenshot.${extension}`, { type: file.type || 'image/png' });
+}
+
+function handleImagePaste(event) {
+    if (!dialog.open) return;
+
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+        if (!item.type.startsWith('image/')) continue;
+
+        const file = item.getAsFile();
+        if (!file) continue;
+
+        event.preventDefault();
+        assignSpiritImageFile(normalizePastedImageFile(file));
+        imageHint.textContent = '画像を設定しました（ファイル選択 / 貼り付け）';
+        return;
+    }
+}
+
+function handleImageInputChange() {
+    const file = imageInput.files?.[0];
+    if (file) {
+        showImagePreview(file);
+        imageHint.textContent = '画像を設定しました（ファイル選択 / 貼り付け）';
+        return;
+    }
+    clearImagePreview();
+}
 
 function isAdminUnlocked() {
     return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
@@ -111,9 +183,10 @@ function resetForm() {
     dialogTitle.textContent = '精霊を追加';
     submitButton.textContent = '追加する';
     form.reset();
+    clearImagePreview();
     setEventMode('existing');
     imageInput.required = true;
-    imageHint.textContent = 'PNG / JPG など（必須）';
+    imageHint.textContent = 'PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）';
     populateSectionSelect();
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
@@ -260,7 +333,8 @@ export async function openEditDialog(spiritId) {
         spiritMainSelect.value = spirit.main;
         spiritSubSelect.value = spirit.sub;
         imageInput.required = false;
-        imageHint.textContent = '変更しない場合は空のままで OK';
+        clearImagePreview();
+        imageHint.textContent = '変更しない場合は空のままで OK（貼り付けで差し替え可）';
 
         dialog.showModal();
     } catch (error) {
@@ -276,6 +350,8 @@ export function initAdmin(db, onReloadCatalog) {
     document.getElementById('add-btn').addEventListener('click', openAddDialog);
     document.getElementById('admin-cancel-btn').addEventListener('click', () => dialog.close());
     form.addEventListener('submit', handleSubmit);
+    dialog.addEventListener('paste', handleImagePaste);
+    imageInput.addEventListener('change', handleImageInputChange);
 
     document.querySelectorAll('input[name="event-mode"]').forEach(radio => {
         radio.addEventListener('change', () => setEventMode(radio.value));

@@ -88,10 +88,11 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="admin-image-group">
                 <label for="admin-spirit-image">精霊画像</label>
                 <input type="file" id="admin-spirit-image" accept="image/png,image/jpeg,image/webp,image/gif" required>
-                <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）</p>
+                <img id="admin-image-preview" class="admin-image-preview" alt="" hidden>
+                <p id="admin-image-hint" class="field-hint">PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）</p>
             </div>
 
             <div class="dialog-actions">
