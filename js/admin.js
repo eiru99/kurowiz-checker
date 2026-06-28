@@ -17,15 +17,14 @@ let editingSpiritId = null;
 const dialog = document.getElementById('admin-dialog');
 const form = document.getElementById('admin-form');
 const dialogTitle = document.getElementById('admin-dialog-title');
-const sectionSelect = document.getElementById('admin-section');
 const eventModeExisting = document.getElementById('event-mode-existing');
 const eventModeNew = document.getElementById('event-mode-new');
 const existingEventBlock = document.getElementById('existing-event-block');
 const newEventBlock = document.getElementById('new-event-block');
+const spiritDetailsBlock = document.getElementById('spirit-details-block');
 const existingEventSelect = document.getElementById('admin-existing-event');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
-const eventSubtitleInput = document.getElementById('admin-event-subtitle');
 const spiritNameInput = document.getElementById('admin-spirit-name');
 const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
@@ -139,16 +138,6 @@ function fillSelectOptions(select, values) {
     }
 }
 
-function populateSectionSelect() {
-    sectionSelect.innerHTML = '';
-    for (const section of catalogRows.sections) {
-        const option = document.createElement('option');
-        option.value = section.id;
-        option.textContent = section.title;
-        sectionSelect.appendChild(option);
-    }
-}
-
 function populateExistingEventSelect() {
     existingEventSelect.innerHTML = '';
     for (const section of catalogRows.sections) {
@@ -167,15 +156,22 @@ function populateExistingEventSelect() {
     }
 }
 
+const DEFAULT_SECTION_ID = 'latest';
+
 function setEventMode(mode) {
     const isExisting = mode === 'existing';
-    eventModeExisting.checked = isExisting;
-    eventModeNew.checked = !isExisting;
+    const isNew = mode === 'new';
+    const showDetails = isExisting || isNew;
+
     existingEventBlock.hidden = !isExisting;
-    newEventBlock.hidden = isExisting;
+    newEventBlock.hidden = !isNew;
+    spiritDetailsBlock.hidden = !showDetails;
+
     existingEventSelect.required = isExisting;
-    eventAbbrInput.required = !isExisting;
-    eventTitleInput.required = !isExisting;
+    eventAbbrInput.required = isNew;
+    eventTitleInput.required = isNew;
+    spiritNameInput.required = showDetails;
+    imageInput.required = showDetails && !editingSpiritId;
 }
 
 function resetForm() {
@@ -184,13 +180,14 @@ function resetForm() {
     submitButton.textContent = '追加する';
     form.reset();
     clearImagePreview();
-    setEventMode('existing');
-    imageInput.required = true;
+    eventModeExisting.checked = false;
+    eventModeNew.checked = false;
+    setEventMode(null);
     imageHint.textContent = 'PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）';
-    populateSectionSelect();
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
+    document.getElementById('event-mode-fieldset').hidden = false;
 }
 
 async function refreshCatalogRows() {
@@ -198,7 +195,7 @@ async function refreshCatalogRows() {
 }
 
 async function resolveEventId() {
-    if (eventModeExisting.checked) {
+    if (editingSpiritId || eventModeExisting.checked) {
         const eventId = existingEventSelect.value;
         if (!eventId) throw new Error('イベントを選択してください。');
         return eventId;
@@ -206,13 +203,12 @@ async function resolveEventId() {
 
     const abbr = eventAbbrInput.value.trim();
     const title = eventTitleInput.value.trim();
-    const subtitle = eventSubtitleInput.value.trim();
-    const sectionId = sectionSelect.value;
 
-    if (!abbr || !title || !sectionId) {
-        throw new Error('新規イベントの略称・正式名・掲載カテゴリを入力してください。');
+    if (!abbr || !title) {
+        throw new Error('新規イベントの略称・正式名を入力してください。');
     }
 
+    const sectionId = DEFAULT_SECTION_ID;
     const eventId = createEventId(abbr);
     const sortOrder = catalogRows.events.filter(event => event.section_id === sectionId).length + 1;
     const { error } = await database.from('catalog_events').insert({
@@ -220,7 +216,7 @@ async function resolveEventId() {
         section_id: sectionId,
         abbr,
         title,
-        subtitle,
+        subtitle: '',
         sort_order: sortOrder
     });
 
@@ -230,6 +226,12 @@ async function resolveEventId() {
 
 async function handleSubmit(event) {
     event.preventDefault();
+
+    if (!editingSpiritId && !eventModeExisting.checked && !eventModeNew.checked) {
+        alert('イベントを既存か新規か選んでください。');
+        return;
+    }
+
     submitButton.disabled = true;
 
     try {
@@ -322,14 +324,21 @@ export async function openEditDialog(spiritId) {
         editingSpiritId = spirit.id;
         dialogTitle.textContent = '精霊を編集';
         submitButton.textContent = '更新する';
-        populateSectionSelect();
         populateExistingEventSelect();
         fillSelectOptions(spiritMainSelect, ELEMENTS);
         fillSelectOptions(spiritSubSelect, ELEMENTS);
-        setEventMode('existing');
+
+        document.getElementById('event-mode-fieldset').hidden = true;
+        newEventBlock.hidden = true;
+        existingEventBlock.hidden = false;
+        spiritDetailsBlock.hidden = false;
+        existingEventSelect.required = true;
+        eventAbbrInput.required = false;
+        eventTitleInput.required = false;
 
         existingEventSelect.value = spirit.event_id;
         spiritNameInput.value = spirit.name;
+        spiritNameInput.required = true;
         spiritMainSelect.value = spirit.main;
         spiritSubSelect.value = spirit.sub;
         imageInput.required = false;

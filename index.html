@@ -41,10 +41,10 @@
         <form id="admin-form" method="dialog">
             <h2 id="admin-dialog-title">精霊を追加</h2>
 
-            <fieldset class="form-group">
+            <fieldset class="form-group" id="event-mode-fieldset">
                 <legend>イベント</legend>
                 <label class="radio-line">
-                    <input type="radio" name="event-mode" id="event-mode-existing" value="existing" checked>
+                    <input type="radio" name="event-mode" id="event-mode-existing" value="existing">
                     既存イベントを選ぶ
                 </label>
                 <label class="radio-line">
@@ -53,46 +53,42 @@
                 </label>
             </fieldset>
 
-            <div id="existing-event-block" class="form-group">
+            <div id="existing-event-block" class="form-group" hidden>
                 <label for="admin-existing-event">既存イベント</label>
                 <select id="admin-existing-event"></select>
             </div>
 
             <div id="new-event-block" class="form-group" hidden>
-                <label for="admin-section">掲載カテゴリ</label>
-                <select id="admin-section"></select>
-
                 <label for="admin-event-abbr">イベント略称</label>
                 <input type="text" id="admin-event-abbr" placeholder="例: かみさんぽっ3">
 
                 <label for="admin-event-title">イベント正式名</label>
                 <input type="text" id="admin-event-title" placeholder="例: 神域をさんぽする至高の神々 3">
-
-                <label for="admin-event-subtitle">サブタイトル（任意）</label>
-                <input type="text" id="admin-event-subtitle" placeholder="例: かみさんぽっ!人と妖精の国アイリー">
             </div>
 
-            <div class="form-group">
-                <label for="admin-spirit-name">精霊名</label>
-                <input type="text" id="admin-spirit-name" required placeholder="例: 神と和解せよ カヌエ・デ・ヤシロ">
-            </div>
-
-            <div class="form-row">
+            <div id="spirit-details-block" hidden>
                 <div class="form-group">
-                    <label for="admin-spirit-main">メイン属性</label>
-                    <select id="admin-spirit-main"></select>
+                    <label for="admin-spirit-name">精霊名</label>
+                    <input type="text" id="admin-spirit-name" placeholder="例: 神と和解せよ カヌエ・デ・ヤシロ">
                 </div>
-                <div class="form-group">
-                    <label for="admin-spirit-sub">サブ属性</label>
-                    <select id="admin-spirit-sub"></select>
-                </div>
-            </div>
 
-            <div class="form-group" id="admin-image-group">
-                <label for="admin-spirit-image">精霊画像</label>
-                <input type="file" id="admin-spirit-image" accept="image/png,image/jpeg,image/webp,image/gif" required>
-                <img id="admin-image-preview" class="admin-image-preview" alt="" hidden>
-                <p id="admin-image-hint" class="field-hint">PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="admin-spirit-main">メイン属性</label>
+                        <select id="admin-spirit-main"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-spirit-sub">サブ属性</label>
+                        <select id="admin-spirit-sub"></select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="admin-image-group">
+                    <label for="admin-spirit-image">精霊画像</label>
+                    <input type="file" id="admin-spirit-image" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <img id="admin-image-preview" class="admin-image-preview" alt="" hidden>
+                    <p id="admin-image-hint" class="field-hint">PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）</p>
+                </div>
             </div>
 
             <div class="dialog-actions">
