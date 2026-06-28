@@ -9,7 +9,7 @@ import {
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
-    detectSpiritCropRect,
+    detectSpiritCropRectInRegion,
     imageNeedsCropMode,
     loadImageFromFile,
     normalizeImageElement,
@@ -40,13 +40,19 @@ const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
 const imageDropzone = document.getElementById('admin-image-dropzone');
 const imageInput = document.getElementById('admin-spirit-image');
+const imagePreviewStage = document.getElementById('admin-image-preview-stage');
 const imagePreview = document.getElementById('admin-image-preview');
+const cropSelection = document.getElementById('admin-crop-selection');
 const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
 
 let previewObjectUrl = null;
 let pendingCropImage = null;
 let pendingCropObjectUrl = null;
+let cropDragStart = null;
+let cropDragActive = false;
+
+const MIN_SELECTION_IMAGE_PX = 24;
 
 const IMAGE_MIME_EXTENSIONS = {
     'image/png': 'png',
@@ -61,12 +67,86 @@ function extensionFromMime(mime) {
 
 function clearPendingCrop() {
     pendingCropImage = null;
+    cropDragStart = null;
+    cropDragActive = false;
     if (pendingCropObjectUrl) {
         URL.revokeObjectURL(pendingCropObjectUrl);
         pendingCropObjectUrl = null;
     }
     imageDropzone.classList.remove('crop-mode');
-    imagePreview.removeEventListener('click', handleCropClick);
+    imagePreviewStage.removeEventListener('pointerdown', handleCropPointerDown);
+    document.removeEventListener('pointermove', handleCropPointerMove);
+    document.removeEventListener('pointerup', handleCropPointerUp);
+    cropSelection.hidden = true;
+    cropSelection.style.width = '';
+    cropSelection.style.height = '';
+    cropSelection.style.left = '';
+    cropSelection.style.top = '';
+}
+
+function getImageFitMetrics() {
+    const rect = imagePreview.getBoundingClientRect();
+    const naturalWidth = pendingCropImage?.naturalWidth ?? imagePreview.naturalWidth;
+    const naturalHeight = pendingCropImage?.naturalHeight ?? imagePreview.naturalHeight;
+    if (!naturalWidth || !naturalHeight || !rect.width || !rect.height) {
+        return null;
+    }
+
+    const scale = Math.min(rect.width / naturalWidth, rect.height / naturalHeight);
+    const displayWidth = naturalWidth * scale;
+    const displayHeight = naturalHeight * scale;
+    const offsetLeft = (rect.width - displayWidth) / 2;
+    const offsetTop = (rect.height - displayHeight) / 2;
+
+    return {
+        scale,
+        offsetLeft,
+        offsetTop,
+        displayWidth,
+        displayHeight,
+        rect
+    };
+}
+
+function clientToImagePoint(clientX, clientY) {
+    const metrics = getImageFitMetrics();
+    if (!metrics) return null;
+
+    const stageRect = imagePreviewStage.getBoundingClientRect();
+    const displayX = clientX - stageRect.left - metrics.offsetLeft;
+    const displayY = clientY - stageRect.top - metrics.offsetTop;
+
+    if (
+        displayX < 0
+        || displayY < 0
+        || displayX > metrics.displayWidth
+        || displayY > metrics.displayHeight
+    ) {
+        return null;
+    }
+
+    return {
+        displayX,
+        displayY,
+        imageX: displayX / metrics.scale,
+        imageY: displayY / metrics.scale
+    };
+}
+
+function updateCropSelectionBox(start, end) {
+    const metrics = getImageFitMetrics();
+    if (!metrics || !start || !end) return;
+
+    const left = metrics.offsetLeft + Math.min(start.displayX, end.displayX);
+    const top = metrics.offsetTop + Math.min(start.displayY, end.displayY);
+    const width = Math.abs(end.displayX - start.displayX);
+    const height = Math.abs(end.displayY - start.displayY);
+
+    cropSelection.hidden = false;
+    cropSelection.style.left = `${left}px`;
+    cropSelection.style.top = `${top}px`;
+    cropSelection.style.width = `${width}px`;
+    cropSelection.style.height = `${height}px`;
 }
 
 function clearImagePreview() {
@@ -77,7 +157,7 @@ function clearImagePreview() {
     }
     imageInput.value = '';
     imagePreview.removeAttribute('src');
-    imagePreview.hidden = true;
+    imagePreviewStage.hidden = true;
     imageDropzone.classList.remove('has-image');
 }
 
@@ -88,9 +168,10 @@ function showImagePreview(file) {
     }
     previewObjectUrl = URL.createObjectURL(file);
     imagePreview.src = previewObjectUrl;
-    imagePreview.hidden = false;
+    imagePreviewStage.hidden = false;
     imageDropzone.classList.add('has-image');
     imageDropzone.classList.remove('crop-mode');
+    cropSelection.hidden = true;
 }
 
 function assignSpiritImageFile(file) {
@@ -113,29 +194,99 @@ function enterCropMode(image, objectUrl) {
     pendingCropImage = image;
     pendingCropObjectUrl = objectUrl;
     imagePreview.src = objectUrl;
-    imagePreview.hidden = false;
+    imagePreviewStage.hidden = false;
     imageDropzone.classList.add('has-image', 'crop-mode');
-    imageHint.textContent = '精霊アイコンをクリックして切り抜いてください';
-    imagePreview.addEventListener('click', handleCropClick);
+    imageHint.textContent = '精霊の周りをドラッグして囲んでください';
+    cropSelection.hidden = true;
+    imagePreviewStage.addEventListener('pointerdown', handleCropPointerDown);
 }
 
-async function handleCropClick(event) {
-    if (!pendingCropImage) return;
+function handleCropPointerDown(event) {
+    if (!pendingCropImage || event.button !== 0) return;
     event.preventDefault();
-    event.stopPropagation();
 
-    const bounds = imagePreview.getBoundingClientRect();
-    if (!bounds.width || !bounds.height) return;
+    const point = clientToImagePoint(event.clientX, event.clientY);
+    if (!point) return;
 
-    const scaleX = pendingCropImage.naturalWidth / bounds.width;
-    const scaleY = pendingCropImage.naturalHeight / bounds.height;
-    const clickX = (event.clientX - bounds.left) * scaleX;
-    const clickY = (event.clientY - bounds.top) * scaleY;
+    cropDragActive = true;
+    cropDragStart = point;
+    imagePreviewStage.setPointerCapture(event.pointerId);
+    updateCropSelectionBox(point, point);
+    document.addEventListener('pointermove', handleCropPointerMove);
+    document.addEventListener('pointerup', handleCropPointerUp);
+}
+
+function handleCropPointerMove(event) {
+    if (!cropDragActive || !cropDragStart) return;
+
+    const metrics = getImageFitMetrics();
+    if (!metrics) return;
+
+    const stageRect = imagePreviewStage.getBoundingClientRect();
+    const rawDisplayX = event.clientX - stageRect.left - metrics.offsetLeft;
+    const rawDisplayY = event.clientY - stageRect.top - metrics.offsetTop;
+    const displayX = Math.max(0, Math.min(metrics.displayWidth, rawDisplayX));
+    const displayY = Math.max(0, Math.min(metrics.displayHeight, rawDisplayY));
+
+    updateCropSelectionBox(cropDragStart, {
+        displayX,
+        displayY,
+        imageX: displayX / metrics.scale,
+        imageY: displayY / metrics.scale
+    });
+}
+
+async function handleCropPointerUp(event) {
+    if (!cropDragActive || !cropDragStart || !pendingCropImage) return;
+
+    cropDragActive = false;
+    document.removeEventListener('pointermove', handleCropPointerMove);
+    document.removeEventListener('pointerup', handleCropPointerUp);
+
+    if (imagePreviewStage.hasPointerCapture(event.pointerId)) {
+        imagePreviewStage.releasePointerCapture(event.pointerId);
+    }
+
+    const metrics = getImageFitMetrics();
+    const end = metrics
+        ? (() => {
+            const stageRect = imagePreviewStage.getBoundingClientRect();
+            const rawDisplayX = event.clientX - stageRect.left - metrics.offsetLeft;
+            const rawDisplayY = event.clientY - stageRect.top - metrics.offsetTop;
+            const displayX = Math.max(0, Math.min(metrics.displayWidth, rawDisplayX));
+            const displayY = Math.max(0, Math.min(metrics.displayHeight, rawDisplayY));
+            return {
+                displayX,
+                displayY,
+                imageX: displayX / metrics.scale,
+                imageY: displayY / metrics.scale
+            };
+        })()
+        : null;
+
+    if (!end) {
+        cropDragStart = null;
+        cropSelection.hidden = true;
+        return;
+    }
+
+    const region = {
+        x: Math.min(cropDragStart.imageX, end.imageX),
+        y: Math.min(cropDragStart.imageY, end.imageY),
+        w: Math.abs(end.imageX - cropDragStart.imageX),
+        h: Math.abs(end.imageY - cropDragStart.imageY)
+    };
+    cropDragStart = null;
+    cropSelection.hidden = true;
+
+    if (region.w < MIN_SELECTION_IMAGE_PX || region.h < MIN_SELECTION_IMAGE_PX) {
+        return;
+    }
 
     const { imageData, width, height } = readImageDataFromElement(pendingCropImage);
-    const cropRect = detectSpiritCropRect(imageData, width, height, clickX, clickY);
+    const cropRect = detectSpiritCropRectInRegion(imageData, width, height, region);
     if (!cropRect) {
-        alert('精霊アイコンを検出できませんでした。アイコンの中央付近をクリックしてください。');
+        alert('精霊アイコンを検出できませんでした。枠全体が入るよう、もう少し大きく囲んでください。');
         return;
     }
 
@@ -295,7 +446,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊をクリックで切り抜き';
+    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊の周りをドラッグで囲む';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
@@ -353,7 +504,7 @@ async function handleSubmit(event) {
         }
 
         if (pendingCropImage) {
-            throw new Error('精霊アイコンをクリックして切り抜いてください。');
+            throw new Error('精霊の周りをドラッグして切り抜いてください。');
         }
 
         const eventId = await resolveEventId();

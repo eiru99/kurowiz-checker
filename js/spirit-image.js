@@ -28,13 +28,107 @@ function getPixel(data, width, x, y) {
     return [data[i], data[i + 1], data[i + 2]];
 }
 
-function scanToEdge(data, width, height, x, y, dx, dy, maxDist) {
+/**
+ * ユーザーが囲んだ範囲の中から精霊アイコンの正方形切り抜き範囲を推定する。
+ * @param {{ x: number, y: number, w: number, h: number }} region
+ * @returns {{ x: number, y: number, size: number } | null}
+ */
+export function detectSpiritCropRectInRegion(imageData, width, height, region) {
+    const clipped = clampRegion(region, width, height);
+    if (!clipped) return null;
+
+    const bbox = findContentBoundingBox(imageData.data, width, height, clipped);
+    if (!bbox) return null;
+
+    const cx = Math.round((bbox.minX + bbox.maxX) / 2);
+    const cy = Math.round((bbox.minY + bbox.maxY) / 2);
+    const contentSize = Math.max(bbox.maxX - bbox.minX + 1, bbox.maxY - bbox.minY + 1);
+    const maxScan = Math.ceil(contentSize * 0.55);
+
+    const left = scanToEdgeInRegion(imageData.data, width, height, cx, cy, -1, 0, maxScan, clipped);
+    const right = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 1, 0, maxScan, clipped);
+    const up = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 0, -1, maxScan, clipped);
+    const down = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 0, 1, maxScan, clipped);
+
+    let size = Math.max(left + right, up + down);
+    const minSize = Math.max(16, Math.floor(Math.min(clipped.w, clipped.h) * 0.3));
+
+    if (size < minSize) {
+        size = contentSize;
+    }
+
+    const padding = Math.max(1, Math.round(size * 0.025));
+    const maxAllowed = Math.min(clipped.w, clipped.h, width, height);
+    size = Math.min(size + padding * 2, maxAllowed);
+
+    if (size < minSize) return null;
+
+    return clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
+}
+
+function clampRegion(region, width, height) {
+    const x = Math.max(0, Math.floor(region.x));
+    const y = Math.max(0, Math.floor(region.y));
+    const w = Math.min(width - x, Math.ceil(region.w));
+    const h = Math.min(height - y, Math.ceil(region.h));
+    if (w < 12 || h < 12) return null;
+    return { x, y, w, h };
+}
+
+function clampSquare(x, y, size, width, height) {
+    let clampedSize = Math.floor(size);
+    if (clampedSize <= 0) return null;
+
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    if (x + clampedSize > width) x = width - clampedSize;
+    if (y + clampedSize > height) y = height - clampedSize;
+    if (x < 0 || y < 0) {
+        clampedSize = Math.min(clampedSize, width, height);
+        x = Math.max(0, Math.floor((width - clampedSize) / 2));
+        y = Math.max(0, Math.floor((height - clampedSize) / 2));
+    }
+    if (clampedSize <= 0 || x + clampedSize > width || y + clampedSize > height) return null;
+    return { x, y, size: clampedSize };
+}
+
+function findContentBoundingBox(data, width, height, region) {
+    const xEnd = region.x + region.w;
+    const yEnd = region.y + region.h;
+    let minX = width;
+    let minY = height;
+    let maxX = 0;
+    let maxY = 0;
+    let found = false;
+
+    for (let y = region.y; y < yEnd; y += 1) {
+        for (let x = region.x; x < xEnd; x += 1) {
+            const [r, g, b] = getPixel(data, width, x, y);
+            if (isSpiritBackground(r, g, b)) continue;
+            found = true;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
+    }
+
+    if (!found) return null;
+    return { minX, minY, maxX, maxY };
+}
+
+function scanToEdgeInRegion(data, width, height, x, y, dx, dy, maxDist, region) {
     let lastInside = 0;
+    const xEnd = region.x + region.w;
+    const yEnd = region.y + region.h;
 
     for (let step = 1; step <= maxDist; step += 1) {
         const nx = Math.round(x + dx * step);
         const ny = Math.round(y + dy * step);
 
+        if (nx < region.x || ny < region.y || nx >= xEnd || ny >= yEnd) {
+            return lastInside;
+        }
         if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
             return lastInside;
         }
@@ -49,6 +143,7 @@ function scanToEdge(data, width, height, x, y, dx, dy, maxDist) {
         for (let ahead = 1; ahead <= 3; ahead += 1) {
             const px = Math.round(x + dx * (step + ahead));
             const py = Math.round(y + dy * (step + ahead));
+            if (px < region.x || py < region.y || px >= xEnd || py >= yEnd) break;
             if (px < 0 || py < 0 || px >= width || py >= height) break;
             const [nr, ng, nb] = getPixel(data, width, px, py);
             if (isSpiritBackground(nr, ng, nb)) consecutiveBackground += 1;
@@ -61,69 +156,6 @@ function scanToEdge(data, width, height, x, y, dx, dy, maxDist) {
     }
 
     return lastInside;
-}
-
-function findNearestCardPixel(data, width, height, x, y) {
-    if (!isSpiritBackground(...getPixel(data, width, x, y))) {
-        return { x, y };
-    }
-
-    const maxRadius = Math.min(width, height);
-    for (let radius = 1; radius < maxRadius; radius += 1) {
-        for (let dx = -radius; dx <= radius; dx += 1) {
-            for (let dy = -radius; dy <= radius; dy += 1) {
-                if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
-                const nx = x + dx;
-                const ny = y + dy;
-                if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-                if (!isSpiritBackground(...getPixel(data, width, nx, ny))) {
-                    return { x: nx, y: ny };
-                }
-            }
-        }
-    }
-
-    return null;
-}
-
-/**
- * クリック位置を含む精霊アイコンの正方形切り抜き範囲を推定する。
- * @returns {{ x: number, y: number, size: number } | null}
- */
-export function detectSpiritCropRect(imageData, width, height, clickX, clickY) {
-    const cx = Math.round(Math.max(0, Math.min(width - 1, clickX)));
-    const cy = Math.round(Math.max(0, Math.min(height - 1, clickY)));
-    const anchor = findNearestCardPixel(imageData.data, width, height, cx, cy);
-    if (!anchor) return null;
-
-    const maxScan = Math.floor(Math.min(width, height) * 0.45);
-    const left = scanToEdge(imageData.data, width, height, anchor.x, anchor.y, -1, 0, maxScan);
-    const right = scanToEdge(imageData.data, width, height, anchor.x, anchor.y, 1, 0, maxScan);
-    const up = scanToEdge(imageData.data, width, height, anchor.x, anchor.y, 0, -1, maxScan);
-    const down = scanToEdge(imageData.data, width, height, anchor.x, anchor.y, 0, 1, maxScan);
-
-    const horizontal = left + right;
-    const vertical = up + down;
-    let size = Math.max(horizontal, vertical);
-
-    const minSize = Math.max(24, Math.floor(Math.min(width, height) * 0.04));
-    const maxSize = Math.floor(Math.min(width, height) * 0.92);
-    if (size < minSize) return null;
-    size = Math.min(size, maxSize);
-
-    const padding = Math.max(2, Math.round(size * 0.03));
-    size = Math.min(size + padding * 2, maxSize);
-
-    let x = Math.round(anchor.x - size / 2);
-    let y = Math.round(anchor.y - size / 2);
-
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-    if (x + size > width) x = width - size;
-    if (y + size > height) y = height - size;
-    if (size <= 0 || x < 0 || y < 0) return null;
-
-    return { x, y, size };
 }
 
 export function imageNeedsCropMode(image) {

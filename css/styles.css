@@ -392,6 +392,12 @@ button:hover {
     display: none;
 }
 
+.admin-image-preview-stage {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
 .admin-image-preview {
     display: block;
     max-width: 100%;
@@ -402,13 +408,25 @@ button:hover {
     pointer-events: none;
 }
 
+.admin-crop-selection {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px dashed #1565c0;
+    background: rgba(21, 101, 192, 0.18);
+    pointer-events: none;
+}
+
 .admin-image-dropzone.crop-mode .admin-spirit-image-input {
     pointer-events: none;
 }
 
-.admin-image-dropzone.crop-mode .admin-image-preview {
-    pointer-events: auto;
+.admin-image-dropzone.crop-mode .admin-image-preview-stage {
     cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+}
+
+.admin-image-dropzone.crop-mode .admin-image-preview {
     max-height: 280px;
 }
 
