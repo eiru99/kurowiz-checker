@@ -196,7 +196,7 @@ function enterCropMode(image, objectUrl) {
     imagePreview.src = objectUrl;
     imagePreviewStage.hidden = false;
     imageDropzone.classList.add('has-image', 'crop-mode');
-    imageHint.textContent = '精霊の周りをドラッグして囲んでください';
+    imageHint.textContent = '精霊の周りをドラッグして囲んでください（枠の外側の白い余白も少し含める）';
     cropSelection.hidden = true;
     imagePreviewStage.addEventListener('pointerdown', handleCropPointerDown);
 }
@@ -446,7 +446,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊の周りをドラッグで囲む';
+    imageHint.textContent = 'PNG / JPG など（必須）。スクショは精霊＋周囲の白余白を囲んでドラッグ';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);

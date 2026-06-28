@@ -14,18 +14,139 @@ function saturation(r, g, b) {
     return max === 0 ? 0 : (max - min) / max;
 }
 
-/** スクリーンショットの背景・アイコン間のすき間 */
-function isSpiritBackground(r, g, b) {
+/** 精霊アイコン同士の白いすき間（枠の外側） */
+function isWhiteGutter(r, g, b) {
+    const sat = saturation(r, g, b);
+    return r >= 235 && g >= 235 && b >= 235 && sat < 0.08;
+}
+
+/** スクショ全体の薄いグレー模様の背景 */
+function isGrayScreenshotBackground(r, g, b) {
     const lum = luminance(r, g, b);
     const sat = saturation(r, g, b);
-    if (lum > 238) return true;
-    if (lum > 158 && sat < 0.14) return true;
-    return false;
+    return lum > 158 && sat < 0.14;
+}
+
+function isSpiritBackground(r, g, b) {
+    return isWhiteGutter(r, g, b) || isGrayScreenshotBackground(r, g, b);
 }
 
 function getPixel(data, width, x, y) {
     const i = (y * width + x) * 4;
     return [data[i], data[i + 1], data[i + 2]];
+}
+
+/** 線上の白すき間ピクセル比率（0=枠側、1=白背景側） */
+function lineWhiteGutterRatio(data, width, fixed, start, end, axis) {
+    let white = 0;
+    let total = 0;
+
+    if (axis === 'x') {
+        for (let y = start; y < end; y += 1) {
+            total += 1;
+            if (isWhiteGutter(...getPixel(data, width, fixed, y))) white += 1;
+        }
+    } else {
+        for (let x = start; x < end; x += 1) {
+            total += 1;
+            if (isWhiteGutter(...getPixel(data, width, x, fixed))) white += 1;
+        }
+    }
+
+    return total === 0 ? 1 : white / total;
+}
+
+/**
+ * ユーザーが囲んだ範囲の外側から内側へ走査し、
+ * 白背景 → 枠 の境界で精霊アイコンの矩形を求める。
+ */
+function findCardRectByWhiteEdges(data, width, height, region) {
+    const { x: rx, y: ry, w: rw, h: rh } = region;
+    const xEnd = rx + rw;
+    const yEnd = ry + rh;
+    const edgeThreshold = 0.45;
+
+    let left = null;
+    for (let x = rx; x < xEnd; x += 1) {
+        if (lineWhiteGutterRatio(data, width, x, ry, yEnd, 'x') < edgeThreshold) {
+            left = x;
+            break;
+        }
+    }
+
+    let right = null;
+    for (let x = xEnd - 1; x >= rx; x -= 1) {
+        if (lineWhiteGutterRatio(data, width, x, ry, yEnd, 'x') < edgeThreshold) {
+            right = x;
+            break;
+        }
+    }
+
+    if (left === null || right === null || right <= left) {
+        return null;
+    }
+
+    let top = null;
+    for (let y = ry; y < yEnd; y += 1) {
+        if (lineWhiteGutterRatio(data, width, y, left, right + 1, 'y') < edgeThreshold) {
+            top = y;
+            break;
+        }
+    }
+
+    let bottom = null;
+    for (let y = yEnd - 1; y >= ry; y -= 1) {
+        if (lineWhiteGutterRatio(data, width, y, left, right + 1, 'y') < edgeThreshold) {
+            bottom = y;
+            break;
+        }
+    }
+
+    if (top === null || bottom === null || bottom <= top) {
+        return null;
+    }
+
+    return { minX: left, minY: top, maxX: right, maxY: bottom };
+}
+
+/** 白すき間判定で取れない場合のフォールバック（行・列の非背景占有率） */
+function findCardRectByProjection(data, width, height, region) {
+    const { x: rx, y: ry, w: rw, h: rh } = region;
+    const xEnd = rx + rw;
+    const yEnd = ry + rh;
+    const rowThreshold = 0.07;
+    const colThreshold = 0.07;
+
+    let top = -1;
+    let bottom = -1;
+    for (let y = ry; y < yEnd; y += 1) {
+        let count = 0;
+        for (let x = rx; x < xEnd; x += 1) {
+            if (!isSpiritBackground(...getPixel(data, width, x, y))) count += 1;
+        }
+        if (count / rw >= rowThreshold) {
+            if (top < 0) top = y;
+            bottom = y;
+        }
+    }
+    if (top < 0) return null;
+
+    const bandHeight = bottom - top + 1;
+    let left = -1;
+    let right = -1;
+    for (let x = rx; x < xEnd; x += 1) {
+        let count = 0;
+        for (let y = top; y <= bottom; y += 1) {
+            if (!isSpiritBackground(...getPixel(data, width, x, y))) count += 1;
+        }
+        if (count / bandHeight >= colThreshold) {
+            if (left < 0) left = x;
+            right = x;
+        }
+    }
+    if (left < 0) return null;
+
+    return { minX: left, minY: top, maxX: right, maxY: bottom };
 }
 
 /**
@@ -37,31 +158,22 @@ export function detectSpiritCropRectInRegion(imageData, width, height, region) {
     const clipped = clampRegion(region, width, height);
     if (!clipped) return null;
 
-    const bbox = findContentBoundingBox(imageData.data, width, height, clipped);
-    if (!bbox) return null;
+    const rect = findCardRectByWhiteEdges(imageData.data, width, height, clipped)
+        ?? findCardRectByProjection(imageData.data, width, height, clipped);
+    if (!rect) return null;
 
-    const cx = Math.round((bbox.minX + bbox.maxX) / 2);
-    const cy = Math.round((bbox.minY + bbox.maxY) / 2);
-    const contentSize = Math.max(bbox.maxX - bbox.minX + 1, bbox.maxY - bbox.minY + 1);
-    const maxScan = Math.ceil(contentSize * 0.55);
-
-    const left = scanToEdgeInRegion(imageData.data, width, height, cx, cy, -1, 0, maxScan, clipped);
-    const right = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 1, 0, maxScan, clipped);
-    const up = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 0, -1, maxScan, clipped);
-    const down = scanToEdgeInRegion(imageData.data, width, height, cx, cy, 0, 1, maxScan, clipped);
-
-    let size = Math.max(left + right, up + down);
-    const minSize = Math.max(16, Math.floor(Math.min(clipped.w, clipped.h) * 0.3));
-
-    if (size < minSize) {
-        size = contentSize;
-    }
-
-    const padding = Math.max(1, Math.round(size * 0.025));
-    const maxAllowed = Math.min(clipped.w, clipped.h, width, height);
-    size = Math.min(size + padding * 2, maxAllowed);
+    const boxWidth = rect.maxX - rect.minX + 1;
+    const boxHeight = rect.maxY - rect.minY + 1;
+    const minSize = Math.max(16, Math.floor(Math.min(clipped.w, clipped.h) * 0.25));
+    let size = Math.max(boxWidth, boxHeight);
 
     if (size < minSize) return null;
+
+    const padding = Math.max(1, Math.round(size * 0.01));
+    size = Math.min(size + padding * 2, Math.min(clipped.w, clipped.h));
+
+    const cx = (rect.minX + rect.maxX) / 2;
+    const cy = (rect.minY + rect.maxY) / 2;
 
     return clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
 }
@@ -90,72 +202,6 @@ function clampSquare(x, y, size, width, height) {
     }
     if (clampedSize <= 0 || x + clampedSize > width || y + clampedSize > height) return null;
     return { x, y, size: clampedSize };
-}
-
-function findContentBoundingBox(data, width, height, region) {
-    const xEnd = region.x + region.w;
-    const yEnd = region.y + region.h;
-    let minX = width;
-    let minY = height;
-    let maxX = 0;
-    let maxY = 0;
-    let found = false;
-
-    for (let y = region.y; y < yEnd; y += 1) {
-        for (let x = region.x; x < xEnd; x += 1) {
-            const [r, g, b] = getPixel(data, width, x, y);
-            if (isSpiritBackground(r, g, b)) continue;
-            found = true;
-            if (x < minX) minX = x;
-            if (x > maxX) maxX = x;
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
-        }
-    }
-
-    if (!found) return null;
-    return { minX, minY, maxX, maxY };
-}
-
-function scanToEdgeInRegion(data, width, height, x, y, dx, dy, maxDist, region) {
-    let lastInside = 0;
-    const xEnd = region.x + region.w;
-    const yEnd = region.y + region.h;
-
-    for (let step = 1; step <= maxDist; step += 1) {
-        const nx = Math.round(x + dx * step);
-        const ny = Math.round(y + dy * step);
-
-        if (nx < region.x || ny < region.y || nx >= xEnd || ny >= yEnd) {
-            return lastInside;
-        }
-        if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
-            return lastInside;
-        }
-
-        const [r, g, b] = getPixel(data, width, nx, ny);
-        if (!isSpiritBackground(r, g, b)) {
-            lastInside = step;
-            continue;
-        }
-
-        let consecutiveBackground = 1;
-        for (let ahead = 1; ahead <= 3; ahead += 1) {
-            const px = Math.round(x + dx * (step + ahead));
-            const py = Math.round(y + dy * (step + ahead));
-            if (px < region.x || py < region.y || px >= xEnd || py >= yEnd) break;
-            if (px < 0 || py < 0 || px >= width || py >= height) break;
-            const [nr, ng, nb] = getPixel(data, width, px, py);
-            if (isSpiritBackground(nr, ng, nb)) consecutiveBackground += 1;
-            else break;
-        }
-
-        if (consecutiveBackground >= 3) {
-            return lastInside;
-        }
-    }
-
-    return lastInside;
 }
 
 export function imageNeedsCropMode(image) {
