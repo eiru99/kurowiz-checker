@@ -402,6 +402,16 @@ button:hover {
     pointer-events: none;
 }
 
+.admin-image-dropzone.crop-mode .admin-spirit-image-input {
+    pointer-events: none;
+}
+
+.admin-image-dropzone.crop-mode .admin-image-preview {
+    pointer-events: auto;
+    cursor: crosshair;
+    max-height: 280px;
+}
+
 .dialog-actions {
     display: flex;
     justify-content: flex-end;

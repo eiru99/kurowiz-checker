@@ -6,6 +6,15 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
+import {
+    blobToSpiritFile,
+    cropAndNormalizeSpiritImage,
+    detectSpiritCropRect,
+    imageNeedsCropMode,
+    loadImageFromFile,
+    normalizeImageElement,
+    readImageDataFromElement
+} from './spirit-image.js';
 
 const ELEMENTS = ['火', '水', '雷', '光', '闇'];
 const ADMIN_SESSION_KEY = 'wiz_admin_unlocked';
@@ -36,6 +45,8 @@ const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
 
 let previewObjectUrl = null;
+let pendingCropImage = null;
+let pendingCropObjectUrl = null;
 
 const IMAGE_MIME_EXTENSIONS = {
     'image/png': 'png',
@@ -48,29 +59,110 @@ function extensionFromMime(mime) {
     return IMAGE_MIME_EXTENSIONS[mime] ?? 'png';
 }
 
+function clearPendingCrop() {
+    pendingCropImage = null;
+    if (pendingCropObjectUrl) {
+        URL.revokeObjectURL(pendingCropObjectUrl);
+        pendingCropObjectUrl = null;
+    }
+    imageDropzone.classList.remove('crop-mode');
+    imagePreview.removeEventListener('click', handleCropClick);
+}
+
 function clearImagePreview() {
+    clearPendingCrop();
     if (previewObjectUrl) {
         URL.revokeObjectURL(previewObjectUrl);
         previewObjectUrl = null;
     }
+    imageInput.value = '';
     imagePreview.removeAttribute('src');
     imagePreview.hidden = true;
     imageDropzone.classList.remove('has-image');
 }
 
 function showImagePreview(file) {
-    clearImagePreview();
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
     previewObjectUrl = URL.createObjectURL(file);
     imagePreview.src = previewObjectUrl;
     imagePreview.hidden = false;
     imageDropzone.classList.add('has-image');
+    imageDropzone.classList.remove('crop-mode');
 }
 
 function assignSpiritImageFile(file) {
+    clearPendingCrop();
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(file);
     imageInput.files = dataTransfer.files;
     showImagePreview(file);
+    imageHint.textContent = `画像を設定しました（${file.name}）`;
+}
+
+function enterCropMode(image, objectUrl) {
+    clearPendingCrop();
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+    imageInput.value = '';
+
+    pendingCropImage = image;
+    pendingCropObjectUrl = objectUrl;
+    imagePreview.src = objectUrl;
+    imagePreview.hidden = false;
+    imageDropzone.classList.add('has-image', 'crop-mode');
+    imageHint.textContent = '精霊アイコンをクリックして切り抜いてください';
+    imagePreview.addEventListener('click', handleCropClick);
+}
+
+async function handleCropClick(event) {
+    if (!pendingCropImage) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const bounds = imagePreview.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+
+    const scaleX = pendingCropImage.naturalWidth / bounds.width;
+    const scaleY = pendingCropImage.naturalHeight / bounds.height;
+    const clickX = (event.clientX - bounds.left) * scaleX;
+    const clickY = (event.clientY - bounds.top) * scaleY;
+
+    const { imageData, width, height } = readImageDataFromElement(pendingCropImage);
+    const cropRect = detectSpiritCropRect(imageData, width, height, clickX, clickY);
+    if (!cropRect) {
+        alert('精霊アイコンを検出できませんでした。アイコンの中央付近をクリックしてください。');
+        return;
+    }
+
+    try {
+        const blob = await cropAndNormalizeSpiritImage(pendingCropImage, cropRect);
+        assignSpiritImageFile(blobToSpiritFile(blob, 'spirit-crop'));
+    } catch (error) {
+        console.error(error);
+        alert(error.message || '切り抜きに失敗しました。');
+    }
+}
+
+async function processIncomingImage(file) {
+    const normalizedFile = normalizePastedImageFile(file);
+    const { image, objectUrl } = await loadImageFromFile(normalizedFile);
+
+    if (imageNeedsCropMode(image)) {
+        enterCropMode(image, objectUrl);
+        return;
+    }
+
+    try {
+        const blob = await normalizeImageElement(image);
+        assignSpiritImageFile(blobToSpiritFile(blob, 'spirit'));
+    } finally {
+        URL.revokeObjectURL(objectUrl);
+    }
 }
 
 function normalizePastedImageFile(file) {
@@ -92,20 +184,26 @@ function handleImagePaste(event) {
         if (!file) continue;
 
         event.preventDefault();
-        assignSpiritImageFile(normalizePastedImageFile(file));
-        imageHint.textContent = '画像を設定しました（ファイル選択 / 貼り付け）';
+        processIncomingImage(file).catch(error => {
+            console.error(error);
+            alert(error.message || '画像の読み込みに失敗しました。');
+        });
         return;
     }
 }
 
 function handleImageInputChange() {
     const file = imageInput.files?.[0];
-    if (file) {
-        showImagePreview(file);
-        imageHint.textContent = '画像を設定しました（ファイル選択 / 貼り付け）';
+    if (!file) {
+        clearImagePreview();
         return;
     }
-    clearImagePreview();
+
+    processIncomingImage(file).catch(error => {
+        console.error(error);
+        alert(error.message || '画像の読み込みに失敗しました。');
+        clearImagePreview();
+    });
 }
 
 function isAdminUnlocked() {
@@ -197,7 +295,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など（必須）';
+    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊をクリックで切り抜き';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
@@ -252,6 +350,10 @@ async function handleSubmit(event) {
         const spiritName = spiritNameInput.value.trim();
         if (!spiritName) {
             throw new Error('精霊名を入力してください。');
+        }
+
+        if (pendingCropImage) {
+            throw new Error('精霊アイコンをクリックして切り抜いてください。');
         }
 
         const eventId = await resolveEventId();

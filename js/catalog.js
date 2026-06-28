@@ -1,4 +1,5 @@
 import { SPIRITS_CATALOG_URL, STORAGE_BUCKET } from './config.js';
+import { prepareSpiritImageFile } from './spirit-image.js';
 
 /** 画面上にセクション見出しを出さないカテゴリ */
 export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre']);
@@ -150,13 +151,14 @@ export function createSpiritImagePath(file) {
 }
 
 export async function uploadSpiritImage(database, file) {
-    const path = createSpiritImagePath(file);
+    const prepared = await prepareSpiritImageFile(file);
+    const path = createSpiritImagePath(prepared);
 
     const { error } = await database.storage
         .from(STORAGE_BUCKET)
-        .upload(path, file, {
+        .upload(path, prepared, {
             upsert: true,
-            contentType: file.type || undefined
+            contentType: prepared.type || undefined
         });
 
     if (error) throw error;
