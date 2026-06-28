@@ -92,6 +92,14 @@ button:hover {
     background-color: #3b2463;
 }
 
+.btn-accent {
+    background-color: #1565c0;
+}
+
+.btn-accent:hover {
+    background-color: #0d47a1;
+}
+
 .hint {
     color: var(--muted-text);
     font-size: 0.82rem;
@@ -153,6 +161,11 @@ button:hover {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.spirit-tile-wrap {
+    position: relative;
+    width: 88px;
 }
 
 .spirit-tile {
@@ -250,6 +263,95 @@ button:hover {
     color: #c62828;
 }
 
+.admin-mode .spirit-edit-btn {
+    display: block;
+}
+
+.spirit-edit-btn {
+    display: none;
+    width: 100%;
+    margin-top: 4px;
+    padding: 4px 6px;
+    font-size: 0.68rem;
+    background: #546e7a;
+}
+
+.spirit-edit-btn:hover {
+    background: #37474f;
+}
+
+.admin-dialog {
+    border: none;
+    border-radius: 10px;
+    padding: 0;
+    width: min(92vw, 520px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.admin-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.admin-dialog form {
+    padding: 20px;
+}
+
+.admin-dialog h2 {
+    margin: 0 0 16px;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+    border: none;
+    padding: 0;
+}
+
+.form-group label,
+.form-group legend {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #37474f;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.radio-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.field-hint {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--muted-text);
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.dialog-actions button[type='button'] {
+    background: #78909c;
+}
+
+.dialog-actions button[type='button']:hover {
+    background: #607d8b;
+}
+
 @media (min-width: 768px) {
     body {
         padding: 24px;
@@ -261,10 +363,10 @@ button:hover {
         font-size: 1.8rem;
     }
 
+    .spirit-tile-wrap,
     .spirit-tile,
     .spirit-thumb {
         width: 96px;
-        height: auto;
     }
 
     .spirit-thumb {

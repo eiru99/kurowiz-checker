@@ -1,4 +1,10 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY, SPIRITS_CATALOG_URL } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import {
+    flattenCatalog,
+    getSpiritImageUrl,
+    loadCatalog
+} from './catalog.js';
+import { initAdmin, openEditDialog } from './admin.js';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -21,22 +27,6 @@ function createSyncKey() {
     return `wiz-${suffix}`;
 }
 
-function flattenCatalog(catalogData) {
-    const byId = new Map();
-    const ids = [];
-
-    for (const section of catalogData.sections ?? []) {
-        for (const event of section.events ?? []) {
-            for (const spirit of event.spirits ?? []) {
-                byId.set(spirit.id, { ...spirit, event, section });
-                ids.push(spirit.id);
-            }
-        }
-    }
-
-    return { byId, ids };
-}
-
 function normalizeOwnedSpiritIds(value) {
     if (!Array.isArray(value)) return [];
     const validIds = new Set(allSpiritIds);
@@ -47,18 +37,14 @@ function showMessage(className, message) {
     catalogEl.innerHTML = `<div class="${className}">${message}</div>`;
 }
 
-async function loadCatalog() {
+async function reloadCatalog() {
     showMessage('loading-message', '精霊データを読み込み中...');
-
-    const response = await fetch(SPIRITS_CATALOG_URL);
-    if (!response.ok) {
-        throw new Error('精霊データの読み込みに失敗しました');
-    }
-
-    catalog = await response.json();
+    catalog = await loadCatalog(database);
     const flattened = flattenCatalog(catalog);
     spiritById = flattened.byId;
     allSpiritIds = flattened.ids;
+    ownedSpiritIds = normalizeOwnedSpiritIds(ownedSpiritIds);
+    renderCatalog();
 }
 
 async function loadCloudData() {
@@ -122,37 +108,59 @@ function matchesFilters(spirit) {
 
 function createSpiritTile(spirit) {
     const isOwned = ownedSpiritIds.includes(spirit.id);
-    const tile = document.createElement('button');
-    tile.type = 'button';
-    tile.className = `spirit-tile${isOwned ? ' owned' : ''}`;
-    tile.title = spirit.name;
-    tile.setAttribute('aria-pressed', String(isOwned));
-    tile.setAttribute('aria-label', `${spirit.name} ${isOwned ? '所持' : '未所持'}`);
+    const tile = document.createElement('div');
+    tile.className = `spirit-tile-wrap${isOwned ? ' owned' : ''}`;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `spirit-tile${isOwned ? ' owned' : ''}`;
+    button.title = spirit.name;
+    button.setAttribute('aria-pressed', String(isOwned));
+    button.setAttribute('aria-label', `${spirit.name} ${isOwned ? '所持' : '未所持'}`);
 
     const thumb = document.createElement('div');
     thumb.className = 'spirit-thumb';
 
-    const image = document.createElement('img');
-    image.src = spirit.image;
-    image.alt = spirit.name;
-    image.loading = 'lazy';
-    image.addEventListener('error', () => {
-        image.remove();
+    const imageUrl = getSpiritImageUrl(database, spirit);
+    if (imageUrl) {
+        const image = document.createElement('img');
+        image.src = imageUrl;
+        image.alt = spirit.name;
+        image.loading = 'lazy';
+        image.addEventListener('error', () => {
+            image.remove();
+            const placeholder = document.createElement('div');
+            placeholder.className = 'spirit-placeholder';
+            placeholder.textContent = '画像未設定';
+            thumb.appendChild(placeholder);
+        });
+        thumb.appendChild(image);
+    } else {
         const placeholder = document.createElement('div');
         placeholder.className = 'spirit-placeholder';
         placeholder.textContent = '画像未設定';
         thumb.appendChild(placeholder);
-    });
-
-    thumb.appendChild(image);
+    }
 
     const name = document.createElement('div');
     name.className = 'spirit-name';
     name.textContent = spirit.name;
 
-    tile.appendChild(thumb);
-    tile.appendChild(name);
-    tile.addEventListener('click', () => toggleOwned(spirit.id));
+    button.appendChild(thumb);
+    button.appendChild(name);
+    button.addEventListener('click', () => toggleOwned(spirit.id));
+
+    tile.appendChild(button);
+
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.className = 'spirit-edit-btn';
+    editButton.textContent = '編集';
+    editButton.addEventListener('click', event => {
+        event.stopPropagation();
+        openEditDialog(spirit.id);
+    });
+    tile.appendChild(editButton);
 
     return tile;
 }
@@ -299,8 +307,10 @@ async function init() {
     }
     syncKeyInput.value = mySyncKey;
 
+    initAdmin(database, reloadCatalog);
+
     try {
-        await loadCatalog();
+        await reloadCatalog();
         await loadCloudData();
         setupRealtimeListener();
     } catch (error) {

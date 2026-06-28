@@ -18,7 +18,8 @@
             <span>🔑 同期コード:</span>
             <input type="text" id="sync-key-input" style="max-width: 150px; font-weight: bold; text-align: center;">
             <button type="button" id="sync-connect-btn">他端末と同期する</button>
-            <span class="hint">※同じコードをスマホ・PCで入力すると自動同期されます</span>
+            <button type="button" id="add-btn" class="btn-accent">Add</button>
+            <span class="hint">※Add は管理用（PIN 入力）。同じ同期コードでスマホ・PC が同期されます</span>
         </div>
         <input type="text" id="search" placeholder="精霊名・イベント名で検索...">
         <select id="filter-element">
@@ -35,6 +36,70 @@
     <main id="catalog" class="catalog">
         <div class="loading-message">読み込み中...</div>
     </main>
+
+    <dialog id="admin-dialog" class="admin-dialog">
+        <form id="admin-form" method="dialog">
+            <h2 id="admin-dialog-title">精霊を追加</h2>
+
+            <fieldset class="form-group">
+                <legend>イベント</legend>
+                <label class="radio-line">
+                    <input type="radio" name="event-mode" id="event-mode-existing" value="existing" checked>
+                    既存イベントを選ぶ
+                </label>
+                <label class="radio-line">
+                    <input type="radio" name="event-mode" id="event-mode-new" value="new">
+                    新規イベントを作る
+                </label>
+            </fieldset>
+
+            <div id="existing-event-block" class="form-group">
+                <label for="admin-existing-event">既存イベント</label>
+                <select id="admin-existing-event"></select>
+            </div>
+
+            <div id="new-event-block" class="form-group" hidden>
+                <label for="admin-section">掲載カテゴリ</label>
+                <select id="admin-section"></select>
+
+                <label for="admin-event-abbr">イベント略称</label>
+                <input type="text" id="admin-event-abbr" placeholder="例: かみさんぽっ3">
+
+                <label for="admin-event-title">イベント正式名</label>
+                <input type="text" id="admin-event-title" placeholder="例: 神域をさんぽする至高の神々 3">
+
+                <label for="admin-event-subtitle">サブタイトル（任意）</label>
+                <input type="text" id="admin-event-subtitle" placeholder="例: かみさんぽっ!人と妖精の国アイリー">
+            </div>
+
+            <div class="form-group">
+                <label for="admin-spirit-name">精霊名</label>
+                <input type="text" id="admin-spirit-name" required placeholder="例: 神と和解せよ カヌエ・デ・ヤシロ">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admin-spirit-main">メイン属性</label>
+                    <select id="admin-spirit-main"></select>
+                </div>
+                <div class="form-group">
+                    <label for="admin-spirit-sub">サブ属性</label>
+                    <select id="admin-spirit-sub"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="admin-spirit-image">精霊画像</label>
+                <input type="file" id="admin-spirit-image" accept="image/png,image/jpeg,image/webp,image/gif" required>
+                <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）</p>
+            </div>
+
+            <div class="dialog-actions">
+                <button type="button" id="admin-cancel-btn">キャンセル</button>
+                <button type="submit" id="admin-submit-btn">追加する</button>
+            </div>
+        </form>
+    </dialog>
 
     <script type="module" src="js/app.js"></script>
 </body>

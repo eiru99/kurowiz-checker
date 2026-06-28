@@ -14,6 +14,8 @@
 -- - anon ユーザーに SELECT / INSERT / UPDATE のみ許可（DELETE は不可）
 -- - Realtime（端末間の即時同期）を有効化
 --
+-- ※ 管理画面（精霊追加）用は supabase/catalog.sql も実行してください
+--
 -- 【注意】
 -- - service_role キーは絶対に HTML に書かないでください
 -- - anon キーの公開は GitHub / Vercel 公開時は普通のことです
