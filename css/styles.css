@@ -341,16 +341,65 @@ button:hover {
     color: var(--muted-text);
 }
 
+.admin-image-dropzone {
+    position: relative;
+    min-height: 140px;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    background: #eceff1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.admin-image-dropzone:hover,
+.admin-image-dropzone:focus-within {
+    border-color: var(--primary-color);
+    background: #e8eaf6;
+}
+
+.admin-image-dropzone.has-image {
+    border-style: solid;
+    padding: 8px;
+}
+
+.admin-spirit-image-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 0;
+}
+
+.admin-image-dropzone-label {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    text-align: center;
+    line-height: 1.5;
+    pointer-events: none;
+}
+
+.admin-image-dropzone.has-image .admin-image-dropzone-label {
+    display: none;
+}
+
 .admin-image-preview {
     display: block;
     max-width: 100%;
     max-height: 160px;
     width: auto;
-    margin-top: 4px;
     border-radius: 6px;
-    border: 1px solid #cfd8dc;
     object-fit: contain;
-    background: #eceff1;
+    pointer-events: none;
 }
 
 .dialog-actions {

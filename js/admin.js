@@ -29,6 +29,7 @@ const eventTitleInput = document.getElementById('admin-event-title');
 const spiritNameInput = document.getElementById('admin-spirit-name');
 const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
+const imageDropzone = document.getElementById('admin-image-dropzone');
 const imageInput = document.getElementById('admin-spirit-image');
 const imagePreview = document.getElementById('admin-image-preview');
 const imageHint = document.getElementById('admin-image-hint');
@@ -54,6 +55,7 @@ function clearImagePreview() {
     }
     imagePreview.removeAttribute('src');
     imagePreview.hidden = true;
+    imageDropzone.classList.remove('has-image');
 }
 
 function showImagePreview(file) {
@@ -61,6 +63,7 @@ function showImagePreview(file) {
     previewObjectUrl = URL.createObjectURL(file);
     imagePreview.src = previewObjectUrl;
     imagePreview.hidden = false;
+    imageDropzone.classList.add('has-image');
 }
 
 function assignSpiritImageFile(file) {
@@ -194,7 +197,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など、またはこの画面で Ctrl+V（貼り付け）も可（必須）';
+    imageHint.textContent = 'PNG / JPG など（必須）';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
