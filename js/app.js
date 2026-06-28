@@ -2,7 +2,8 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 import {
     flattenCatalog,
     getSpiritImageUrl,
-    loadCatalog
+    loadCatalog,
+    SECTIONS_WITHOUT_DISPLAY_TITLE
 } from './catalog.js';
 import { initAdmin, openEditDialog } from './admin.js';
 
@@ -188,13 +189,18 @@ function renderCatalog() {
 
         if (visibleEvents.length === 0) continue;
 
-        const sectionBlock = document.createElement('section');
-        sectionBlock.className = 'section-block';
+        const hideSectionTitle = SECTIONS_WITHOUT_DISPLAY_TITLE.has(section.id);
+        const sectionBlock = hideSectionTitle ? null : document.createElement('section');
+        if (sectionBlock) {
+            sectionBlock.className = 'section-block';
 
-        const sectionTitle = document.createElement('h2');
-        sectionTitle.className = 'section-title';
-        sectionTitle.textContent = section.title;
-        sectionBlock.appendChild(sectionTitle);
+            const sectionTitle = document.createElement('h2');
+            sectionTitle.className = 'section-title';
+            sectionTitle.textContent = section.title;
+            sectionBlock.appendChild(sectionTitle);
+        }
+
+        const container = sectionBlock ?? catalogEl;
 
         for (const { event, visibleSpirits } of visibleEvents) {
             const eventBlock = document.createElement('article');
@@ -213,10 +219,12 @@ function renderCatalog() {
 
             eventBlock.appendChild(header);
             eventBlock.appendChild(row);
-            sectionBlock.appendChild(eventBlock);
+            container.appendChild(eventBlock);
         }
 
-        catalogEl.appendChild(sectionBlock);
+        if (sectionBlock) {
+            catalogEl.appendChild(sectionBlock);
+        }
     }
 
     if (visibleCount === 0) {

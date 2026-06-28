@@ -1,5 +1,8 @@
 import { SPIRITS_CATALOG_URL, STORAGE_BUCKET } from './config.js';
 
+/** 画面上にセクション見出しを出さないカテゴリ */
+export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent']);
+
 export function flattenCatalog(catalogData) {
     const byId = new Map();
     const ids = [];

@@ -3,6 +3,7 @@ import {
     createEventId,
     createSpiritId,
     fetchCatalogRows,
+    SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
 
@@ -143,6 +144,16 @@ function populateExistingEventSelect() {
     for (const section of catalogRows.sections) {
         const sectionEvents = catalogRows.events.filter(event => event.section_id === section.id);
         if (sectionEvents.length === 0) continue;
+
+        if (SECTIONS_WITHOUT_DISPLAY_TITLE.has(section.id)) {
+            for (const event of sectionEvents) {
+                const option = document.createElement('option');
+                option.value = event.id;
+                option.textContent = `${event.abbr} / ${event.title}`;
+                existingEventSelect.appendChild(option);
+            }
+            continue;
+        }
 
         const group = document.createElement('optgroup');
         group.label = section.title;
