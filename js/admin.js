@@ -170,7 +170,7 @@ async function handleSubmit(event) {
         let imagePath = null;
 
         if (imageInput.files?.[0]) {
-            imagePath = await uploadSpiritImage(database, spiritId, imageInput.files[0]);
+            imagePath = await uploadSpiritImage(database, imageInput.files[0]);
         } else if (editingSpiritId) {
             const current = catalogRows.spirits.find(spirit => spirit.id === editingSpiritId);
             imagePath = current?.image_path ?? null;

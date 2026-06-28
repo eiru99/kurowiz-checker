@@ -141,9 +141,13 @@ export function createSpiritId(eventId, name) {
     return `${slugify(eventId)}-${slugify(name)}-${Date.now().toString(36)}`;
 }
 
-export async function uploadSpiritImage(database, spiritId, file) {
-    const extension = (file.name.split('.').pop() || 'png').toLowerCase();
-    const path = `${spiritId}.${extension}`;
+export function createSpiritImagePath(file) {
+    const extension = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
+    return `${crypto.randomUUID()}.${extension}`;
+}
+
+export async function uploadSpiritImage(database, file) {
+    const path = createSpiritImagePath(file);
 
     const { error } = await database.storage
         .from(STORAGE_BUCKET)

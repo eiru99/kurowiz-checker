@@ -58,6 +58,12 @@ ALTER TABLE public.catalog_spirits
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS image_path text;
 
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+GRANT SELECT, INSERT, UPDATE ON public.catalog_sections TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.catalog_events TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.catalog_spirits TO anon, authenticated;
+
 ALTER TABLE public.catalog_sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.catalog_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.catalog_spirits ENABLE ROW LEVEL SECURITY;

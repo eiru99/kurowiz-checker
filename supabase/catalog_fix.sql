@@ -9,7 +9,8 @@
 -- 4. 成功したら Results に "Success. No rows returned" などと出る
 -- 5. サイトを再読み込みして Add を再度試す
 --
--- ※ 2枚目のスクショで "Click Run to execute" のままだと未実行です
+-- ※ エラー "permission denied for table catalog_sections" (42501) は
+--    RLS ではなく GRANT（テーブル権限）不足が原因です
 -- =============================================================================
 
 -- 不足している列があれば追加
@@ -33,6 +34,13 @@ ALTER TABLE public.catalog_spirits
 
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS image_path text;
+
+-- ★ 重要: anon ロールにテーブル権限を付与（Table Editor 手動作成時に不足しがち）
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+GRANT SELECT, INSERT, UPDATE ON public.catalog_sections TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.catalog_events TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.catalog_spirits TO anon, authenticated;
 
 -- RLS を有効化
 ALTER TABLE public.catalog_sections ENABLE ROW LEVEL SECURITY;
