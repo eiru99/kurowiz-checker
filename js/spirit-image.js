@@ -36,6 +36,9 @@ function getPixel(data, width, x, y) {
     return [data[i], data[i + 1], data[i + 2]];
 }
 
+const MAX_EDGE_WHITE_RATIO = 0.8;
+const MIN_CROP_SIZE = 16;
+
 /** 線上の白すき間ピクセル比率（0=枠側、1=白背景側） */
 function lineWhiteGutterRatio(data, width, fixed, start, end, axis) {
     let white = 0;
@@ -109,6 +112,46 @@ function findCardRectByWhiteEdges(data, width, height, region) {
     return { minX: left, minY: top, maxX: right, maxY: bottom };
 }
 
+function squareEdgeWhiteRatios(data, width, x, y, size) {
+    const right = x + size - 1;
+    const bottom = y + size - 1;
+    return {
+        top: lineWhiteGutterRatio(data, width, y, x, right + 1, 'y'),
+        bottom: lineWhiteGutterRatio(data, width, bottom, x, right + 1, 'y'),
+        left: lineWhiteGutterRatio(data, width, x, y, bottom + 1, 'x'),
+        right: lineWhiteGutterRatio(data, width, right, y, bottom + 1, 'x')
+    };
+}
+
+/**
+ * 各辺の白ピクセルが 80% 以下になるまで、該当辺を 1px ずつ内側へ寄せる。
+ */
+function tightenSquareToWhiteEdgeRule(data, width, height, square) {
+    let { x, y, size } = square;
+
+    for (let guard = 0; guard < size && size >= MIN_CROP_SIZE; guard += 1) {
+        const edges = squareEdgeWhiteRatios(data, width, x, y, size);
+        const needTop = edges.top > MAX_EDGE_WHITE_RATIO;
+        const needBottom = edges.bottom > MAX_EDGE_WHITE_RATIO;
+        const needLeft = edges.left > MAX_EDGE_WHITE_RATIO;
+        const needRight = edges.right > MAX_EDGE_WHITE_RATIO;
+
+        if (!needTop && !needBottom && !needLeft && !needRight) {
+            break;
+        }
+
+        if (needTop) y += 1;
+        if (needLeft) x += 1;
+        size -= (needTop ? 1 : 0) + (needBottom ? 1 : 0) + (needLeft ? 1 : 0) + (needRight ? 1 : 0);
+
+        if (size < MIN_CROP_SIZE) {
+            return null;
+        }
+    }
+
+    return clampSquare(x, y, size, width, height);
+}
+
 /** 白すき間判定で取れない場合のフォールバック（行・列の非背景占有率） */
 function findCardRectByProjection(data, width, height, region) {
     const { x: rx, y: ry, w: rw, h: rh } = region;
@@ -169,13 +212,13 @@ export function detectSpiritCropRectInRegion(imageData, width, height, region) {
 
     if (size < minSize) return null;
 
-    const padding = Math.max(1, Math.round(size * 0.01));
-    size = Math.min(size + padding * 2, Math.min(clipped.w, clipped.h));
-
     const cx = (rect.minX + rect.maxX) / 2;
     const cy = (rect.minY + rect.maxY) / 2;
 
-    return clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
+    const initial = clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
+    if (!initial) return null;
+
+    return tightenSquareToWhiteEdgeRule(imageData.data, width, height, initial);
 }
 
 function clampRegion(region, width, height) {
