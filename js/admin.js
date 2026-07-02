@@ -37,6 +37,7 @@ const existingEventSelect = document.getElementById('admin-existing-event');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
 const spiritNameInput = document.getElementById('admin-spirit-name');
+const editNameBlock = document.getElementById('edit-name-block');
 const editAttrsBlock = document.getElementById('edit-attrs-block');
 const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
@@ -71,12 +72,6 @@ function clearSpiritQueue() {
     spiritQueueList.innerHTML = '';
     spiritQueueBlock.hidden = true;
     spiritQueueCount.textContent = '0';
-
-    const singleNameGroup = spiritNameInput.closest('.form-group');
-    if (singleNameGroup) {
-        singleNameGroup.hidden = false;
-    }
-
     updateSubmitButtonLabel();
 }
 
@@ -157,11 +152,6 @@ function renderSpiritQueue() {
 
     updateSubmitButtonLabel();
     updateImageRequired();
-
-    const singleNameGroup = spiritNameInput.closest('.form-group');
-    if (singleNameGroup) {
-        singleNameGroup.hidden = spiritQueue.length > 0;
-    }
 }
 
 function removeFromSpiritQueue(queueId) {
@@ -212,7 +202,7 @@ function updateImageRequired() {
     const showDetails = eventModeExisting.checked || eventModeNew.checked;
     const hasQueue = spiritQueue.length > 0;
     imageInput.required = showDetails && !hasQueue;
-    spiritNameInput.required = showDetails && !hasQueue;
+    spiritNameInput.required = Boolean(editingSpiritId);
 }
 
 function extensionFromMime(mime) {
@@ -356,15 +346,25 @@ async function processIncomingImage(file) {
     const normalizedFile = normalizePastedImageFile(file);
     const { image, objectUrl } = await loadImageFromFile(normalizedFile);
 
+    if (editingSpiritId) {
+        try {
+            const blob = await normalizeImageElement(image);
+            assignSpiritImageFile(blobToSpiritFile(blob, 'spirit'));
+        } finally {
+            URL.revokeObjectURL(objectUrl);
+        }
+        return;
+    }
+
     if (imageNeedsCropMode(image)) {
         enterCropMode(image, objectUrl);
         return;
     }
 
-    clearSpiritQueue();
     try {
         const blob = await normalizeImageElement(image);
-        assignSpiritImageFile(blobToSpiritFile(blob, 'spirit'));
+        addToSpiritQueue(blobToSpiritFile(blob, 'spirit'));
+        imageHint.textContent = '下の欄に精霊名を入力してください';
     } finally {
         URL.revokeObjectURL(objectUrl);
     }
@@ -499,10 +499,11 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など（必須）。スクショ貼り付け時は精霊をクリックで切り抜き（複数可）';
+    imageHint.textContent = 'PNG / JPG など。スクショ貼り付け時は精霊をクリックで切り抜き（複数可）。名前は下の欄に入力';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
+    editNameBlock.hidden = true;
     editAttrsBlock.hidden = true;
     document.getElementById('event-mode-fieldset').hidden = false;
 }
@@ -542,6 +543,10 @@ async function resolveEventId() {
 }
 
 async function submitSpiritQueue() {
+    if (spiritQueue.length === 0) {
+        throw new Error('精霊画像を追加してください。');
+    }
+
     const unnamed = spiritQueue.find(item => !item.name.trim());
     if (unnamed) {
         throw new Error('すべての精霊に名前を入力してください。');
@@ -587,7 +592,10 @@ async function handleSubmit(event) {
     submitButton.disabled = true;
 
     try {
-        if (!editingSpiritId && spiritQueue.length > 0) {
+        if (!editingSpiritId) {
+            if (pendingCropImage && spiritQueue.length === 0) {
+                throw new Error('切り抜きたい精霊をクリックしてください。');
+            }
             await submitSpiritQueue();
             return;
         }
@@ -597,44 +605,34 @@ async function handleSubmit(event) {
             throw new Error('精霊名を入力してください。');
         }
 
-        if (pendingCropImage) {
-            throw new Error('切り抜きたい精霊をクリックするか、キューに追加してから登録してください。');
-        }
-
         const eventId = await resolveEventId();
-        const spiritId = editingSpiritId ?? createSpiritId(eventId, spiritName);
+        const spiritId = editingSpiritId;
         let imagePath = null;
 
         if (imageInput.files?.[0]) {
             imagePath = await uploadSpiritImage(database, imageInput.files[0]);
-        } else if (editingSpiritId) {
+        } else {
             const current = catalogRows.spirits.find(spirit => spirit.id === editingSpiritId);
             imagePath = current?.image_path ?? null;
-        } else {
-            throw new Error('画像を選択してください。');
         }
 
         const payload = {
             id: spiritId,
             event_id: eventId,
             name: spiritName,
-            main: editingSpiritId ? spiritMainSelect.value : DEFAULT_ELEMENT,
-            sub: editingSpiritId ? spiritSubSelect.value : DEFAULT_ELEMENT,
+            main: spiritMainSelect.value,
+            sub: spiritSubSelect.value,
             image_path: imagePath,
-            sort_order: editingSpiritId
-                ? (catalogRows.spirits.find(spirit => spirit.id === editingSpiritId)?.sort_order ?? 1)
-                : (catalogRows.spirits.filter(spirit => spirit.event_id === eventId).length + 1)
+            sort_order: catalogRows.spirits.find(spirit => spirit.id === editingSpiritId)?.sort_order ?? 1
         };
 
-        const { error } = editingSpiritId
-            ? await database.from('catalog_spirits').update(payload).eq('id', editingSpiritId)
-            : await database.from('catalog_spirits').insert(payload);
+        const { error } = await database.from('catalog_spirits').update(payload).eq('id', editingSpiritId);
 
         if (error) throw error;
 
         dialog.close();
         await reloadCatalog();
-        alert(editingSpiritId ? '精霊を更新しました。' : '精霊を追加しました。');
+        alert('精霊を更新しました。');
     } catch (error) {
         console.error(error);
         alert(error.message || '保存に失敗しました。');
@@ -688,6 +686,7 @@ export async function openEditDialog(spiritId) {
         populateExistingEventSelect();
         fillSelectOptions(spiritMainSelect, ELEMENTS);
         fillSelectOptions(spiritSubSelect, ELEMENTS);
+        editNameBlock.hidden = false;
         editAttrsBlock.hidden = false;
 
         document.getElementById('event-mode-fieldset').hidden = true;
