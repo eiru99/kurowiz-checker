@@ -700,35 +700,61 @@ function averageAttributeColor(data, width, height, x0, y0, w, h) {
     return { r: rSum / count, g: gSum / count, b: bSum / count };
 }
 
+/** サブ属性アイコンは右寄りのため、サンプル矩形を右へずらす（emblem サイズに比例、最小 3px） */
+const SUB_SAMPLE_SHIFT_RATIO = 0.12;
+const SUB_SAMPLE_SHIFT_MIN = 3;
+
 /**
- * 切り抜き矩形の左上にある属性アイコンの色から main / sub を推定する。
- * @returns {{ main: string | null, sub: string | null }}
+ * 属性サンプリング領域の座標を返す（プレビュー・デバッグ用）。
+ * @returns {{ emblem: {x,y,w,h}, main: {x,y,w,h}, sub: {x,y,w,h}, offset: number, emblemSize: number, subShift: number }}
  */
-export function detectSpiritAttributes(imageData, width, height, cropRect) {
+export function calcAttributeSampleRegions(cropRect) {
     const { x, y, size } = cropRect;
     const emblemSize = Math.max(6, Math.round(size * 0.18));
     const offset = Math.max(1, Math.round(size * 0.03));
     const emblemX = x + offset;
     const emblemY = y + offset;
     const halfW = Math.floor(emblemSize / 2);
+    const subShift = Math.min(
+        Math.max(SUB_SAMPLE_SHIFT_MIN, Math.round(emblemSize * SUB_SAMPLE_SHIFT_RATIO)),
+        Math.max(0, emblemSize - halfW - 3)
+    );
+    const subX = emblemX + halfW + subShift;
+    const subW = Math.max(3, emblemSize - halfW - subShift);
+    return {
+        emblem: { x: emblemX, y: emblemY, w: emblemSize, h: emblemSize },
+        main: { x: emblemX, y: emblemY, w: halfW, h: emblemSize },
+        sub: { x: subX, y: emblemY, w: subW, h: emblemSize },
+        offset,
+        emblemSize,
+        subShift
+    };
+}
+
+/**
+ * 切り抜き矩形の左上にある属性アイコンの色から main / sub を推定する。
+ * @returns {{ main: string | null, sub: string | null }}
+ */
+export function detectSpiritAttributes(imageData, width, height, cropRect) {
+    const { main, sub, emblem } = calcAttributeSampleRegions(cropRect);
 
     const mainColor = averageAttributeColor(
         imageData.data,
         width,
         height,
-        emblemX,
-        emblemY,
-        halfW,
-        emblemSize
+        main.x,
+        main.y,
+        main.w,
+        main.h
     );
     const subColor = averageAttributeColor(
         imageData.data,
         width,
         height,
-        emblemX + halfW,
-        emblemY,
-        emblemSize - halfW,
-        emblemSize
+        sub.x,
+        sub.y,
+        sub.w,
+        sub.h
     );
 
     return {

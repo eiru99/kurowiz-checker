@@ -1,0 +1,90 @@
+[
+  {
+    "source": "sample-light-thunder.png",
+    "output": "sample-light-thunder-overlay.png",
+    "size": [
+      137,
+      135
+    ],
+    "crop": {
+      "x": 1,
+      "y": 0,
+      "size": 135
+    },
+    "regions": {
+      "emblem": {
+        "x": 5,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "main": {
+        "x": 5,
+        "y": 4,
+        "w": 12,
+        "h": 24
+      },
+      "sub": {
+        "x": 20,
+        "y": 4,
+        "w": 9,
+        "h": 24
+      },
+      "offset": 4,
+      "emblem_size": 24,
+      "sub_shift": 3
+    },
+    "main_center": [
+      11.0,
+      16.0
+    ],
+    "sub_center": [
+      24.5,
+      16.0
+    ]
+  },
+  {
+    "source": "sample-thunder-dark.png",
+    "output": "sample-thunder-dark-overlay.png",
+    "size": [
+      137,
+      137
+    ],
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "size": 137
+    },
+    "regions": {
+      "emblem": {
+        "x": 4,
+        "y": 4,
+        "w": 25,
+        "h": 25
+      },
+      "main": {
+        "x": 4,
+        "y": 4,
+        "w": 12,
+        "h": 25
+      },
+      "sub": {
+        "x": 19,
+        "y": 4,
+        "w": 10,
+        "h": 25
+      },
+      "offset": 4,
+      "emblem_size": 25,
+      "sub_shift": 3
+    },
+    "main_center": [
+      10.0,
+      16.5
+    ],
+    "sub_center": [
+      24.0,
+      16.5
+    ]
+  }
+]

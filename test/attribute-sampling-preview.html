@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>属性サンプリング領域プレビュー</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #111827;
+            color: #f3f4f6;
+            padding: 24px;
+            margin: 0;
+        }
+        h1 { font-size: 1.1rem; margin: 0 0 6px; }
+        .lead { font-size: 0.85rem; color: #9ca3af; margin: 0 0 20px; line-height: 1.6; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+        .card {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .card h2 { font-size: 0.95rem; margin: 0 0 4px; }
+        .card .meta { font-size: 0.75rem; color: #9ca3af; margin-bottom: 12px; }
+        canvas {
+            image-rendering: pixelated;
+            border: 1px solid #4b5563;
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            background: #000;
+        }
+        .legend {
+            margin-top: 12px;
+            font-size: 0.78rem;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+        .tag {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+        .tag-main { background: #166534; color: #bbf7d0; }
+        .tag-sub { background: #9a3412; color: #fed7aa; }
+        .tag-emblem { background: #1e3a8a; color: #bfdbfe; }
+    </style>
+</head>
+<body>
+    <h1>属性サンプリング領域の可視化</h1>
+    <p class="lead">
+        緑・橙の四角は半透明（約22%）で、下の元画像が透けて見えます。
+        青の点線 = 全体枠 /
+        ● = 各領域の中心点（実際の代表座標）
+    </p>
+    <div class="grid" id="grid"></div>
+    <script type="module">
+        import {
+            calcAttributeSampleRegions,
+            squareCropRectForImage
+        } from '../js/spirit-image.js';
+
+        const samples = [
+            {
+                src: 'samples/sample-light-thunder.png',
+                title: '画像1（光 / 雷）',
+                note: '左=白→光、右=黄→雷'
+            },
+            {
+                src: 'samples/sample-thunder-dark.png',
+                title: '画像2（雷 / 闇）',
+                note: '左=黄→雷、右=紫→闇'
+            }
+        ];
+
+        const SCALE = 5;
+        const FILL_ALPHA = 0.22;
+
+        function regionCenter(region) {
+            return {
+                x: region.x + region.w / 2,
+                y: region.y + region.h / 2
+            };
+        }
+
+        function drawOverlay(ctx, regions, scale) {
+            function drawRect(region, fillRgb, stroke, dashed = false) {
+                const rx = region.x * scale;
+                const ry = region.y * scale;
+                const rw = region.w * scale;
+                const rh = region.h * scale;
+                if (fillRgb) {
+                    const [r, g, b] = fillRgb;
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${FILL_ALPHA})`;
+                    ctx.fillRect(rx, ry, rw, rh);
+                }
+                ctx.strokeStyle = stroke;
+                ctx.lineWidth = 2;
+                ctx.setLineDash(dashed ? [5, 4] : []);
+                ctx.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
+                ctx.setLineDash([]);
+            }
+
+            function drawPoint(center, stroke, label) {
+                const px = center.x * scale;
+                const py = center.y * scale;
+                const radius = Math.max(2.5, scale * 0.75);
+
+                ctx.beginPath();
+                ctx.arc(px, py, radius + 1.5, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(px, py, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = stroke;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(17, 24, 39, 0.75)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(px - radius - 3, py);
+                ctx.lineTo(px + radius + 3, py);
+                ctx.moveTo(px, py - radius - 3);
+                ctx.lineTo(px, py + radius + 3);
+                ctx.stroke();
+
+                if (label) {
+                    ctx.font = `bold ${Math.max(10, scale * 2.2)}px sans-serif`;
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.lineWidth = 3;
+                    ctx.strokeText(label, px + radius + 4, py - radius);
+                    ctx.fillText(label, px + radius + 4, py - radius);
+                }
+            }
+
+            drawRect(regions.main, [34, 197, 94], '#16a34a');
+            drawRect(regions.sub, [249, 115, 22], '#ea580c');
+            drawRect(regions.emblem, null, '#3b82f6', true);
+
+            drawPoint(regionCenter(regions.main), '#16a34a', 'M');
+            drawPoint(regionCenter(regions.sub), '#ea580c', 'S');
+        }
+
+        const grid = document.getElementById('grid');
+
+        for (const sample of samples) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h2>${sample.title}</h2>
+                <div class="meta">${sample.note}</div>
+            `;
+            const canvas = document.createElement('canvas');
+            card.appendChild(canvas);
+            grid.appendChild(card);
+
+            const img = new Image();
+            img.onload = () => {
+                const cropRect = squareCropRectForImage(img.width, img.height);
+                const regions = calcAttributeSampleRegions(cropRect);
+                const mainCenter = regionCenter(regions.main);
+                const subCenter = regionCenter(regions.sub);
+
+                canvas.width = img.width * SCALE;
+                canvas.height = img.height * SCALE;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                drawOverlay(ctx, regions, SCALE);
+
+                const legend = document.createElement('div');
+                legend.className = 'legend';
+                legend.innerHTML = `
+                    <div>画像 ${img.width}×${img.height}px / cropRect (${cropRect.x}, ${cropRect.y}, ${cropRect.size})</div>
+                    <div>
+                        <span class="tag tag-emblem">全体</span>
+                        (${regions.emblem.x}, ${regions.emblem.y}) ${regions.emblem.w}×${regions.emblem.h}px
+                    </div>
+                    <div>
+                        <span class="tag tag-main">M</span>
+                        矩形 (${regions.main.x}, ${regions.main.y}) ${regions.main.w}×${regions.main.h}px /
+                        中心点 (${mainCenter.x.toFixed(1)}, ${mainCenter.y.toFixed(1)})
+                    </div>
+                    <div>
+                        <span class="tag tag-sub">S</span>
+                        矩形 (${regions.sub.x}, ${regions.sub.y}) ${regions.sub.w}×${regions.sub.h}px /
+                        中心点 (${subCenter.x.toFixed(1)}, ${subCenter.y.toFixed(1)}) /
+                        右シフト ${regions.subShift}px
+                    </div>
+                `;
+                card.appendChild(legend);
+            };
+            img.src = sample.src;
+        }
+    </script>
+</body>
+</html>
