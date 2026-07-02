@@ -19,7 +19,7 @@ import {
 } from './spirit-image.js';
 
 const ELEMENTS = ['火', '水', '雷', '光', '闇'];
-const DEFAULT_ELEMENT = ELEMENTS[0];
+const UNDETECTED_ELEMENT = '-';
 const ADMIN_SESSION_KEY = 'wiz_admin_unlocked';
 
 let database = null;
@@ -87,6 +87,29 @@ function updateSubmitButtonLabel() {
         : '追加する';
 }
 
+function toQueueAttribute(detected) {
+    return detected ?? UNDETECTED_ELEMENT;
+}
+
+function populateAttributeSelect(select) {
+    select.innerHTML = '';
+    const unknownOption = document.createElement('option');
+    unknownOption.value = UNDETECTED_ELEMENT;
+    unknownOption.textContent = UNDETECTED_ELEMENT;
+    select.appendChild(unknownOption);
+
+    for (const element of ELEMENTS) {
+        const option = document.createElement('option');
+        option.value = element;
+        option.textContent = element;
+        select.appendChild(option);
+    }
+}
+
+function syncAttributeSelectStyle(select) {
+    select.classList.toggle('attr-undetected', select.value === UNDETECTED_ELEMENT);
+}
+
 function renderSpiritQueue() {
     spiritQueueList.innerHTML = '';
     spiritQueueCount.textContent = String(spiritQueue.length);
@@ -119,24 +142,19 @@ function renderSpiritQueue() {
 
         const mainSelect = document.createElement('select');
         const subSelect = document.createElement('select');
-        for (const element of ELEMENTS) {
-            const mainOption = document.createElement('option');
-            mainOption.value = element;
-            mainOption.textContent = element;
-            mainSelect.appendChild(mainOption);
-
-            const subOption = document.createElement('option');
-            subOption.value = element;
-            subOption.textContent = element;
-            subSelect.appendChild(subOption);
-        }
+        populateAttributeSelect(mainSelect);
+        populateAttributeSelect(subSelect);
         mainSelect.value = item.main;
         subSelect.value = item.sub;
+        syncAttributeSelectStyle(mainSelect);
+        syncAttributeSelectStyle(subSelect);
         mainSelect.addEventListener('change', () => {
             item.main = mainSelect.value;
+            syncAttributeSelectStyle(mainSelect);
         });
         subSelect.addEventListener('change', () => {
             item.sub = subSelect.value;
+            syncAttributeSelectStyle(subSelect);
         });
 
         attrs.append(mainSelect, subSelect);
@@ -173,8 +191,8 @@ function addToSpiritQueue(file, attributes = null) {
         file,
         objectUrl,
         name: '',
-        main: attributes?.main ?? DEFAULT_ELEMENT,
-        sub: attributes?.sub ?? DEFAULT_ELEMENT
+        main: toQueueAttribute(attributes?.main),
+        sub: toQueueAttribute(attributes?.sub)
     });
     renderSpiritQueue();
     updateCropHint();
@@ -559,6 +577,13 @@ async function submitSpiritQueue() {
     const unnamed = spiritQueue.find(item => !item.name.trim());
     if (unnamed) {
         throw new Error('すべての精霊に名前を入力してください。');
+    }
+
+    const unsetAttrs = spiritQueue.find(
+        item => item.main === UNDETECTED_ELEMENT || item.sub === UNDETECTED_ELEMENT
+    );
+    if (unsetAttrs) {
+        throw new Error('属性が未検出の精霊があります。属性を選択してください。');
     }
 
     const eventId = await resolveEventId();

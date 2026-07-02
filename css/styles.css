@@ -480,6 +480,11 @@ button:hover {
     gap: 4px;
 }
 
+.spirit-queue-attrs select.attr-undetected {
+    background-color: #fdeaea;
+    border-color: #e57373;
+}
+
 .spirit-queue-remove {
     padding: 4px 8px;
     font-size: 0.75rem;
