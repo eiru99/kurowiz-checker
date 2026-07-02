@@ -485,6 +485,36 @@ button:hover {
     border-color: #e57373;
 }
 
+.spirit-queue-attrs select.attr-火 {
+    background-color: #bf6217;
+    border-color: #8f4a11;
+    color: #fff;
+}
+
+.spirit-queue-attrs select.attr-水 {
+    background-color: #4b8697;
+    border-color: #366674;
+    color: #fff;
+}
+
+.spirit-queue-attrs select.attr-雷 {
+    background-color: #ad921d;
+    border-color: #7d6a15;
+    color: #fff;
+}
+
+.spirit-queue-attrs select.attr-光 {
+    background-color: #dce8eb;
+    border-color: #afc4c8;
+    color: #333;
+}
+
+.spirit-queue-attrs select.attr-闇 {
+    background-color: #a0497a;
+    border-color: #7a3660;
+    color: #fff;
+}
+
 .spirit-queue-remove {
     padding: 4px 8px;
     font-size: 0.75rem;

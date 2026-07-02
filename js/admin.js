@@ -108,6 +108,9 @@ function populateAttributeSelect(select) {
 
 function syncAttributeSelectStyle(select) {
     select.classList.toggle('attr-undetected', select.value === UNDETECTED_ELEMENT);
+    for (const element of ELEMENTS) {
+        select.classList.toggle(`attr-${element}`, select.value === element);
+    }
 }
 
 function renderSpiritQueue() {
