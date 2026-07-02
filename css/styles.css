@@ -420,6 +420,81 @@ button:hover {
     max-height: 280px;
 }
 
+.spirit-queue-block {
+    margin-bottom: 14px;
+}
+
+.spirit-queue-heading {
+    margin: 0 0 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #37474f;
+}
+
+.spirit-queue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.spirit-queue-item {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 8px;
+    align-items: start;
+    padding: 8px;
+    background: #eceff1;
+    border-radius: 8px;
+}
+
+.spirit-queue-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    object-fit: contain;
+    background: #fff;
+}
+
+.spirit-queue-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.spirit-queue-fields input,
+.spirit-queue-fields select {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 4px 6px;
+}
+
+.spirit-queue-attrs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.spirit-queue-remove {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    background: #78909c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.spirit-queue-remove:hover {
+    background: #607d8b;
+}
+
 .dialog-actions {
     display: flex;
     justify-content: flex-end;

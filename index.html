@@ -87,12 +87,17 @@
                     <label for="admin-spirit-image">精霊画像</label>
                     <div class="admin-image-dropzone" id="admin-image-dropzone">
                         <input type="file" id="admin-spirit-image" class="admin-spirit-image-input" accept="image/png,image/jpeg,image/webp,image/gif">
-                        <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>スクショの場合は精霊をクリックで切り抜き</small></p>
+                        <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>スクショの場合は精霊をクリックで切り抜き（複数可）</small></p>
                         <div class="admin-image-preview-stage" id="admin-image-preview-stage" hidden>
                             <img id="admin-image-preview" class="admin-image-preview" alt="">
                         </div>
                     </div>
                     <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。保存時は 128×128 に統一</p>
+                </div>
+
+                <div id="spirit-queue-block" class="spirit-queue-block" hidden>
+                    <p class="spirit-queue-heading">追加する精霊 <span id="spirit-queue-count">0</span>体</p>
+                    <ul id="spirit-queue-list" class="spirit-queue-list"></ul>
                 </div>
             </div>
 
