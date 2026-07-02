@@ -56,7 +56,7 @@ const spiritQueueCount = document.getElementById('spirit-queue-count');
 let previewObjectUrl = null;
 let pendingCropImage = null;
 let pendingCropObjectUrl = null;
-/** @type {{ id: string, file: File, objectUrl: string, name: string, main: string, sub: string }[]} */
+/** @type {{ id: string, file: File, objectUrl: string, name: string, main: string, sub: string, hideSub: boolean }[]} */
 let spiritQueue = [];
 
 const IMAGE_MIME_EXTENSIONS = {
@@ -113,6 +113,12 @@ function syncAttributeSelectStyle(select) {
     }
 }
 
+function shouldHideSubAttribute(attributes) {
+    return attributes?.main != null
+        && attributes?.sub != null
+        && attributes.main === attributes.sub;
+}
+
 function renderSpiritQueue() {
     spiritQueueList.innerHTML = '';
     spiritQueueCount.textContent = String(spiritQueue.length);
@@ -142,25 +148,41 @@ function renderSpiritQueue() {
 
         const attrs = document.createElement('div');
         attrs.className = 'spirit-queue-attrs';
+        if (item.hideSub) {
+            attrs.classList.add('single-attr');
+        }
 
         const mainSelect = document.createElement('select');
-        const subSelect = document.createElement('select');
         populateAttributeSelect(mainSelect);
-        populateAttributeSelect(subSelect);
         mainSelect.value = item.main;
-        subSelect.value = item.sub;
         syncAttributeSelectStyle(mainSelect);
-        syncAttributeSelectStyle(subSelect);
         mainSelect.addEventListener('change', () => {
             item.main = mainSelect.value;
             syncAttributeSelectStyle(mainSelect);
-        });
-        subSelect.addEventListener('change', () => {
-            item.sub = subSelect.value;
-            syncAttributeSelectStyle(subSelect);
+            if (item.hideSub) {
+                if (item.main !== item.sub) {
+                    item.hideSub = false;
+                    renderSpiritQueue();
+                    return;
+                }
+                item.sub = item.main;
+            }
         });
 
-        attrs.append(mainSelect, subSelect);
+        attrs.append(mainSelect);
+
+        if (!item.hideSub) {
+            const subSelect = document.createElement('select');
+            populateAttributeSelect(subSelect);
+            subSelect.value = item.sub;
+            syncAttributeSelectStyle(subSelect);
+            subSelect.addEventListener('change', () => {
+                item.sub = subSelect.value;
+                syncAttributeSelectStyle(subSelect);
+            });
+            attrs.append(subSelect);
+        }
+
         fields.append(nameInput, attrs);
 
         const removeBtn = document.createElement('button');
@@ -189,13 +211,16 @@ function removeFromSpiritQueue(queueId) {
 
 function addToSpiritQueue(file, attributes = null) {
     const objectUrl = URL.createObjectURL(file);
+    const main = toQueueAttribute(attributes?.main);
+    const sub = toQueueAttribute(attributes?.sub);
     spiritQueue.push({
         id: crypto.randomUUID(),
         file,
         objectUrl,
         name: '',
-        main: toQueueAttribute(attributes?.main),
-        sub: toQueueAttribute(attributes?.sub)
+        main,
+        sub,
+        hideSub: shouldHideSubAttribute(attributes)
     });
     renderSpiritQueue();
     updateCropHint();
@@ -582,9 +607,11 @@ async function submitSpiritQueue() {
         throw new Error('すべての精霊に名前を入力してください。');
     }
 
-    const unsetAttrs = spiritQueue.find(
-        item => item.main === UNDETECTED_ELEMENT || item.sub === UNDETECTED_ELEMENT
-    );
+    const unsetAttrs = spiritQueue.find(item => {
+        if (item.main === UNDETECTED_ELEMENT) return true;
+        if (item.hideSub) return false;
+        return item.sub === UNDETECTED_ELEMENT;
+    });
     if (unsetAttrs) {
         throw new Error('属性が未検出の精霊があります。属性を選択してください。');
     }
@@ -605,7 +632,7 @@ async function submitSpiritQueue() {
             event_id: eventId,
             name: spiritName,
             main: item.main,
-            sub: item.sub,
+            sub: item.hideSub ? item.main : item.sub,
             image_path: imagePath,
             sort_order: baseSort + i + 1
         });

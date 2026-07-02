@@ -480,6 +480,10 @@ button:hover {
     gap: 4px;
 }
 
+.spirit-queue-attrs.single-attr {
+    grid-template-columns: 1fr;
+}
+
 .spirit-queue-attrs select {
     appearance: none;
     -webkit-appearance: none;
