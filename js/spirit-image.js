@@ -623,3 +623,126 @@ export function readImageDataFromElement(image) {
     context.drawImage(image, 0, 0);
     return { imageData: context.getImageData(0, 0, width, height), width, height };
 }
+
+/** 属性アイコンの金枠・白枠（サンプル対象外） */
+function isAttributeFramePixel(r, g, b) {
+    const sat = saturation(r, g, b);
+    const lum = luminance(r, g, b);
+    if (r >= 230 && g >= 230 && b >= 230 && sat < 0.1) return true;
+    return lum > 125 && lum < 225 && sat > 0.12 && sat < 0.55 && r > g && r > b * 0.75;
+}
+
+function rgbToHue(r, g, b) {
+    const rn = r / 255;
+    const gn = g / 255;
+    const bn = b / 255;
+    const max = Math.max(rn, gn, bn);
+    const min = Math.min(rn, gn, bn);
+    const d = max - min;
+    if (d < 0.04) return null;
+
+    let h;
+    if (max === rn) h = ((gn - bn) / d) % 6;
+    else if (max === gn) h = (bn - rn) / d + 2;
+    else h = (rn - gn) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+    return h;
+}
+
+function classifyElementColor(rgb) {
+    if (!rgb) return null;
+
+    const { r, g, b } = rgb;
+    const sat = saturation(r, g, b);
+    const lum = luminance(r, g, b);
+
+    if (sat < 0.2 && lum > 165) return '光';
+
+    const hue = rgbToHue(r, g, b);
+    if (hue === null) return lum > 165 ? '光' : null;
+
+    if (hue < 30 || hue >= 330) return '火';
+    if (hue < 75) return '雷';
+    if (hue < 155) {
+        if (b > r + 20) return '水';
+        if (r > b + 20) return '火';
+        return '雷';
+    }
+    if (hue < 255) return '水';
+    if (hue < 320) return '闇';
+    return '火';
+}
+
+function averageAttributeColor(data, width, height, x0, y0, w, h) {
+    let rSum = 0;
+    let gSum = 0;
+    let bSum = 0;
+    let count = 0;
+    const xStart = Math.max(0, x0);
+    const yStart = Math.max(0, y0);
+    const xEnd = Math.min(width, x0 + w);
+    const yEnd = Math.min(height, y0 + h);
+
+    for (let py = yStart; py < yEnd; py += 1) {
+        for (let px = xStart; px < xEnd; px += 1) {
+            const [r, g, b] = getPixel(data, width, px, py);
+            if (isAttributeFramePixel(r, g, b)) continue;
+            rSum += r;
+            gSum += g;
+            bSum += b;
+            count += 1;
+        }
+    }
+
+    const minSamples = Math.max(2, Math.floor(w * h * 0.12));
+    if (count < minSamples) return null;
+    return { r: rSum / count, g: gSum / count, b: bSum / count };
+}
+
+/**
+ * 切り抜き矩形の左上にある属性アイコンの色から main / sub を推定する。
+ * @returns {{ main: string | null, sub: string | null }}
+ */
+export function detectSpiritAttributes(imageData, width, height, cropRect) {
+    const { x, y, size } = cropRect;
+    const emblemSize = Math.max(6, Math.round(size * 0.18));
+    const offset = Math.max(1, Math.round(size * 0.03));
+    const emblemX = x + offset;
+    const emblemY = y + offset;
+    const halfW = Math.floor(emblemSize / 2);
+
+    const mainColor = averageAttributeColor(
+        imageData.data,
+        width,
+        height,
+        emblemX,
+        emblemY,
+        halfW,
+        emblemSize
+    );
+    const subColor = averageAttributeColor(
+        imageData.data,
+        width,
+        height,
+        emblemX + halfW,
+        emblemY,
+        emblemSize - halfW,
+        emblemSize
+    );
+
+    return {
+        main: classifyElementColor(mainColor),
+        sub: classifyElementColor(subColor)
+    };
+}
+
+/** 画像全体を正方形に切り出す際の矩形（normalizeImageElement と同じ基準） */
+export function squareCropRectForImage(width, height) {
+    const size = Math.min(width, height);
+    return {
+        x: Math.floor((width - size) / 2),
+        y: Math.floor((height - size) / 2),
+        size
+    };
+}

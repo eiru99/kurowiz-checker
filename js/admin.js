@@ -9,11 +9,13 @@ import {
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
+    detectSpiritAttributes,
     detectSpiritCropRectAtClick,
     imageNeedsCropMode,
     loadImageFromFile,
     normalizeImageElement,
-    readImageDataFromElement
+    readImageDataFromElement,
+    squareCropRectForImage
 } from './spirit-image.js';
 
 const ELEMENTS = ['火', '水', '雷', '光', '闇'];
@@ -164,15 +166,15 @@ function removeFromSpiritQueue(queueId) {
     updateCropHint();
 }
 
-function addToSpiritQueue(file) {
+function addToSpiritQueue(file, attributes = null) {
     const objectUrl = URL.createObjectURL(file);
     spiritQueue.push({
         id: crypto.randomUUID(),
         file,
         objectUrl,
         name: '',
-        main: DEFAULT_ELEMENT,
-        sub: DEFAULT_ELEMENT
+        main: attributes?.main ?? DEFAULT_ELEMENT,
+        sub: attributes?.sub ?? DEFAULT_ELEMENT
     });
     renderSpiritQueue();
     updateCropHint();
@@ -334,8 +336,12 @@ async function handleCropClick(event) {
     }
 
     try {
+        const attributes = detectSpiritAttributes(imageData, width, height, cropRect);
         const blob = await cropAndNormalizeSpiritImage(pendingCropImage, cropRect);
-        addToSpiritQueue(blobToSpiritFile(blob, `spirit-crop-${spiritQueue.length + 1}`));
+        addToSpiritQueue(
+            blobToSpiritFile(blob, `spirit-crop-${spiritQueue.length + 1}`),
+            attributes
+        );
     } catch (error) {
         console.error(error);
         alert(error.message || '切り抜きに失敗しました。');
@@ -362,8 +368,11 @@ async function processIncomingImage(file) {
     }
 
     try {
+        const { imageData, width, height } = readImageDataFromElement(image);
+        const cropRect = squareCropRectForImage(width, height);
+        const attributes = detectSpiritAttributes(imageData, width, height, cropRect);
         const blob = await normalizeImageElement(image);
-        addToSpiritQueue(blobToSpiritFile(blob, 'spirit'));
+        addToSpiritQueue(blobToSpiritFile(blob, 'spirit'), attributes);
         imageHint.textContent = '下の欄に精霊名を入力してください';
     } finally {
         URL.revokeObjectURL(objectUrl);
