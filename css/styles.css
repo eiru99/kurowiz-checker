@@ -480,39 +480,57 @@ button:hover {
     gap: 4px;
 }
 
+.spirit-queue-attrs select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 24px;
+    cursor: pointer;
+    font-weight: 600;
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 10px 6px;
+}
+
 .spirit-queue-attrs select.attr-undetected {
     background-color: #fdeaea;
     border-color: #e57373;
+    color: #333;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23333' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-attrs select.attr-火 {
     background-color: #bf6217;
     border-color: #8f4a11;
     color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-attrs select.attr-水 {
     background-color: #4b8697;
     border-color: #366674;
     color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-attrs select.attr-雷 {
     background-color: #ad921d;
     border-color: #7d6a15;
     color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-attrs select.attr-光 {
     background-color: #dce8eb;
     border-color: #afc4c8;
     color: #333;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23333' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-attrs select.attr-闇 {
     background-color: #a0497a;
     border-color: #7a3660;
     color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
 .spirit-queue-remove {
