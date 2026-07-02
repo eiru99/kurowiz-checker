@@ -662,7 +662,11 @@ function classifyElementColor(rgb) {
     const hue = rgbToHue(r, g, b);
     if (hue === null) return lum > 165 ? '光' : null;
 
-    if (hue < 30 || hue >= 330) return '火';
+    if (hue < 30 || hue >= 330) {
+        // 光アイコンは暖色クリームで R 寄り hue になることがある（火+光のサブなど）
+        if (sat < 0.35 && lum > 155) return '光';
+        return '火';
+    }
     if (hue < 75) {
         // 光アイコンの金枠内は黄味が強いが B チャンネルが残る（雷は B が低い）
         if (b >= 55 && sat < 0.65) return '光';

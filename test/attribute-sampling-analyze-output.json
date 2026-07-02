@@ -355,6 +355,95 @@
         "actual": "闇",
         "match": true
       }
+    },
+    {
+      "file": "sample-fire-light.png",
+      "imageSize": [
+        137,
+        138
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 137
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 25,
+          "h": 25
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "offset": 4,
+        "emblemSize": 25,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "火",
+        "sub": "光"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "stats": {
+          "count": 287,
+          "frame": 13,
+          "min_samples": 36
+        },
+        "color": {
+          "rgb": [
+            182.32,
+            96.86,
+            26.53
+          ],
+          "hue": 27.09,
+          "saturation": 0.8545,
+          "luminance": 114.4
+        },
+        "actual": "火",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "stats": {
+          "count": 149,
+          "frame": 101,
+          "min_samples": 30
+        },
+        "color": {
+          "rgb": [
+            199.48,
+            143.37,
+            131.0
+          ],
+          "hue": 10.84,
+          "saturation": 0.3433,
+          "luminance": 158.74
+        },
+        "actual": "光",
+        "match": true
+      }
     }
   ],
   "dataset": [
@@ -469,6 +558,34 @@
       "hue": 312.68,
       "saturation": 0.742,
       "luminance": 85.08
+    },
+    {
+      "file": "sample-fire-light.png",
+      "region": "main",
+      "expected": "火",
+      "actual": "火",
+      "rgb": [
+        182.32,
+        96.86,
+        26.53
+      ],
+      "hue": 27.09,
+      "saturation": 0.8545,
+      "luminance": 114.4
+    },
+    {
+      "file": "sample-fire-light.png",
+      "region": "sub",
+      "expected": "光",
+      "actual": "光",
+      "rgb": [
+        199.48,
+        143.37,
+        131.0
+      ],
+      "hue": 10.84,
+      "saturation": 0.3433,
+      "luminance": 158.74
     }
   ],
   "matchingThresholds": [

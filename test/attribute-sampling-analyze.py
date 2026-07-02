@@ -21,6 +21,7 @@ CASES = [
     ("sample-thunder-dark.png", "雷", "闇"),
     ("sample-water-light.png", "水", "光"),
     ("sample-fire-dark.png", "火", "闇"),
+    ("sample-fire-light.png", "火", "光"),
 ]
 
 
@@ -98,6 +99,8 @@ def classify_element_color(rgb: dict | None, t: ClassifyThresholds = ClassifyThr
             return "火"
     # Fix: JS uses hue >= 330 for fire - use explicit 330 when defaults
     if hue < 30 or hue >= 330:
+        if sat < 0.35 and lum > 155:
+            return "光"
         return "火"
     if hue < 75:
         if b >= t.gold_light_b_min and sat < t.gold_light_sat_max:
@@ -129,6 +132,8 @@ def classify_element_color_param(rgb: dict | None, t: ClassifyThresholds) -> str
         return "光" if lum > t.light_lum_min else None
     h_fire_hi = 360 - t.hue_fire_low  # 330 when low=30
     if hue < t.hue_fire_low or hue >= h_fire_hi:
+        if sat < 0.35 and lum > 155:
+            return "光"
         return "火"
     if hue < t.hue_thunder:
         if b >= t.gold_light_b_min and sat < t.gold_light_sat_max:
