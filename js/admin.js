@@ -17,6 +17,7 @@ import {
 } from './spirit-image.js';
 
 const ELEMENTS = ['火', '水', '雷', '光', '闇'];
+const DEFAULT_ELEMENT = ELEMENTS[0];
 const ADMIN_SESSION_KEY = 'wiz_admin_unlocked';
 
 let database = null;
@@ -36,6 +37,7 @@ const existingEventSelect = document.getElementById('admin-existing-event');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
 const spiritNameInput = document.getElementById('admin-spirit-name');
+const editAttrsBlock = document.getElementById('edit-attrs-block');
 const spiritMainSelect = document.getElementById('admin-spirit-main');
 const spiritSubSelect = document.getElementById('admin-spirit-sub');
 const imageDropzone = document.getElementById('admin-image-dropzone');
@@ -179,8 +181,8 @@ function addToSpiritQueue(file) {
         file,
         objectUrl,
         name: '',
-        main: spiritMainSelect.value,
-        sub: spiritSubSelect.value
+        main: DEFAULT_ELEMENT,
+        sub: DEFAULT_ELEMENT
     });
     renderSpiritQueue();
     updateCropHint();
@@ -501,6 +503,7 @@ function resetForm() {
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
+    editAttrsBlock.hidden = true;
     document.getElementById('event-mode-fieldset').hidden = false;
 }
 
@@ -615,8 +618,8 @@ async function handleSubmit(event) {
             id: spiritId,
             event_id: eventId,
             name: spiritName,
-            main: spiritMainSelect.value,
-            sub: spiritSubSelect.value,
+            main: editingSpiritId ? spiritMainSelect.value : DEFAULT_ELEMENT,
+            sub: editingSpiritId ? spiritSubSelect.value : DEFAULT_ELEMENT,
             image_path: imagePath,
             sort_order: editingSpiritId
                 ? (catalogRows.spirits.find(spirit => spirit.id === editingSpiritId)?.sort_order ?? 1)
@@ -685,6 +688,7 @@ export async function openEditDialog(spiritId) {
         populateExistingEventSelect();
         fillSelectOptions(spiritMainSelect, ELEMENTS);
         fillSelectOptions(spiritSubSelect, ELEMENTS);
+        editAttrsBlock.hidden = false;
 
         document.getElementById('event-mode-fieldset').hidden = true;
         newEventBlock.hidden = true;
