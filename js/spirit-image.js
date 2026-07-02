@@ -663,14 +663,18 @@ function classifyElementColor(rgb) {
     if (hue === null) return lum > 165 ? '光' : null;
 
     if (hue < 30 || hue >= 330) return '火';
-    if (hue < 75) return '雷';
+    if (hue < 75) {
+        // 光アイコンの金枠内は黄味が強いが B チャンネルが残る（雷は B が低い）
+        if (b >= 55 && sat < 0.65) return '光';
+        return '雷';
+    }
     if (hue < 155) {
         if (b > r + 20) return '水';
         if (r > b + 20) return '火';
         return '雷';
     }
     if (hue < 255) return '水';
-    if (hue < 320) return '闇';
+    if (hue < 327) return '闇';
     return '火';
 }
 

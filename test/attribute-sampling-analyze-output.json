@@ -1,0 +1,866 @@
+{
+  "results": [
+    {
+      "file": "sample-light-thunder.png",
+      "imageSize": [
+        137,
+        135
+      ],
+      "cropRect": {
+        "x": 1,
+        "y": 0,
+        "size": 135
+      },
+      "regions": {
+        "emblem": {
+          "x": 5,
+          "y": 4,
+          "w": 24,
+          "h": 24
+        },
+        "main": {
+          "x": 5,
+          "y": 4,
+          "w": 12,
+          "h": 24
+        },
+        "sub": {
+          "x": 20,
+          "y": 4,
+          "w": 9,
+          "h": 24
+        },
+        "offset": 4,
+        "emblemSize": 24,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "光",
+        "sub": "光"
+      },
+      "main": {
+        "rect": {
+          "x": 5,
+          "y": 4,
+          "w": 12,
+          "h": 24
+        },
+        "stats": {
+          "count": 135,
+          "frame": 153,
+          "min_samples": 34
+        },
+        "color": {
+          "rgb": [
+            164.13,
+            140.04,
+            81.53
+          ],
+          "hue": 42.5,
+          "saturation": 0.5032,
+          "luminance": 140.58
+        },
+        "actual": "光",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 20,
+          "y": 4,
+          "w": 9,
+          "h": 24
+        },
+        "stats": {
+          "count": 124,
+          "frame": 92,
+          "min_samples": 25
+        },
+        "color": {
+          "rgb": [
+            218.77,
+            211.1,
+            198.62
+          ],
+          "hue": 37.17,
+          "saturation": 0.0921,
+          "luminance": 211.97
+        },
+        "actual": "光",
+        "match": true
+      }
+    },
+    {
+      "file": "sample-thunder-dark.png",
+      "imageSize": [
+        137,
+        137
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 137
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 25,
+          "h": 25
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "offset": 4,
+        "emblemSize": 25,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "雷",
+        "sub": "闇"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "stats": {
+          "count": 291,
+          "frame": 9,
+          "min_samples": 36
+        },
+        "color": {
+          "rgb": [
+            172.91,
+            146.46,
+            28.64
+          ],
+          "hue": 49.0,
+          "saturation": 0.8344,
+          "luminance": 140.94
+        },
+        "actual": "雷",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "stats": {
+          "count": 232,
+          "frame": 18,
+          "min_samples": 30
+        },
+        "color": {
+          "rgb": [
+            159.95,
+            72.51,
+            121.67
+          ],
+          "hue": 326.27,
+          "saturation": 0.5467,
+          "luminance": 104.26
+        },
+        "actual": "闇",
+        "match": true
+      }
+    },
+    {
+      "file": "sample-water-light.png",
+      "imageSize": [
+        137,
+        137
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 137
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 25,
+          "h": 25
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "offset": 4,
+        "emblemSize": 25,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "水",
+        "sub": "光"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "stats": {
+          "count": 299,
+          "frame": 1,
+          "min_samples": 36
+        },
+        "color": {
+          "rgb": [
+            75.36,
+            134.43,
+            150.68
+          ],
+          "hue": 192.94,
+          "saturation": 0.4998,
+          "luminance": 118.62
+        },
+        "actual": "水",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "stats": {
+          "count": 188,
+          "frame": 62,
+          "min_samples": 30
+        },
+        "color": {
+          "rgb": [
+            174.98,
+            196.36,
+            199.68
+          ],
+          "hue": 188.05,
+          "saturation": 0.1237,
+          "luminance": 190.35
+        },
+        "actual": "光",
+        "match": true
+      }
+    },
+    {
+      "file": "sample-fire-dark.png",
+      "imageSize": [
+        137,
+        137
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 137
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 25,
+          "h": 25
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "offset": 4,
+        "emblemSize": 25,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "火",
+        "sub": "闇"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "stats": {
+          "count": 300,
+          "frame": 0,
+          "min_samples": 36
+        },
+        "color": {
+          "rgb": [
+            191.23,
+            98.03,
+            22.87
+          ],
+          "hue": 26.78,
+          "saturation": 0.8804,
+          "luminance": 117.33
+        },
+        "actual": "火",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "stats": {
+          "count": 224,
+          "frame": 26,
+          "min_samples": 30
+        },
+        "color": {
+          "rgb": [
+            155.65,
+            40.16,
+            131.24
+          ],
+          "hue": 312.68,
+          "saturation": 0.742,
+          "luminance": 85.08
+        },
+        "actual": "闇",
+        "match": true
+      }
+    }
+  ],
+  "dataset": [
+    {
+      "file": "sample-light-thunder.png",
+      "region": "main",
+      "expected": "光",
+      "actual": "光",
+      "rgb": [
+        164.13,
+        140.04,
+        81.53
+      ],
+      "hue": 42.5,
+      "saturation": 0.5032,
+      "luminance": 140.58
+    },
+    {
+      "file": "sample-light-thunder.png",
+      "region": "sub",
+      "expected": "光",
+      "actual": "光",
+      "rgb": [
+        218.77,
+        211.1,
+        198.62
+      ],
+      "hue": 37.17,
+      "saturation": 0.0921,
+      "luminance": 211.97
+    },
+    {
+      "file": "sample-thunder-dark.png",
+      "region": "main",
+      "expected": "雷",
+      "actual": "雷",
+      "rgb": [
+        172.91,
+        146.46,
+        28.64
+      ],
+      "hue": 49.0,
+      "saturation": 0.8344,
+      "luminance": 140.94
+    },
+    {
+      "file": "sample-thunder-dark.png",
+      "region": "sub",
+      "expected": "闇",
+      "actual": "闇",
+      "rgb": [
+        159.95,
+        72.51,
+        121.67
+      ],
+      "hue": 326.27,
+      "saturation": 0.5467,
+      "luminance": 104.26
+    },
+    {
+      "file": "sample-water-light.png",
+      "region": "main",
+      "expected": "水",
+      "actual": "水",
+      "rgb": [
+        75.36,
+        134.43,
+        150.68
+      ],
+      "hue": 192.94,
+      "saturation": 0.4998,
+      "luminance": 118.62
+    },
+    {
+      "file": "sample-water-light.png",
+      "region": "sub",
+      "expected": "光",
+      "actual": "光",
+      "rgb": [
+        174.98,
+        196.36,
+        199.68
+      ],
+      "hue": 188.05,
+      "saturation": 0.1237,
+      "luminance": 190.35
+    },
+    {
+      "file": "sample-fire-dark.png",
+      "region": "main",
+      "expected": "火",
+      "actual": "火",
+      "rgb": [
+        191.23,
+        98.03,
+        22.87
+      ],
+      "hue": 26.78,
+      "saturation": 0.8804,
+      "luminance": 117.33
+    },
+    {
+      "file": "sample-fire-dark.png",
+      "region": "sub",
+      "expected": "闇",
+      "actual": "闇",
+      "rgb": [
+        155.65,
+        40.16,
+        131.24
+      ],
+      "hue": 312.68,
+      "saturation": 0.742,
+      "luminance": 85.08
+    }
+  ],
+  "matchingThresholds": [
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 150.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 150.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 150.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 150.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 150.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 155.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 155.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 155.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 155.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 155.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 160.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 160.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 160.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 160.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 160.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 165.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 165.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 165.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 165.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 65.0,
+      "hue_green_band": 165.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 70.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 10.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 70.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 15.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 70.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 20.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 70.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 25.0
+    },
+    {
+      "light_sat_max": 0.15,
+      "light_lum_min": 140.0,
+      "gray_delta": 0.02,
+      "hue_fire_low": 30.0,
+      "hue_thunder": 70.0,
+      "hue_green_band": 145.0,
+      "hue_water": 255.0,
+      "hue_dark": 327.0,
+      "gold_light_b_min": 55.0,
+      "gold_light_sat_max": 0.65,
+      "rgb_diff": 30.0
+    }
+  ]
+}
