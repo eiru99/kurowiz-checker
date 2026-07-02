@@ -1,0 +1,3 @@
+# OpenCV.js ローカル配置用（約 10MB）
+# ダウンロード: python test/download-opencv-js.py
+vendor/opencv.js

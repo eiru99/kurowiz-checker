@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精霊クリック切り抜き — 精度テスト</title>
+    <link rel="stylesheet" href="crop-test.css">
+</head>
+<body>
+    <header>
+        <h1>精霊クリック切り抜き — 精度テスト</h1>
+        <p class="subtitle">本番 admin は輪郭検出を使用。旧ピクセル走査との比較も可能</p>
+    </header>
+
+    <main>
+        <section class="panel controls-panel">
+            <h2>操作</h2>
+            <ul class="instructions">
+                <li>下のエリアをクリックしてフォーカスし、<kbd>Ctrl</kbd>+<kbd>V</kbd> でスクショを貼り付け</li>
+                <li>またはファイル選択 / サンプル画像読み込み</li>
+                <li>切り抜きモードでは精霊アイコンをクリック → 検出枠と 128×128 結果を確認</li>
+            </ul>
+            <fieldset class="method-fieldset">
+                <legend>検出方式</legend>
+                <label class="method-option">
+                    <input type="radio" name="detect-method" value="pixel" checked>
+                    旧方式（ピクセル走査）
+                </label>
+                <label class="method-option">
+                    <input type="radio" name="detect-method" value="opencv">
+                    本番方式（輪郭検出）
+                </label>
+                <label class="method-option">
+                    <input type="radio" name="detect-method" value="compare">
+                    両方比較
+                </label>
+            </fieldset>
+            <div class="button-row">
+                <button type="button" id="load-sample">サンプル画像を読み込む</button>
+                <button type="button" id="reset-btn" disabled>リセット</button>
+                <button type="button" id="show-mask-btn" disabled>前景マスク表示</button>
+                <button type="button" id="stay-crop-toggle" class="toggle active" aria-pressed="true">
+                    連続テスト（切り抜きモード維持）
+                </button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>入力画像</h2>
+            <div class="admin-image-dropzone" id="dropzone" tabindex="0">
+                <input type="file" id="file-input" class="admin-spirit-image-input" accept="image/png,image/jpeg,image/webp,image/gif">
+                <p class="admin-image-dropzone-label" id="dropzone-label">
+                    クリックしてファイルを選択<br>
+                    または <kbd>Ctrl</kbd>+<kbd>V</kbd> で貼り付け<br>
+                    <small>スクショの場合は精霊をクリックで切り抜き</small>
+                </p>
+                <div class="admin-image-preview-stage" id="preview-stage" hidden>
+                    <img id="preview" class="admin-image-preview" alt="">
+                    <canvas id="overlay" class="crop-overlay" hidden></canvas>
+                </div>
+            </div>
+            <p id="status" class="status" role="status">画像を貼り付けるか選択してください</p>
+        </section>
+
+        <div class="results-grid" id="results-grid">
+            <section class="panel result-panel" id="pixel-result-panel">
+                <h2 id="pixel-result-title">切り抜き結果（128×128）</h2>
+                <div class="result-box">
+                    <img id="result" class="result-image" alt="" width="128" height="128" hidden>
+                    <p id="result-placeholder" class="placeholder">クリック後に表示</p>
+                </div>
+                <dl id="detection-info" class="detection-info" hidden>
+                    <div><dt>クリック座標</dt><dd id="info-click">—</dd></div>
+                    <div><dt>検出矩形</dt><dd id="info-rect">—</dd></div>
+                    <div><dt>出力サイズ</dt><dd id="info-output">—</dd></div>
+                </dl>
+            </section>
+
+            <section class="panel result-panel" id="opencv-result-panel" hidden>
+                <h2>本番方式 切り抜き結果（128×128）</h2>
+                <div class="result-box">
+                    <img id="result-opencv" class="result-image" alt="" width="128" height="128" hidden>
+                    <p id="result-opencv-placeholder" class="placeholder">クリック後に表示</p>
+                </div>
+                <dl id="detection-info-opencv" class="detection-info" hidden>
+                    <div><dt>検出矩形</dt><dd id="info-rect-opencv">—</dd></div>
+                    <div><dt>出力サイズ</dt><dd id="info-output-opencv">—</dd></div>
+                </dl>
+            </section>
+
+            <section class="panel history-panel">
+                <h2>テスト履歴</h2>
+                <ol id="history" class="history">
+                    <li class="history-empty">まだテストなし</li>
+                </ol>
+            </section>
+        </div>
+
+        <section class="panel" id="mask-panel" hidden>
+            <h2>前景マスク（輪郭検出デバッグ）</h2>
+            <canvas id="mask-canvas" class="mask-canvas"></canvas>
+        </section>
+    </main>
+
+    <script type="module" src="crop-test.js"></script>
+</body>
+</html>

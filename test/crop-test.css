@@ -1,0 +1,353 @@
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --primary-color: #241442;
+    --border-color: #cfd8dc;
+    --muted-text: #666666;
+    --success: #2e7d32;
+    --error: #c62828;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 16px;
+    line-height: 1.5;
+    max-width: 960px;
+    margin-inline: auto;
+}
+
+header {
+    background: linear-gradient(135deg, #111111, var(--primary-color));
+    color: white;
+    padding: 20px 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.subtitle {
+    margin: 8px 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.panel {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.panel h2 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+}
+
+.instructions {
+    margin: 0 0 12px;
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+    color: var(--muted-text);
+}
+
+.instructions kbd {
+    background: #eceff1;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 0.85em;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+button {
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+button:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background: #e8eaf6;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button.toggle.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* --- admin 画像ドロップゾーン（本番 styles.css から抽出） --- */
+
+.admin-image-dropzone {
+    position: relative;
+    min-height: 140px;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    background: #eceff1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+}
+
+.admin-image-dropzone:hover,
+.admin-image-dropzone:focus-within {
+    border-color: var(--primary-color);
+    background: #e8eaf6;
+}
+
+.admin-image-dropzone.has-image {
+    border-style: solid;
+    padding: 8px;
+}
+
+.admin-spirit-image-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 0;
+}
+
+.admin-image-dropzone-label {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    text-align: center;
+    line-height: 1.5;
+    pointer-events: none;
+}
+
+.admin-image-dropzone.has-image .admin-image-dropzone-label {
+    display: none;
+}
+
+.admin-image-preview-stage {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.admin-image-preview {
+    display: block;
+    max-width: 100%;
+    max-height: 160px;
+    width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.admin-image-dropzone.crop-mode .admin-spirit-image-input {
+    pointer-events: none;
+}
+
+.admin-image-dropzone.crop-mode .admin-image-preview-stage {
+    cursor: crosshair;
+}
+
+.admin-image-dropzone.crop-mode .admin-image-preview {
+    max-height: 420px;
+}
+
+.crop-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+/* --- テストページ固有 --- */
+
+.status {
+    margin: 10px 0 0;
+    font-size: 0.9rem;
+    color: var(--muted-text);
+}
+
+.status.ok {
+    color: var(--success);
+}
+
+.status.err {
+    color: var(--error);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.results-grid.compare-mode {
+    grid-template-columns: 1fr 1fr;
+}
+
+.results-grid.compare-mode .history-panel {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+    .results-grid,
+    .results-grid.compare-mode {
+        grid-template-columns: 1fr;
+    }
+
+    .results-grid.compare-mode .history-panel {
+        grid-column: auto;
+    }
+}
+
+.result-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 148px;
+    background: #eceff1;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.result-image {
+    display: block;
+    border-radius: 4px;
+    image-rendering: pixelated;
+}
+
+.placeholder {
+    margin: 0;
+    color: var(--muted-text);
+    font-size: 0.85rem;
+}
+
+.detection-info {
+    margin: 12px 0 0;
+    font-size: 0.85rem;
+}
+
+.detection-info div {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.detection-info dt {
+    min-width: 6em;
+    color: var(--muted-text);
+}
+
+.detection-info dd {
+    margin: 0;
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.history {
+    margin: 0;
+    padding-left: 1.4rem;
+    font-size: 0.85rem;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.history li {
+    margin-bottom: 6px;
+}
+
+.history-empty {
+    list-style: none;
+    margin-left: -1.4rem;
+    color: var(--muted-text);
+}
+
+.history .ok {
+    color: var(--success);
+}
+
+.history .err {
+    color: var(--error);
+}
+
+.method-fieldset {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 0 0 12px;
+}
+
+.method-fieldset legend {
+    padding: 0 6px;
+    font-size: 0.85rem;
+    color: var(--muted-text);
+}
+
+.method-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.opencv-status {
+    margin: 10px 0 0;
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.opencv-status.ready {
+    color: var(--success);
+}
+
+.opencv-status.err {
+    color: var(--error);
+}
+
+.mask-canvas {
+    display: block;
+    max-width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    image-rendering: pixelated;
+}

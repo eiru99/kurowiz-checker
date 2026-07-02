@@ -180,10 +180,43 @@ function finalizeSquareCrop(data, width, height, initial) {
 }
 
 /**
- * クリック位置から四方へ走査し、白背景の内側で正方形を構成して切り抜く。
+ * クリック位置から輪郭検出で精霊アイコンの正方形切り抜き範囲を求める。
+ * 失敗時は従来のピクセル走査にフォールバックする。
  * @returns {{ x: number, y: number, size: number } | null}
  */
 export function detectSpiritCropRectAtClick(imageData, width, height, clickX, clickY) {
+    return detectSpiritCropRectAtClickByContour(imageData, width, height, clickX, clickY)
+        ?? detectSpiritCropRectAtClickByPixelScan(imageData, width, height, clickX, clickY);
+}
+
+/** @returns {{ x: number, y: number, size: number } | null} */
+export function detectSpiritCropRectAtClickByContour(imageData, width, height, clickX, clickY) {
+    const rawMask = createForegroundMask(imageData, width, height);
+    const mask = morphCloseMask(rawMask, width, height);
+
+    const anchor = findNearestForegroundPixel(mask, width, height, clickX, clickY);
+    if (!anchor) return null;
+
+    const component = findConnectedComponentAt(mask, width, height, anchor.x, anchor.y);
+    if (!component || component.width < MIN_CROP_SIZE || component.height < MIN_CROP_SIZE) {
+        return null;
+    }
+
+    return rectToSquareCrop(
+        component.x,
+        component.y,
+        component.width,
+        component.height,
+        width,
+        height
+    );
+}
+
+/**
+ * 従来のピクセル走査による切り抜き（テスト比較・フォールバック用）。
+ * @returns {{ x: number, y: number, size: number } | null}
+ */
+export function detectSpiritCropRectAtClickByPixelScan(imageData, width, height, clickX, clickY) {
     const anchor = findNearestCardPixel(imageData.data, width, height, clickX, clickY);
     if (!anchor) return null;
 
@@ -213,6 +246,173 @@ export function detectSpiritCropRectAtClick(imageData, width, height, clickX, cl
     }, width, height);
 
     return finalizeSquareCrop(imageData.data, width, height, initial);
+}
+
+function createForegroundMask(imageData, width, height) {
+    const mask = new Uint8Array(width * height);
+    const data = imageData.data;
+
+    for (let py = 0; py < height; py += 1) {
+        for (let px = 0; px < width; px += 1) {
+            const i = (py * width + px) * 4;
+            mask[py * width + px] = isSpiritBackground(data[i], data[i + 1], data[i + 2]) ? 0 : 255;
+        }
+    }
+
+    return mask;
+}
+
+function morphCloseMask(mask, width, height, kernelSize = 5, iterations = 2) {
+    let current = mask;
+    for (let iter = 0; iter < iterations; iter += 1) {
+        current = dilateMask(current, width, height, kernelSize);
+        current = erodeMask(current, width, height, kernelSize);
+    }
+    return current;
+}
+
+function dilateMask(mask, width, height, kernelSize) {
+    const radius = Math.floor(kernelSize / 2);
+    const out = new Uint8Array(width * height);
+
+    for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+            let value = 0;
+            for (let dy = -radius; dy <= radius && value === 0; dy += 1) {
+                for (let dx = -radius; dx <= radius; dx += 1) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                    if (mask[ny * width + nx] > 0) {
+                        value = 255;
+                        break;
+                    }
+                }
+            }
+            out[y * width + x] = value;
+        }
+    }
+
+    return out;
+}
+
+function erodeMask(mask, width, height, kernelSize) {
+    const radius = Math.floor(kernelSize / 2);
+    const out = new Uint8Array(width * height);
+
+    for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+            let value = 255;
+            for (let dy = -radius; dy <= radius && value === 255; dy += 1) {
+                for (let dx = -radius; dx <= radius; dx += 1) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
+                        value = 0;
+                        break;
+                    }
+                    if (mask[ny * width + nx] === 0) {
+                        value = 0;
+                        break;
+                    }
+                }
+            }
+            out[y * width + x] = value;
+        }
+    }
+
+    return out;
+}
+
+function findNearestForegroundPixel(mask, width, height, x, y) {
+    const cx = Math.round(Math.max(0, Math.min(width - 1, x)));
+    const cy = Math.round(Math.max(0, Math.min(height - 1, y)));
+    if (mask[cy * width + cx] > 0) {
+        return { x: cx, y: cy };
+    }
+
+    const maxRadius = Math.min(width, height);
+    for (let radius = 1; radius < maxRadius; radius += 1) {
+        for (let dx = -radius; dx <= radius; dx += 1) {
+            for (let dy = -radius; dy <= radius; dy += 1) {
+                if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
+                const nx = cx + dx;
+                const ny = cy + dy;
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                if (mask[ny * width + nx] > 0) {
+                    return { x: nx, y: ny };
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function findConnectedComponentAt(mask, width, height, startX, startY) {
+    const startIdx = startY * width + startX;
+    if (mask[startIdx] === 0) return null;
+
+    const visited = new Uint8Array(width * height);
+    const stack = [startIdx];
+    visited[startIdx] = 1;
+
+    let minX = startX;
+    let maxX = startX;
+    let minY = startY;
+    let maxY = startY;
+
+    while (stack.length > 0) {
+        const idx = stack.pop();
+        const x = idx % width;
+        const y = Math.floor(idx / width);
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+
+        const neighbors = [idx - 1, idx + 1, idx - width, idx + width];
+        for (const nextIdx of neighbors) {
+            if (nextIdx < 0 || nextIdx >= width * height) continue;
+            const nx = nextIdx % width;
+            if (Math.abs(nx - x) > 1) continue;
+            if (visited[nextIdx] || mask[nextIdx] === 0) continue;
+            visited[nextIdx] = 1;
+            stack.push(nextIdx);
+        }
+    }
+
+    return {
+        x: minX,
+        y: minY,
+        width: maxX - minX + 1,
+        height: maxY - minY + 1
+    };
+}
+
+function rectToSquareCrop(x, y, w, h, width, height) {
+    const size = Math.max(w, h);
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    return clampSquare(Math.round(cx - size / 2), Math.round(cy - size / 2), size, width, height);
+}
+
+/** 輪郭検出デバッグ用の前景マスク ImageData */
+export function createDebugMaskImageData(imageData, width, height) {
+    const rawMask = createForegroundMask(imageData, width, height);
+    const mask = morphCloseMask(rawMask, width, height);
+    const out = new ImageData(width, height);
+
+    for (let i = 0; i < width * height; i += 1) {
+        const value = mask[i];
+        const j = i * 4;
+        out.data[j] = value;
+        out.data[j + 1] = value;
+        out.data[j + 2] = value;
+        out.data[j + 3] = 255;
+    }
+
+    return out;
 }
 
 function squareEdgeWhiteRatios(data, width, x, y, size) {
