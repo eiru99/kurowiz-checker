@@ -113,10 +113,25 @@ function syncAttributeSelectStyle(select) {
     }
 }
 
-function shouldHideSubAttribute(attributes) {
-    return attributes?.main != null
-        && attributes?.sub != null
-        && attributes.main === attributes.sub;
+function shouldHideSub(main, sub) {
+    return main !== UNDETECTED_ELEMENT
+        && sub !== UNDETECTED_ELEMENT
+        && main === sub;
+}
+
+function onQueueAttributeChange(item) {
+    if (shouldHideSub(item.main, item.sub)) {
+        item.sub = item.main;
+        if (!item.hideSub) {
+            item.hideSub = true;
+            renderSpiritQueue();
+        }
+        return;
+    }
+    if (item.hideSub) {
+        item.hideSub = false;
+        renderSpiritQueue();
+    }
 }
 
 function renderSpiritQueue() {
@@ -159,14 +174,7 @@ function renderSpiritQueue() {
         mainSelect.addEventListener('change', () => {
             item.main = mainSelect.value;
             syncAttributeSelectStyle(mainSelect);
-            if (item.hideSub) {
-                if (item.main !== item.sub) {
-                    item.hideSub = false;
-                    renderSpiritQueue();
-                    return;
-                }
-                item.sub = item.main;
-            }
+            onQueueAttributeChange(item);
         });
 
         attrs.append(mainSelect);
@@ -179,6 +187,7 @@ function renderSpiritQueue() {
             subSelect.addEventListener('change', () => {
                 item.sub = subSelect.value;
                 syncAttributeSelectStyle(subSelect);
+                onQueueAttributeChange(item);
             });
             attrs.append(subSelect);
         }
@@ -220,7 +229,7 @@ function addToSpiritQueue(file, attributes = null) {
         name: '',
         main,
         sub,
-        hideSub: shouldHideSubAttribute(attributes)
+        hideSub: shouldHideSub(main, sub)
     });
     renderSpiritQueue();
     updateCropHint();
