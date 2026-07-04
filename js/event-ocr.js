@@ -9,6 +9,7 @@ const TEXT_RIGHT_RATIO = 0.99;
 const MIN_TEXT_RUN_HEIGHT = 6;
 const REFERENCE_MIN_RUN_HEIGHT = 10;
 const BANNER_TITLE_ZONE_TOP = 0.22;
+const BANNER_TITLE_ZONE_BOTTOM = 0.38;
 const MAX_SEPARATOR_RUN_HEIGHT = 7;
 const MIN_OCR_WIDTH = 1200;
 const MIN_OCR_HEIGHT = 56;
@@ -345,7 +346,7 @@ function computeMinimumRunHeight(referenceHeight) {
     );
 }
 
-function resolveHeaderRunHeightThresholds(data, width, height, separatorY) {
+function resolveHeaderRunHeightThresholds(data, width, height, separatorY, minLeft = 0) {
     let referenceRun = null;
 
     if (separatorY !== null) {
@@ -358,11 +359,12 @@ function resolveHeaderRunHeightThresholds(data, width, height, separatorY) {
         );
     } else {
         const titleSearchStart = Math.floor(height * BANNER_TITLE_ZONE_TOP);
+        const titleSearchEnd = Math.min(height - 1, Math.floor(height * BANNER_TITLE_ZONE_BOTTOM));
         referenceRun = findTopmostTextRun(
             data,
             width,
             titleSearchStart,
-            height - 1,
+            titleSearchEnd,
             REFERENCE_MIN_RUN_HEIGHT
         );
     }
@@ -559,7 +561,8 @@ function detectHeaderTextLineRects(image) {
         data,
         width,
         height,
-        separatorY
+        separatorY,
+        minLeft
     );
 
     let abbrRun = null;
@@ -576,7 +579,14 @@ function detectHeaderTextLineRects(image) {
         );
     } else {
         const titleSearchStart = Math.floor(height * BANNER_TITLE_ZONE_TOP);
-        titleRun = findTopmostTextRun(data, width, titleSearchStart, height - 1, minRunHeight);
+        const titleSearchEnd = Math.min(height - 1, Math.floor(height * BANNER_TITLE_ZONE_BOTTOM));
+        titleRun = findTopmostTextRun(
+            data,
+            width,
+            titleSearchStart,
+            titleSearchEnd,
+            minRunHeight
+        );
     }
 
     return {
@@ -744,8 +754,8 @@ export async function extractEventNamesFromImage(image) {
 
     const result = finalizeEventHeaderResult({ abbr, title });
 
-    if (!result.abbr) {
-        throw new Error('イベント略称を読み取れませんでした。');
+    if (!result.abbr && !result.title) {
+        throw new Error('イベント名を読み取れませんでした。');
     }
 
     return result;

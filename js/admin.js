@@ -7,7 +7,7 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
-import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js';
+import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js?v=20250704b';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -448,10 +448,26 @@ function showOcrRegionOverlays(image) {
     ocrRegionOverlays.hidden = ocrRegionOverlays.childElementCount === 0;
 }
 
-function refreshOcrRegionOverlays() {
+function scheduleOcrRegionOverlayRefresh() {
     const sourceImage = getOcrSourceImage();
-    if (!sourceImage || ocrRegionOverlays.hidden) return;
-    showOcrRegionOverlays(sourceImage);
+    if (!sourceImage || !eventModeNew.checked || editingEventId) {
+        clearOcrRegionOverlays();
+        return;
+    }
+
+    const render = () => {
+        if (sourceImage.complete && sourceImage.naturalWidth > 0) {
+            showOcrRegionOverlays(sourceImage);
+            return;
+        }
+        sourceImage.addEventListener('load', () => showOcrRegionOverlays(sourceImage), { once: true });
+    };
+
+    if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(render);
+    } else {
+        render();
+    }
 }
 
 function clientToDisplayPoint(clientX, clientY) {
@@ -727,9 +743,7 @@ function showImagePreview(file) {
     imageDropzone.classList.add('has-image');
     imageDropzone.classList.remove('crop-mode');
     updateOcrSelectButtons();
-    requestAnimationFrame(() => {
-        showOcrRegionOverlays(imagePreview);
-    });
+    scheduleOcrRegionOverlayRefresh();
 }
 
 function assignSpiritImageFile(file) {
@@ -760,9 +774,7 @@ function enterCropMode(image, objectUrl) {
     updateCropHint();
     updateOcrSelectButtons();
     syncSpiritCropClickListener();
-    requestAnimationFrame(() => {
-        showOcrRegionOverlays(image);
-    });
+    scheduleOcrRegionOverlayRefresh();
 }
 
 async function handleCropClick(event) {
@@ -816,6 +828,13 @@ async function tryExtractEventNamesFromScreenshot(image) {
                     imageHint.textContent = previousHint;
                 }
             }, 5000);
+        } else if (!abbr && title) {
+            imageHint.textContent = '正式名のみ取得できました。略称を手入力してください';
+            window.setTimeout(() => {
+                if (imageHint.textContent.includes('略称を手入力')) {
+                    imageHint.textContent = previousHint;
+                }
+            }, 5000);
         }
     } catch (error) {
         console.warn('Event name OCR failed:', error);
@@ -832,6 +851,12 @@ async function processIncomingImage(file) {
     if (editingEventId && !imageReplaceTargetId) {
         alert('画像を差し替える精霊を左のサムネイルから選んでください。');
         return;
+    }
+
+    if (!editingEventId && eventModeNew.checked) {
+        clearOcrRegionOverlays();
+        eventAbbrInput.value = '';
+        eventTitleInput.value = '';
     }
 
     const normalizedFile = normalizePastedImageFile(file);
@@ -1309,8 +1334,8 @@ export function initAdmin(db, onReloadCatalog) {
     imagePreviewStage.addEventListener('pointermove', handleOcrPointerMove);
     imagePreviewStage.addEventListener('pointerup', handleOcrPointerUp);
     imagePreviewStage.addEventListener('pointercancel', handleOcrPointerUp);
-    imagePreview.addEventListener('load', refreshOcrRegionOverlays);
-    window.addEventListener('resize', refreshOcrRegionOverlays);
+    imagePreview.addEventListener('load', scheduleOcrRegionOverlayRefresh);
+    window.addEventListener('resize', scheduleOcrRegionOverlayRefresh);
 
     dialog.addEventListener('keydown', event => {
         if (event.key === 'Escape' && ocrSelectTarget) {
