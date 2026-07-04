@@ -4,7 +4,7 @@ const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/te
 const TESSERACT_LANG_PATH = 'https://tessdata.projectnaptha.com/4.0.0';
 
 const HEADER_SCAN_BAND = { top: 0, height: 0.5, left: 0, right: 1 };
-const TEXT_LEFT_RATIO = 0.12;
+const TEXT_LEFT_RATIO = 0.02;
 const TEXT_RIGHT_RATIO = 0.99;
 const MIN_TEXT_RUN_HEIGHT = 6;
 const MAX_SEPARATOR_RUN_HEIGHT = 7;
@@ -121,6 +121,28 @@ function isHeaderTextPixel(data, width, x, y) {
 function isSeparatorPixel(data, width, x, y) {
     const { lum, sat } = getPixelLuminance(data, width, x, y);
     return lum >= 40 && lum <= 115 && sat < 0.22;
+}
+
+function isDecorativePillarPixel(r, g, b) {
+    return r > 145 && g > 95 && b < 95 && r > g && g > b * 1.1;
+}
+
+function findDecorativePillarRightX(data, width, height) {
+    const scanWidth = Math.min(width, Math.floor(width * 0.1));
+    let rightEdge = 0;
+
+    for (let x = 0; x < scanWidth; x += 1) {
+        let pillarRows = 0;
+        for (let y = 0; y < height; y += 1) {
+            const { r, g, b } = getPixelLuminance(data, width, x, y);
+            if (isDecorativePillarPixel(r, g, b)) pillarRows += 1;
+        }
+        if (pillarRows >= Math.max(3, Math.floor(height * 0.12))) {
+            rightEdge = x + 1;
+        }
+    }
+
+    return rightEdge;
 }
 
 function cropImageBand(image, band) {
@@ -327,20 +349,42 @@ function findHorizontalSeparatorY(data, width, height) {
     for (let y = Math.floor(height * 0.06); y < Math.floor(height * 0.55); y += 1) {
         const separatorDensity = rowSeparatorDensity(data, width, y);
         const textDensity = rowTextDensity(data, width, y);
-        if (separatorDensity < 0.24) continue;
-        if (textDensity > 0.1) continue;
 
-        const score = separatorDensity - textDensity * 0.5;
-        if (score > bestScore) {
-            bestScore = score;
-            bestY = y;
+        if (separatorDensity >= 0.24 && textDensity <= 0.1) {
+            const score = separatorDensity - textDensity * 0.5;
+            if (score > bestScore) {
+                bestScore = score;
+                bestY = y;
+            }
+            continue;
+        }
+
+        if (separatorDensity >= 0.13 && textDensity <= 0.22) {
+            const score = separatorDensity - textDensity * 0.35;
+            if (score > bestScore) {
+                bestScore = score;
+                bestY = y;
+            }
         }
     }
 
     return bestY;
 }
 
-function detectTextBoundsInCanvas(canvas) {
+function findTopmostTextRun(data, width, yStart, yEnd) {
+    const rowDensities = buildRowDensities(data, width, yStart, yEnd);
+    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities);
+    if (runs.length === 0) return null;
+
+    runs.sort((left, right) => left.y0 - right.y0);
+    const run = runs[0];
+    return {
+        y0: yStart + run.y0,
+        y1: yStart + run.y1
+    };
+}
+
+function detectTextBoundsInCanvas(canvas, minLeft = 0) {
     const context = canvas.getContext('2d', { willReadFrequently: true });
     const { width, height } = canvas;
     const imageData = context.getImageData(0, 0, width, height);
@@ -353,11 +397,11 @@ function detectTextBoundsInCanvas(canvas) {
         }
     }
 
-    const colThreshold = Math.max(2, Math.floor(height * 0.24));
+    const colThreshold = Math.max(2, Math.floor(height * 0.10));
     let minX = width;
     let maxX = 0;
 
-    for (let x = 0; x < width; x += 1) {
+    for (let x = minLeft; x < width; x += 1) {
         if (colCounts[x] >= colThreshold) {
             minX = Math.min(minX, x);
             maxX = Math.max(maxX, x);
@@ -368,30 +412,38 @@ function detectTextBoundsInCanvas(canvas) {
         return null;
     }
 
-    const paddingX = Math.max(1, Math.floor((maxX - minX) * 0.01));
+    const paddingX = Math.max(2, Math.floor(height * 0.08));
     return {
         x: Math.max(0, minX - paddingX),
         w: Math.min(width, maxX - minX + 1 + paddingX * 2)
     };
 }
 
-function toImageRect(offsetX, offsetY, canvasWidth, bounds, y0, y1) {
-    const left = Math.floor(canvasWidth * TEXT_LEFT_RATIO);
+function toImageRect(offsetX, offsetY, canvasWidth, bounds, y0, y1, minLeft = 0) {
+    const fallbackLeft = Math.max(minLeft, Math.floor(canvasWidth * TEXT_LEFT_RATIO));
     const right = Math.floor(canvasWidth * TEXT_RIGHT_RATIO);
-    const localX = Math.max(left, bounds?.x ?? left);
-    const x = offsetX + localX;
-    const maxW = offsetX + right - x;
-    const w = Math.min(bounds?.w ?? (right - left), maxW);
+
+    let localX;
+    let w;
+    if (bounds) {
+        localX = Math.max(fallbackLeft, bounds.x);
+        w = bounds.x + bounds.w - localX;
+    } else {
+        localX = fallbackLeft;
+        w = right - fallbackLeft;
+    }
+
+    w = Math.min(w, right - localX);
 
     return {
-        x,
+        x: offsetX + localX,
         y: offsetY + y0,
         w: Math.max(1, w),
         h: y1 - y0 + 1
     };
 }
 
-function runToImageRect(canvas, offsetX, offsetY, canvasWidth, run) {
+function runToImageRect(canvas, offsetX, offsetY, canvasWidth, run, minLeft = 0) {
     const lineHeight = run.y1 - run.y0 + 1;
     const lineCanvas = document.createElement('canvas');
     lineCanvas.width = canvas.width;
@@ -408,7 +460,7 @@ function runToImageRect(canvas, offsetX, offsetY, canvasWidth, run) {
         lineHeight
     );
 
-    const bounds = detectTextBoundsInCanvas(lineCanvas);
+    const bounds = detectTextBoundsInCanvas(lineCanvas, minLeft);
     const paddingY = Math.max(1, Math.floor(lineHeight * 0.12));
     return toImageRect(
         offsetX,
@@ -416,7 +468,8 @@ function runToImageRect(canvas, offsetX, offsetY, canvasWidth, run) {
         canvasWidth,
         bounds,
         Math.max(0, run.y0 - paddingY),
-        Math.min(canvas.height - 1, run.y1 + paddingY)
+        Math.min(canvas.height - 1, run.y1 + paddingY),
+        minLeft
     );
 }
 
@@ -428,14 +481,15 @@ function detectHeaderTextLineRects(image) {
     const { data } = imageData;
 
     const separatorY = findHorizontalSeparatorY(data, width, height);
+    const minLeft = findDecorativePillarRightX(data, width, height);
     const rects = [];
 
     if (separatorY !== null) {
         const abbrRun = findPrimaryTextRun(data, width, 0, Math.max(0, separatorY - 2));
-        const titleRun = findPrimaryTextRun(data, width, Math.min(height - 1, separatorY + 2), height - 1);
+        const titleRun = findTopmostTextRun(data, width, Math.min(height - 1, separatorY + 2), height - 1);
 
-        if (abbrRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, abbrRun));
-        if (titleRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, titleRun));
+        if (abbrRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, abbrRun, minLeft));
+        if (titleRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, titleRun, minLeft));
         if (rects.length >= 2) return rects.slice(0, 2);
     }
 
@@ -444,7 +498,7 @@ function detectHeaderTextLineRects(image) {
         .sort((left, right) => left.y0 - right.y0)
         .slice(0, 2);
 
-    return runs.map(run => runToImageRect(canvas, offsetX, offsetY, width, run));
+    return runs.map(run => runToImageRect(canvas, offsetX, offsetY, width, run, minLeft));
 }
 
 async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false } = {}) {
