@@ -115,7 +115,6 @@ function createSpiritTile(spirit) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `spirit-tile${isOwned ? ' owned' : ''}`;
-    button.title = spirit.name;
     button.setAttribute('aria-pressed', String(isOwned));
     button.setAttribute('aria-label', `${spirit.name} ${isOwned ? '所持' : '未所持'}`);
 
@@ -126,7 +125,7 @@ function createSpiritTile(spirit) {
     if (imageUrl) {
         const image = document.createElement('img');
         image.src = imageUrl;
-        image.alt = spirit.name;
+        image.alt = '';
         image.loading = 'lazy';
         image.addEventListener('error', () => {
             image.remove();
@@ -143,12 +142,7 @@ function createSpiritTile(spirit) {
         thumb.appendChild(placeholder);
     }
 
-    const name = document.createElement('div');
-    name.className = 'spirit-name';
-    name.textContent = spirit.name;
-
     button.appendChild(thumb);
-    button.appendChild(name);
     button.addEventListener('click', () => toggleOwned(spirit.id));
 
     tile.appendChild(button);
