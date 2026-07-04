@@ -38,9 +38,9 @@ ALTER TABLE public.catalog_spirits
 -- ★ 重要: anon ロールにテーブル権限を付与（Table Editor 手動作成時に不足しがち）
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
-GRANT SELECT, INSERT, UPDATE ON public.catalog_sections TO anon, authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.catalog_events TO anon, authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.catalog_spirits TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.catalog_sections TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.catalog_events TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.catalog_spirits TO anon, authenticated;
 
 -- RLS を有効化
 ALTER TABLE public.catalog_sections ENABLE ROW LEVEL SECURITY;
@@ -59,6 +59,7 @@ DROP POLICY IF EXISTS "anon update catalog_events" ON public.catalog_events;
 DROP POLICY IF EXISTS "anon read catalog_spirits" ON public.catalog_spirits;
 DROP POLICY IF EXISTS "anon insert catalog_spirits" ON public.catalog_spirits;
 DROP POLICY IF EXISTS "anon update catalog_spirits" ON public.catalog_spirits;
+DROP POLICY IF EXISTS "anon delete catalog_spirits" ON public.catalog_spirits;
 
 CREATE POLICY "anon read catalog_sections"
     ON public.catalog_sections FOR SELECT TO anon USING (true);
@@ -80,6 +81,8 @@ CREATE POLICY "anon insert catalog_spirits"
     ON public.catalog_spirits FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "anon update catalog_spirits"
     ON public.catalog_spirits FOR UPDATE TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "anon delete catalog_spirits"
+    ON public.catalog_spirits FOR DELETE TO anon USING (true);
 
 -- Storage バケット
 INSERT INTO storage.buckets (id, name, public)
