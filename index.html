@@ -60,10 +60,16 @@
 
             <div id="new-event-block" class="form-group" hidden>
                 <label for="admin-event-abbr">イベント略称</label>
-                <input type="text" id="admin-event-abbr" placeholder="例: かみさんぽっ3">
+                <div class="admin-input-row">
+                    <input type="text" id="admin-event-abbr" placeholder="例: かみさんぽっ3">
+                    <button type="button" class="btn-ocr-select" data-ocr-target="abbr">自動認識</button>
+                </div>
 
                 <label for="admin-event-title">イベント正式名</label>
-                <input type="text" id="admin-event-title" placeholder="例: 神域をさんぽする至高の神々 3">
+                <div class="admin-input-row">
+                    <input type="text" id="admin-event-title" placeholder="例: 神域をさんぽする至高の神々 3">
+                    <button type="button" class="btn-ocr-select" data-ocr-target="title">自動認識</button>
+                </div>
             </div>
 
             <div id="spirit-details-block" hidden>
@@ -90,9 +96,10 @@
                         <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>新規イベント時はイベント名も自動取得。スクショは精霊をクリックで切り抜き（複数可）</small></p>
                         <div class="admin-image-preview-stage" id="admin-image-preview-stage" hidden>
                             <img id="admin-image-preview" class="admin-image-preview" alt="">
+                            <div id="admin-ocr-selection" class="admin-ocr-selection" hidden></div>
                         </div>
                     </div>
-                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。新規イベントのスクショは略称・正式名も自動取得。保存時は 128×128 に統一</p>
+                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。新規イベントは自動取得または「自動認識」で範囲指定。保存時は 128×128 に統一</p>
                 </div>
 
                 <div id="spirit-queue-block" class="spirit-queue-block" hidden>

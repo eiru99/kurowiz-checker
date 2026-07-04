@@ -347,6 +347,49 @@ button:hover {
     color: var(--muted-text);
 }
 
+.admin-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.admin-input-row:last-child {
+    margin-bottom: 0;
+}
+
+.admin-input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-ocr-select {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    border: 1px solid #7986cb;
+    border-radius: 6px;
+    background: #e8eaf6;
+    color: #283593;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-ocr-select:hover {
+    background: #c5cae9;
+}
+
+.btn-ocr-select.is-active {
+    background: #3949ab;
+    border-color: #3949ab;
+    color: #fff;
+}
+
+.btn-ocr-select:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .admin-image-dropzone {
     position: relative;
     min-height: 140px;
@@ -424,6 +467,27 @@ button:hover {
 
 .admin-image-dropzone.crop-mode .admin-image-preview {
     max-height: 280px;
+}
+
+.admin-image-dropzone.ocr-select-mode .admin-spirit-image-input {
+    pointer-events: none;
+}
+
+.admin-image-dropzone.ocr-select-mode .admin-image-preview-stage {
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.admin-image-dropzone.ocr-select-mode .admin-image-preview {
+    max-height: 280px;
+}
+
+.admin-ocr-selection {
+    position: absolute;
+    border: 2px solid #3949ab;
+    background: rgba(57, 73, 171, 0.18);
+    pointer-events: none;
+    box-sizing: border-box;
 }
 
 .spirit-queue-block {

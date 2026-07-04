@@ -218,6 +218,56 @@ async function recognizeHeaderBlock(worker, image) {
     return parseEventHeaderResult(data);
 }
 
+function cropImageRect(image, rect) {
+    const width = image.naturalWidth || image.width;
+    const height = image.naturalHeight || image.height;
+
+    const sx = Math.max(0, Math.min(width - 1, Math.floor(rect.x)));
+    const sy = Math.max(0, Math.min(height - 1, Math.floor(rect.y)));
+    const sw = Math.max(1, Math.min(width - sx, Math.floor(rect.w)));
+    const sh = Math.max(1, Math.min(height - sy, Math.floor(rect.h)));
+    const scale = Math.max(1, MIN_OCR_WIDTH / sw);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(sw * scale);
+    canvas.height = Math.ceil(sh * scale);
+
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.imageSmoothingEnabled = scale > 1;
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+
+    return canvas;
+}
+
+async function recognizeCanvasText(worker, canvas) {
+    const aspect = canvas.height / Math.max(1, canvas.width);
+    const psm = aspect > 0.45 ? '6' : SINGLE_LINE_PSM;
+    await worker.setParameters({ tessedit_pageseg_mode: psm });
+    const { data } = await worker.recognize(canvas);
+    return normalizeEventOcrText(data.text ?? '');
+}
+
+/**
+ * 画像上の任意矩形から文字を OCR する。
+ * @param {HTMLImageElement} image
+ * @param {{ x: number, y: number, w: number, h: number }} rect
+ * @returns {Promise<string>}
+ */
+export async function recognizeTextFromImageRect(image, rect) {
+    const worker = await getOcrWorker();
+    const canvas = enhanceHeaderCanvasForOcr(cropImageRect(image, rect));
+    const text = await recognizeCanvasText(worker, canvas);
+
+    if (!text) {
+        throw new Error('文字を読み取れませんでした。領域を大きくして再試行してください。');
+    }
+
+    return text;
+}
+
 /**
  * イベントスクショ上部から略称（1行目）と正式名（2行目）を OCR で取得する。
  * @param {HTMLImageElement} image
