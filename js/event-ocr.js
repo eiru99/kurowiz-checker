@@ -7,6 +7,8 @@ const HEADER_SCAN_BAND = { top: 0, height: 0.5, left: 0, right: 1 };
 const TEXT_LEFT_RATIO = 0.02;
 const TEXT_RIGHT_RATIO = 0.99;
 const MIN_TEXT_RUN_HEIGHT = 6;
+const REFERENCE_MIN_RUN_HEIGHT = 10;
+const BANNER_TITLE_ZONE_TOP = 0.22;
 const MAX_SEPARATOR_RUN_HEIGHT = 7;
 const MIN_OCR_WIDTH = 1200;
 const MIN_OCR_HEIGHT = 56;
@@ -307,13 +309,107 @@ function isSeparatorLikeRun(run, rowDensities) {
     return averageRunDensity(run, rowDensities) >= 0.22;
 }
 
-function filterMeaningfulTextRuns(runs, rowDensities) {
+function runHeight(run) {
+    return run.y1 - run.y0 + 1;
+}
+
+function filterMeaningfulTextRuns(runs, rowDensities, minHeight = MIN_TEXT_RUN_HEIGHT) {
     return runs.filter(run => {
-        const height = run.y1 - run.y0 + 1;
-        if (height < MIN_TEXT_RUN_HEIGHT) return false;
+        const height = runHeight(run);
+        if (height < minHeight) return false;
         if (isSeparatorLikeRun(run, rowDensities)) return false;
         return averageRunDensity(run, rowDensities) >= 0.02;
     });
+}
+
+function estimateReferenceLineHeight(runs, bandHeight) {
+    const candidates = runs
+        .filter(run => {
+            const height = runHeight(run);
+            return height >= REFERENCE_MIN_RUN_HEIGHT
+                && height <= Math.floor(bandHeight * 0.25)
+                && run.y0 < bandHeight * 0.5;
+        })
+        .map(run => runHeight(run))
+        .sort((left, right) => left - right);
+
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(candidates.length / 2)];
+}
+
+function computeMinimumRunHeight(referenceHeight) {
+    if (referenceHeight === null) return MIN_TEXT_RUN_HEIGHT;
+    return Math.max(
+        MIN_TEXT_RUN_HEIGHT,
+        Math.ceil(referenceHeight * 0.55)
+    );
+}
+
+function resolveHeaderRunHeightThresholds(data, width, height, separatorY) {
+    let referenceRun = null;
+
+    if (separatorY !== null) {
+        referenceRun = findTopmostTextRun(
+            data,
+            width,
+            Math.min(height - 1, separatorY + 2),
+            height - 1,
+            REFERENCE_MIN_RUN_HEIGHT
+        );
+    } else {
+        const titleSearchStart = Math.floor(height * BANNER_TITLE_ZONE_TOP);
+        referenceRun = findTopmostTextRun(
+            data,
+            width,
+            titleSearchStart,
+            height - 1,
+            REFERENCE_MIN_RUN_HEIGHT
+        );
+    }
+
+    let referenceHeight = referenceRun ? runHeight(referenceRun) : null;
+    if (referenceHeight === null) {
+        const rowDensities = buildRowDensities(data, width, 0, height - 1);
+        const rawRuns = filterMeaningfulTextRuns(
+            findTextRuns(rowDensities, width),
+            rowDensities
+        );
+        referenceHeight = estimateReferenceLineHeight(rawRuns, height);
+    }
+
+    const minRunHeight = computeMinimumRunHeight(referenceHeight);
+    const minAbbrRunHeight = Math.max(
+        MIN_TEXT_RUN_HEIGHT,
+        Math.floor(minRunHeight * 0.55)
+    );
+
+    return { minRunHeight, minAbbrRunHeight };
+}
+
+function findTextRunInBand(data, width, yStart, yEnd, minHeight, strategy = 'primary') {
+    const rowDensities = buildRowDensities(data, width, yStart, yEnd);
+    const runs = filterMeaningfulTextRuns(
+        findTextRuns(rowDensities, width, minHeight),
+        rowDensities,
+        minHeight
+    );
+    if (runs.length === 0) return null;
+
+    if (strategy === 'topmost') {
+        runs.sort((left, right) => left.y0 - right.y0);
+    } else {
+        runs.sort((left, right) => {
+            const heightDiff = runHeight(right) - runHeight(left);
+            if (heightDiff !== 0) return heightDiff;
+            return left.y0 - right.y0;
+        });
+    }
+
+    const run = runs[0];
+    return {
+        y0: yStart + run.y0,
+        y1: yStart + run.y1
+    };
 }
 
 function buildRowDensities(data, width, yStart, yEnd) {
@@ -324,22 +420,12 @@ function buildRowDensities(data, width, yStart, yEnd) {
     return rowDensities;
 }
 
-function findPrimaryTextRun(data, width, yStart, yEnd) {
-    const rowDensities = buildRowDensities(data, width, yStart, yEnd);
-    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities);
-    if (runs.length === 0) return null;
+function findPrimaryTextRun(data, width, yStart, yEnd, minHeight = MIN_TEXT_RUN_HEIGHT) {
+    return findTextRunInBand(data, width, yStart, yEnd, minHeight, 'primary');
+}
 
-    runs.sort((left, right) => {
-        const heightDiff = (right.y1 - right.y0) - (left.y1 - left.y0);
-        if (heightDiff !== 0) return heightDiff;
-        return left.y0 - right.y0;
-    });
-
-    const run = runs[0];
-    return {
-        y0: yStart + run.y0,
-        y1: yStart + run.y1
-    };
+function findTopmostTextRun(data, width, yStart, yEnd, minHeight = MIN_TEXT_RUN_HEIGHT) {
+    return findTextRunInBand(data, width, yStart, yEnd, minHeight, 'topmost');
 }
 
 function findHorizontalSeparatorY(data, width, height) {
@@ -369,19 +455,6 @@ function findHorizontalSeparatorY(data, width, height) {
     }
 
     return bestY;
-}
-
-function findTopmostTextRun(data, width, yStart, yEnd) {
-    const rowDensities = buildRowDensities(data, width, yStart, yEnd);
-    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities);
-    if (runs.length === 0) return null;
-
-    runs.sort((left, right) => left.y0 - right.y0);
-    const run = runs[0];
-    return {
-        y0: yStart + run.y0,
-        y1: yStart + run.y1
-    };
 }
 
 function detectTextBoundsInCanvas(canvas, minLeft = 0) {
@@ -482,23 +555,34 @@ function detectHeaderTextLineRects(image) {
 
     const separatorY = findHorizontalSeparatorY(data, width, height);
     const minLeft = findDecorativePillarRightX(data, width, height);
-    const rects = [];
+    const { minRunHeight, minAbbrRunHeight } = resolveHeaderRunHeightThresholds(
+        data,
+        width,
+        height,
+        separatorY
+    );
+
+    let abbrRun = null;
+    let titleRun = null;
 
     if (separatorY !== null) {
-        const abbrRun = findPrimaryTextRun(data, width, 0, Math.max(0, separatorY - 2));
-        const titleRun = findTopmostTextRun(data, width, Math.min(height - 1, separatorY + 2), height - 1);
-
-        if (abbrRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, abbrRun, minLeft));
-        if (titleRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, titleRun, minLeft));
-        if (rects.length >= 2) return rects.slice(0, 2);
+        abbrRun = findPrimaryTextRun(data, width, 0, Math.max(0, separatorY - 2), minAbbrRunHeight);
+        titleRun = findTopmostTextRun(
+            data,
+            width,
+            Math.min(height - 1, separatorY + 2),
+            height - 1,
+            minRunHeight
+        );
+    } else {
+        const titleSearchStart = Math.floor(height * BANNER_TITLE_ZONE_TOP);
+        titleRun = findTopmostTextRun(data, width, titleSearchStart, height - 1, minRunHeight);
     }
 
-    const rowDensities = buildRowDensities(data, width, 0, height - 1);
-    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities)
-        .sort((left, right) => left.y0 - right.y0)
-        .slice(0, 2);
-
-    return runs.map(run => runToImageRect(canvas, offsetX, offsetY, width, run, minLeft));
+    return {
+        abbr: abbrRun ? runToImageRect(canvas, offsetX, offsetY, width, abbrRun, minLeft) : null,
+        title: titleRun ? runToImageRect(canvas, offsetX, offsetY, width, titleRun, minLeft) : null
+    };
 }
 
 async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false } = {}) {
@@ -612,8 +696,8 @@ export function getEventNameOcrRegions(image) {
             h: Math.max(2, Math.floor(imageHeight * 0.004)),
             label: '区切り線'
         },
-        abbr: lineRects[0] ? { ...lineRects[0], label: '略称' } : null,
-        title: lineRects[1] ? { ...lineRects[1], label: '正式名' } : null
+        abbr: lineRects.abbr ? { ...lineRects.abbr, label: '略称' } : null,
+        title: lineRects.title ? { ...lineRects.title, label: '正式名' } : null
     };
 }
 
@@ -646,13 +730,13 @@ export async function extractEventNamesFromImage(image) {
     let abbr = '';
     let title = '';
 
-    if (lineRects.length >= 1) {
-        const abbrResult = await recognizeLineRect(worker, image, lineRects[0], { preserveSpaces: false });
+    if (lineRects.abbr) {
+        const abbrResult = await recognizeLineRect(worker, image, lineRects.abbr, { preserveSpaces: false });
         abbr = abbrResult.text;
     }
 
-    if (lineRects.length >= 2) {
-        const titleResult = await recognizeLineRect(worker, image, lineRects[1], { preserveSpaces: true });
+    if (lineRects.title) {
+        const titleResult = await recognizeLineRect(worker, image, lineRects.title, { preserveSpaces: true });
         title = titleResult.text;
     }
 
