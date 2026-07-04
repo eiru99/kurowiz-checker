@@ -14,10 +14,4 @@ export async function detectOrnamentFromCanvasAsync(canvas) {
     return detectOrnamentViaWorker(width, height, data);
 }
 
-/** @deprecated Worker 版では同期 API 非対応。detectOrnamentFromCanvasAsync を使用。 */
-export function detectOrnamentFromCanvas(canvas) {
-    console.warn('detectOrnamentFromCanvas: sync API unavailable with worker OpenCV');
-    return null;
-}
-
 export { isOpenCvReady, ensureOpenCv };

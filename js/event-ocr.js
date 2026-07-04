@@ -876,70 +876,10 @@ export function getEventOcrOpenCvLoadError() {
     return openCvLoadErrorMessage;
 }
 
-/** OpenCV 意匠検出をスキップ（テストページの高速モードなど）。 */
-export function disableEventOcrOpenCv() {
-    openCvLoadFailed = true;
-}
-
 /** OpenCV + Tesseract を事前読み込み。 */
 export async function warmupEventOcr(options = {}) {
     await ensureEventOcrOpenCv(options);
     await getOcrWorker();
-}
-
-function detectHeaderTextLineRectsMask(layout) {
-    const {
-        offsetX,
-        offsetY,
-        width,
-        height,
-        mask,
-        goldLine,
-        iconRowTopY,
-        textLeft,
-        textRight,
-        textRuns
-    } = layout;
-
-    if (goldLine && textRuns.length >= 1) {
-        const abbrRun = textRuns[0];
-        const titleRun = textRuns.length >= 2 ? textRuns[1] : null;
-        const abbrBandY0 = Math.max(0, abbrRun.y0 - 4);
-        const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 3);
-        const titleBandY0 = Math.min(height - 1, goldLine.y1 + 3);
-        const titleBandY1 = titleRun
-            ? Math.min(height - 1, titleRun.y1 + 6)
-            : iconRowTopY !== null
-                ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
-                : Math.min(height - 1, Math.floor(height * 0.42));
-
-        const abbrBounds = findTextBoundsInBand(mask, width, abbrBandY0, abbrBandY1, textLeft);
-        const titleBounds = findTextBoundsInBand(mask, width, titleBandY0, titleBandY1, textLeft);
-
-        return {
-            abbr: boundsToImageRect(offsetX, offsetY, abbrBounds, textLeft, textRight, abbrBandY0, abbrBandY1),
-            title: boundsToImageRect(offsetX, offsetY, titleBounds, textLeft, textRight, titleBandY0, titleBandY1)
-        };
-    }
-
-    if (goldLine) {
-        const abbrBandY0 = Math.floor(height * 0.02);
-        const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 4);
-        const titleBandY0 = Math.min(height - 1, goldLine.y1 + 4);
-        const titleBandY1 = iconRowTopY !== null
-            ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
-            : Math.min(height - 1, Math.floor(height * 0.42));
-
-        const abbrBounds = findTextBoundsInBand(mask, width, abbrBandY0, abbrBandY1, textLeft);
-        const titleBounds = findTextBoundsInBand(mask, width, titleBandY0, titleBandY1, textLeft);
-
-        return {
-            abbr: boundsToImageRect(offsetX, offsetY, abbrBounds, textLeft, textRight, abbrBandY0, abbrBandY1),
-            title: boundsToImageRect(offsetX, offsetY, titleBounds, textLeft, textRight, titleBandY0, titleBandY1)
-        };
-    }
-
-    return null;
 }
 
 function detectHeaderTextLineRects(image, layout = null) {
@@ -1139,32 +1079,6 @@ function maxColumnRun(predicate, data, width, x, yStart, yEnd) {
     return best;
 }
 
-function maxPixelRun(predicate, data, width, fixedAxis, start, end, crossStart, crossEnd) {
-    let best = 0;
-    let current = 0;
-
-    for (let i = start; i <= end; i += 1) {
-        let matched = false;
-        for (let cross = crossStart; cross <= crossEnd; cross += 1) {
-            const x = fixedAxis === 'x' ? i : cross;
-            const y = fixedAxis === 'x' ? cross : i;
-            if (predicate(data, width, x, y)) {
-                matched = true;
-                break;
-            }
-        }
-
-        if (matched) {
-            current += 1;
-            best = Math.max(best, current);
-        } else {
-            current = 0;
-        }
-    }
-
-    return best;
-}
-
 function countPredicateInBand(predicate, data, width, x0, x1, y0, y1) {
     let count = 0;
     for (let y = y0; y <= y1; y += 1) {
@@ -1321,22 +1235,6 @@ function applySeparatorLineToOrnamentBottom(ornament, separatorLine) {
 }
 
 /**
- * 左上の金枠意匠（縦長の装飾）の矩形を検出する。
- * OpenCV 結果が layout にあれば優先、なければピクセル走査。
- * @param {number | null} separatorY 区切り線の Y（ヘッダー帯内座標）。略称行の下端上限に使う。
- * @returns {{ x: number, y: number, w: number, h: number } | null}
- */
-function detectDecorativeOrnamentRect(data, width, height, separatorY = null, layout = null) {
-    if (layout) {
-        const resolved = resolveDecorativeOrnamentRect(layout, separatorY);
-        if (resolved) return resolved;
-    }
-    const candidate = probeDecorativeOrnamentRect(data, width, height, separatorY);
-    if (!isValidDecorativeOrnamentRect(candidate, width, height)) return null;
-    return candidate;
-}
-
-/**
  * 意匠下端付近で右方向へ伸びる装飾水平線を検出する（略称と正式名の境界）。
  * @param {{ x: number, y: number, w: number, h: number }} ornament
  * @returns {{ y0: number, y1: number, centerY: number } | null}
@@ -1393,11 +1291,6 @@ function findOrnamentBottomExtensionLine(data, width, height, ornament, textRigh
     }
 
     return { y0, y1, centerY: (y0 + y1) / 2 };
-}
-
-function resolveOrnamentSeparatorLine(layout, ornament) {
-    if (!ornament) return null;
-    return resolveLayoutSeparatorLine(layout, ornament);
 }
 
 /**
@@ -1457,7 +1350,7 @@ function detectOrnamentBasedHeaderTextRects(image, layout) {
     const ornament = resolveDecorativeOrnamentRect(layout, layout.separatorY);
     if (!ornament) return null;
 
-    const separatorLine = resolveOrnamentSeparatorLine(layout, ornament);
+    const separatorLine = resolveLayoutSeparatorLine(layout, ornament);
 
     const imageWidth = image.naturalWidth || image.width;
     return buildOrnamentBasedTitleRects(ornament, imageWidth, layout.offsetX, layout.offsetY, {
@@ -1468,8 +1361,10 @@ function detectOrnamentBasedHeaderTextRects(image, layout) {
 }
 
 function findDecorativePillarRightX(data, width, height, separatorY = null) {
-    const ornament = detectDecorativeOrnamentRect(data, width, height, separatorY);
-    if (ornament) return ornament.x + ornament.w;
+    const candidate = probeDecorativeOrnamentRect(data, width, height, separatorY);
+    if (isValidDecorativeOrnamentRect(candidate, width, height)) {
+        return candidate.x + candidate.w;
+    }
 
     const scanWidth = Math.min(width, Math.floor(width * 0.12));
     let inPillar = false;
@@ -2695,7 +2590,7 @@ export function debugEventOcrAnalysis(image, layout = null) {
     const projection = detectTextLinesByHorizontalProjection(resolvedLayout);
     const roles = detectHeaderTextLineRects(image, resolvedLayout);
     const ornamentSeparatorLine = ornament
-        ? resolveOrnamentSeparatorLine(resolvedLayout, ornament)
+        ? resolveLayoutSeparatorLine(resolvedLayout, ornament)
         : null;
 
     return {
@@ -2728,11 +2623,6 @@ export function debugEventOcrAnalysis(image, layout = null) {
         projectionThreshold: projection.projection.textThreshold,
         roles
     };
-}
-
-export async function debugEventOcrAnalysisAsync(image) {
-    const layout = await prepareEventOcrLayout(image);
-    return debugEventOcrAnalysis(image, layout);
 }
 
 function buildEventNameOcrRegions(image, layout) {

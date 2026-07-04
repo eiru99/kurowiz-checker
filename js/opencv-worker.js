@@ -1,8 +1,7 @@
 /**
  * OpenCV.js Web Worker — WASM 初期化をメインスレッドから切り離す。
- * BUILD_ID を変えると Worker / core のキャッシュを確実に無効化できる。
+ * キャッシュ無効化: import 先の ?v= を opencv-loader の OPENCV_BUILD_ID と揃えて更新する。
  */
-const BUILD_ID = '20250705e';
 import { detectOrnamentFromRgba } from './opencv-ornament-core.js?v=20250705e';
 const OPENCV_MODULE_URLS = [
     '/vendor/opencv-worker/index.js',

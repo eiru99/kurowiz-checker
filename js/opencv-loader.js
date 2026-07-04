@@ -100,14 +100,3 @@ export async function detectOrnamentViaWorker(width, height, rgba, options = {})
         options.initTimeoutMs ?? INIT_TIMEOUT_MS
     );
 }
-
-export function terminateOpenCvWorker() {
-    if (worker) {
-        worker.terminate();
-        worker = null;
-    }
-    for (const [, entry] of pending) clearTimeout(entry.timer);
-    pending.clear();
-    readyPromise = null;
-    ready = false;
-}
