@@ -491,6 +491,14 @@ async function tryExtractEventNamesFromScreenshot(image) {
         const { abbr, title } = await extractEventNamesFromImage(image);
         if (abbr) eventAbbrInput.value = abbr;
         if (title) eventTitleInput.value = title;
+        if (abbr && !title) {
+            imageHint.textContent = '略称のみ取得できました。正式名を手入力してください';
+            window.setTimeout(() => {
+                if (imageHint.textContent.includes('正式名を手入力')) {
+                    imageHint.textContent = previousHint;
+                }
+            }, 5000);
+        }
     } catch (error) {
         console.warn('Event name OCR failed:', error);
         imageHint.textContent = 'イベント名を自動取得できませんでした。略称・正式名を手入力してください';

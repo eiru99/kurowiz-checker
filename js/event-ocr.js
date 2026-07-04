@@ -3,12 +3,15 @@ const TESSERACT_WORKER_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/
 const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js';
 const TESSERACT_LANG_PATH = 'https://tessdata.projectnaptha.com/4.0.0';
 
-/** スクショ上部のイベント名テキスト領域（精霊アイコンより上） */
-const HEADER_TOP_RATIO = 0;
-const HEADER_HEIGHT_RATIO = 0.34;
-const HEADER_LEFT_RATIO = 0.03;
-const HEADER_RIGHT_RATIO = 0.99;
+/** 1行目（略称）の切り出し範囲 */
+const ABBR_BAND = { top: 0, height: 0.17, left: 0.03, right: 0.99 };
+/** 2行目（正式名）の切り出し範囲 */
+const TITLE_BAND = { top: 0.13, height: 0.18, left: 0.03, right: 0.99 };
+/** フォールバック用のヘッダー全体 */
+const HEADER_BAND = { top: 0, height: 0.34, left: 0.03, right: 0.99 };
 const MIN_OCR_WIDTH = 640;
+const SINGLE_LINE_PSM = '7';
+const LINE_GROUP_Y_TOLERANCE = 14;
 
 let workerPromise = null;
 
@@ -48,14 +51,14 @@ function normalizeEventOcrText(text) {
         .trim();
 }
 
-function cropEventHeaderCanvas(image) {
+function cropImageBand(image, band) {
     const width = image.naturalWidth || image.width;
     const height = image.naturalHeight || image.height;
 
-    const sx = Math.floor(width * HEADER_LEFT_RATIO);
-    const sy = Math.floor(height * HEADER_TOP_RATIO);
-    const sw = Math.max(1, Math.floor(width * (HEADER_RIGHT_RATIO - HEADER_LEFT_RATIO)));
-    const sh = Math.max(1, Math.floor(height * HEADER_HEIGHT_RATIO));
+    const sx = Math.floor(width * band.left);
+    const sy = Math.floor(height * band.top);
+    const sw = Math.max(1, Math.floor(width * (band.right - band.left)));
+    const sh = Math.max(1, Math.floor(height * band.height));
     const scale = Math.max(1, MIN_OCR_WIDTH / sw);
 
     const canvas = document.createElement('canvas');
@@ -100,17 +103,9 @@ function parseEventHeaderLines(lines) {
         .filter(line => line.text.length >= 2)
         .sort((left, right) => left.y0 - right.y0);
 
-    if (candidates.length === 0) {
-        return { abbr: '', title: '' };
-    }
-
-    if (candidates.length === 1) {
-        return { abbr: candidates[0].text, title: '' };
-    }
-
     return {
-        abbr: candidates[0].text,
-        title: candidates[1].text
+        abbr: candidates[0]?.text ?? '',
+        title: candidates[1]?.text ?? ''
     };
 }
 
@@ -126,10 +121,101 @@ function parseEventHeaderText(rawText) {
     };
 }
 
+function parseEventHeaderWords(words) {
+    const candidates = (words ?? [])
+        .map(word => ({
+            text: normalizeEventOcrText(word.text ?? ''),
+            y0: word.bbox?.y0 ?? 0
+        }))
+        .filter(word => word.text.length >= 1)
+        .sort((left, right) => left.y0 - right.y0);
+
+    if (candidates.length === 0) {
+        return { abbr: '', title: '' };
+    }
+
+    const lines = [];
+    let currentLine = { y0: candidates[0].y0, parts: [candidates[0].text] };
+
+    for (let i = 1; i < candidates.length; i += 1) {
+        const word = candidates[i];
+        if (Math.abs(word.y0 - currentLine.y0) <= LINE_GROUP_Y_TOLERANCE) {
+            currentLine.parts.push(word.text);
+        } else {
+            lines.push(normalizeEventOcrText(currentLine.parts.join('')));
+            currentLine = { y0: word.y0, parts: [word.text] };
+        }
+    }
+    lines.push(normalizeEventOcrText(currentLine.parts.join('')));
+
+    const filtered = lines.filter(line => line.length >= 2);
+    return {
+        abbr: filtered[0] ?? '',
+        title: filtered[1] ?? ''
+    };
+}
+
+function mergeEventHeaderResults(...results) {
+    let abbr = '';
+    let title = '';
+
+    for (const result of results) {
+        if (!abbr && result.abbr) abbr = result.abbr;
+        if (!title && result.title) title = result.title;
+    }
+
+    return { abbr, title };
+}
+
 function parseEventHeaderResult(data) {
-    const fromLines = parseEventHeaderLines(data.lines ?? []);
-    if (fromLines.abbr) return fromLines;
-    return parseEventHeaderText(data.text ?? '');
+    return mergeEventHeaderResults(
+        parseEventHeaderLines(data.lines ?? []),
+        parseEventHeaderWords(data.words ?? []),
+        parseEventHeaderText(data.text ?? '')
+    );
+}
+
+function isBetterTitleCandidate(nextTitle, abbr) {
+    if (!nextTitle) return false;
+    if (!abbr) return true;
+    if (nextTitle === abbr) return false;
+    return nextTitle.length >= abbr.length;
+}
+
+function finalizeEventHeaderResult(result) {
+    const abbr = result.abbr ?? '';
+    let title = result.title ?? '';
+
+    if (title && abbr && title === abbr) {
+        title = '';
+    }
+
+    if (title && abbr && title.startsWith(abbr) && title.length > abbr.length + 2) {
+        const remainder = title.slice(abbr.length);
+        if (remainder.length >= 2) {
+            title = remainder;
+        }
+    }
+
+    if (!isBetterTitleCandidate(title, abbr)) {
+        title = '';
+    }
+
+    return { abbr, title };
+}
+
+async function recognizeBandText(worker, image, band) {
+    const canvas = enhanceHeaderCanvasForOcr(cropImageBand(image, band));
+    await worker.setParameters({ tessedit_pageseg_mode: SINGLE_LINE_PSM });
+    const { data } = await worker.recognize(canvas);
+    return normalizeEventOcrText(data.text ?? '');
+}
+
+async function recognizeHeaderBlock(worker, image) {
+    const canvas = enhanceHeaderCanvasForOcr(cropImageBand(image, HEADER_BAND));
+    await worker.setParameters({ tessedit_pageseg_mode: '6' });
+    const { data } = await worker.recognize(canvas);
+    return parseEventHeaderResult(data);
 }
 
 /**
@@ -139,12 +225,21 @@ function parseEventHeaderResult(data) {
  */
 export async function extractEventNamesFromImage(image) {
     const worker = await getOcrWorker();
-    const headerCanvas = enhanceHeaderCanvasForOcr(cropEventHeaderCanvas(image));
-    const { data } = await worker.recognize(headerCanvas);
-    const result = parseEventHeaderResult(data);
+
+    const abbrText = await recognizeBandText(worker, image, ABBR_BAND);
+    const titleText = await recognizeBandText(worker, image, TITLE_BAND);
+    const blockResult = await recognizeHeaderBlock(worker, image);
+
+    const merged = mergeEventHeaderResults(
+        { abbr: abbrText, title: '' },
+        { abbr: '', title: titleText },
+        blockResult
+    );
+
+    const result = finalizeEventHeaderResult(merged);
 
     if (!result.abbr) {
-        throw new Error('イベント名を読み取れませんでした。');
+        throw new Error('イベント略称を読み取れませんでした。');
     }
 
     return result;
