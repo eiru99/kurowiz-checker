@@ -7,6 +7,7 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
+import { extractEventNamesFromImage } from './event-ocr.js';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -480,6 +481,22 @@ async function handleCropClick(event) {
     }
 }
 
+async function tryExtractEventNamesFromScreenshot(image) {
+    if (editingEventId || !eventModeNew.checked) return;
+
+    const previousHint = imageHint.textContent;
+    imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
+
+    try {
+        const { abbr, title } = await extractEventNamesFromImage(image);
+        if (abbr) eventAbbrInput.value = abbr;
+        if (title) eventTitleInput.value = title;
+    } catch (error) {
+        console.warn('Event name OCR failed:', error);
+        imageHint.textContent = previousHint;
+    }
+}
+
 async function processIncomingImage(file) {
     if (editingEventId && !imageReplaceTargetId) {
         alert('画像を差し替える精霊を左のサムネイルから選んでください。');
@@ -488,6 +505,8 @@ async function processIncomingImage(file) {
 
     const normalizedFile = normalizePastedImageFile(file);
     const { image, objectUrl } = await loadImageFromFile(normalizedFile);
+
+    await tryExtractEventNamesFromScreenshot(image);
 
     if (editingEventId && imageReplaceTargetId) {
         try {
@@ -662,7 +681,7 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など。スクショ貼り付け時は精霊をクリックで切り抜き（複数可）。名前は下の欄に入力';
+    imageHint.textContent = 'PNG / JPG など。新規イベントのスクショは略称・正式名も自動取得。精霊はクリックで切り抜き（複数可）';
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
