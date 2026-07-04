@@ -10,24 +10,111 @@
         .case { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
         .case img { display: block; width: 100%; max-width: 720px; border: 1px solid #ccc; }
         .preview-wrap { position: relative; display: inline-block; width: 100%; max-width: 720px; }
-        .overlay { position: absolute; border: 2px solid; box-sizing: border-box; pointer-events: none; }
-        .overlay-abbr { border-color: rgba(30, 100, 255, 0.85); background: rgba(30, 100, 255, 0.12); }
-        .overlay-title { border-color: rgba(20, 160, 70, 0.85); background: rgba(20, 160, 70, 0.12); }
-        .overlay-ornament { border-color: rgba(230, 126, 34, 0.95); background: rgba(243, 156, 18, 0.18); }
+        .region-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin: 0 0 8px;
+            font-size: 0.82rem;
+            color: #455a64;
+        }
+        .region-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .region-legend i {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid;
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+        .region-legend .legend-ornament i { border-color: rgba(230, 126, 34, 0.98); background: rgba(243, 156, 18, 0.42); }
+        .region-legend .legend-abbr i { border-color: rgba(25, 118, 210, 0.9); background: rgba(33, 150, 243, 0.3); }
+        .region-legend .legend-title i { border-color: rgba(56, 142, 60, 0.9); background: rgba(76, 175, 80, 0.3); }
+        .ocr-region-overlay {
+            position: absolute;
+            box-sizing: border-box;
+            border-width: 2px;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .ocr-region-label {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .ocr-region-ornament {
+            z-index: 4;
+            border-width: 3px;
+            border-color: rgba(230, 126, 34, 0.98);
+            background: rgba(243, 156, 18, 0.42);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+        }
+        .ocr-region-ornament .ocr-region-label { background: rgba(211, 84, 0, 0.95); }
+        .ocr-region-ornament-tentative {
+            border-style: dashed;
+            background: rgba(243, 156, 18, 0.28);
+        }
+        .ocr-region-abbr {
+            z-index: 2;
+            border-color: rgba(25, 118, 210, 0.9);
+            background: rgba(33, 150, 243, 0.3);
+        }
+        .ocr-region-abbr .ocr-region-label { background: rgba(21, 101, 192, 0.92); }
+        .ocr-region-title {
+            z-index: 2;
+            border-color: rgba(56, 142, 60, 0.9);
+            background: rgba(76, 175, 80, 0.3);
+        }
+        .ocr-region-title .ocr-region-label { background: rgba(46, 125, 50, 0.92); }
+        .ocr-region-separator {
+            z-index: 1;
+            border-color: rgba(211, 47, 47, 0.85);
+            background: rgba(211, 47, 47, 0.25);
+        }
+        .ocr-region-separator .ocr-region-label { background: rgba(183, 28, 28, 0.92); }
         .result { margin-top: 12px; line-height: 1.6; }
         .pass { color: #0a7a2f; font-weight: bold; }
         .fail { color: #b00020; font-weight: bold; }
         #summary { font-size: 1.1rem; margin-top: 24px; }
+        .hint { font-size: 0.85rem; color: #546e7a; margin: 0 0 16px; line-height: 1.5; }
+        .hint code { font-size: 0.82rem; }
+        #status { font-weight: 600; }
     </style>
 </head>
 <body>
     <h1>Event OCR Debug</h1>
-    <p id="status">Tesseract 読み込み中…（初回は数十秒）</p>
+    <p class="hint">
+        ローカル HTTP サーバー必須（<code>file://</code> では動きません）。リポジトリ直下で
+        <code>python -m http.server 8765</code> →
+        <code>http://127.0.0.1:8765/test/event-ocr-debug.html</code>。
+        このページは<strong>OpenCV 必須</strong>（意匠検出は Worker 経由の OpenCV のみ。probe フォールバックなし）。
+        読込上限は <strong>60 秒</strong>で、超過または失敗時はエラー表示してテストを開始しません。
+        初回は <code>python test/download-opencv-worker.py</code> で
+        <code>vendor/opencv-worker/</code> を用意してください（git 管理外・約 11MB）。
+    </p>
+    <p id="status">準備中…</p>
     <div id="cases"></div>
     <p id="summary"></p>
 
     <script type="module">
-        import { extractEventNamesFromImage, getEventNameOcrRegions, debugEventOcrAnalysis } from '../js/event-ocr.js?v=20250704z';
+        import {
+            extractEventNamesFromImage,
+            getEventNameOcrRegionsAsync,
+            debugEventOcrAnalysis,
+            prepareEventOcrLayout,
+            warmupEventOcr,
+            ensureEventOcrOpenCv,
+            getEventOcrOpenCvLoadError
+        } from '../js/event-ocr.js?v=20250705h';
+
+        const OPENCV_LOAD_TIMEOUT_MS = 60_000;
 
         const TEST_CASES = [
             {
@@ -92,31 +179,84 @@
             });
         }
 
-        function renderOverlays(container, image, regions) {
-            const scale = container.clientWidth / (image.naturalWidth || image.width);
-            for (const [key, className] of [
-                ['ornament', 'overlay-ornament'],
-                ['abbr', 'overlay-abbr'],
-                ['title', 'overlay-title']
-            ]) {
+        function renderOcrRegionOverlays(container, image, regions) {
+            const imageWidth = image.naturalWidth || image.width;
+            const imageHeight = image.naturalHeight || image.height;
+            if (!imageWidth || !imageHeight) return;
+
+            const overlayRoot = document.createElement('div');
+            overlayRoot.className = 'ocr-region-overlays';
+            overlayRoot.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+
+            const entries = [
+                ['abbr', 'ocr-region-abbr'],
+                ['title', 'ocr-region-title'],
+                ['separator', 'ocr-region-separator'],
+                ['ornament', 'ocr-region-ornament']
+            ];
+
+            for (const [key, className] of entries) {
                 const rect = regions[key];
-                if (!rect) continue;
+                if (!rect || rect.w < 1 || rect.h < 1) continue;
+
                 const overlay = document.createElement('div');
-                overlay.className = `overlay ${className}`;
-                overlay.style.left = `${rect.x * scale}px`;
-                overlay.style.top = `${rect.y * scale}px`;
-                overlay.style.width = `${rect.w * scale}px`;
-                overlay.style.height = `${rect.h * scale}px`;
-                container.appendChild(overlay);
+                overlay.className = `ocr-region-overlay ${className}`;
+                if (key === 'ornament' && rect.tentative) {
+                    overlay.classList.add('ocr-region-ornament-tentative');
+                }
+                overlay.style.left = `${(rect.x / imageWidth) * 100}%`;
+                overlay.style.top = `${(rect.y / imageHeight) * 100}%`;
+                overlay.style.width = `${(rect.w / imageWidth) * 100}%`;
+                overlay.style.height = `${(rect.h / imageHeight) * 100}%`;
+
+                const labelEl = document.createElement('span');
+                labelEl.className = 'ocr-region-label';
+                labelEl.textContent = rect.label ?? key;
+                overlay.appendChild(labelEl);
+
+                overlayRoot.appendChild(overlay);
             }
+
+            container.appendChild(overlayRoot);
+        }
+
+        async function paintStatus(message) {
+            status.textContent = message;
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+
+        async function requireOpenCvLoaded() {
+            const startedAt = Date.now();
+            await paintStatus(`OpenCV.js 読込中…（上限 ${OPENCV_LOAD_TIMEOUT_MS / 1000} 秒）`);
+            const ready = await ensureEventOcrOpenCv({ initTimeoutMs: OPENCV_LOAD_TIMEOUT_MS });
+            const elapsedSec = Math.round((Date.now() - startedAt) / 1000);
+            if (!ready) {
+                const detail = getEventOcrOpenCvLoadError();
+                throw new Error(
+                    `OpenCV.js の読込に失敗しました（${elapsedSec} 秒経過）。`
+                    + (detail ? ` 詳細: ${detail}` : '')
+                    + ' — vendor/opencv-worker または CDN を確認してください。'
+                    + ' 未配置なら python test/download-opencv-worker.py を実行。'
+                );
+            }
+            await paintStatus(`OpenCV.js 読込完了（${elapsedSec} 秒）— Tesseract 読込中…`);
         }
 
         async function runCase(testCase) {
             const image = await loadImage(testCase.src);
-            const regions = getEventNameOcrRegions(image);
-            const debug = debugEventOcrAnalysis(image);
+            const layout = await prepareEventOcrLayout(image);
+            if (!layout.openCvOrnament) {
+                throw new Error(`${testCase.id}: OpenCV 意匠検出結果がありません（openCvOrnament が null）`);
+            }
+
+            const regions = await getEventNameOcrRegionsAsync(image, layout);
+            if (!regions.ornament?.openCv) {
+                throw new Error(`${testCase.id}: 意匠オーバーレイが OpenCV 由来ではありません`);
+            }
+
+            const debug = debugEventOcrAnalysis(image, layout);
             console.log(testCase.id, debug);
-            const result = await extractEventNamesFromImage(image);
+            const result = await extractEventNamesFromImage(image, layout);
             const abbrOk = matchesExpected(result.abbr, testCase.expectedAbbr)
                 || matchesExpectedLoose(result.abbr, testCase.looseAbbr);
             const titleOk = matchesExpected(result.title, testCase.expectedTitle)
@@ -127,10 +267,20 @@
             section.className = 'case';
             section.innerHTML = `
                 <h2>${testCase.id} <span class="${pass ? 'pass' : 'fail'}">${pass ? 'PASS' : 'FAIL'}</span></h2>
+                <div class="region-legend">
+                    <span class="legend-ornament"><i></i>橙 = 意匠(OpenCV)</span>
+                    <span class="legend-abbr"><i></i>青 = 略称</span>
+                    <span class="legend-title"><i></i>緑 = 正式名</span>
+                    <span class="legend-separator"><i style="border-color:rgba(211,47,47,.85);background:rgba(211,47,47,.25)"></i>赤 = 区切り線</span>
+                </div>
                 <div class="preview-wrap">
                     <img src="${testCase.src}" alt="${testCase.id}">
                 </div>
                 <div class="result">
+                    <div>OpenCV意匠: <code>x=${layout.openCvOrnament.x} y=${layout.openCvOrnament.y} w=${layout.openCvOrnament.w} h=${layout.openCvOrnament.h}</code> ✓</div>
+                    <div>意匠(表示): <code>${debug.ornament ? `x=${debug.ornament.x} y=${debug.ornament.y} w=${debug.ornament.w} h=${debug.ornament.h} 下辺=${debug.ornament.y + debug.ornament.h - 1}` : '(none)'}</code></div>
+                    <div>区切り線: <code>${debug.ornamentExtensionLine ? `y0=${debug.ornamentExtensionLine.y0} y1=${debug.ornamentExtensionLine.y1}` : '(none)'}</code></div>
+                    <div>下辺=線y1: <code>${debug.ornament && debug.ornamentExtensionLine ? (debug.ornament.y + debug.ornament.h - 1 === debug.ornamentExtensionLine.y1 ? '一致 ✓' : '不一致 ✗') : '—'}</code></div>
                     <div>略称: <code>${result.abbr || '(empty)'}</code> ${abbrOk ? '✓' : '✗'}</div>
                     <div>正式名: <code>${result.title || '(empty)'}</code> ${titleOk ? '✓' : '✗'}</div>
                     <details>
@@ -139,7 +289,7 @@
                     </details>
                 </div>
             `;
-            renderOverlays(section.querySelector('.preview-wrap'), image, regions);
+            renderOcrRegionOverlays(section.querySelector('.preview-wrap'), image, regions);
             return { pass, section };
         }
 
@@ -148,20 +298,39 @@
         const summary = document.getElementById('summary');
 
         try {
+            await requireOpenCvLoaded();
+            await warmupEventOcr();
+            await paintStatus('テスト開始…');
+
             const results = [];
             for (const testCase of TEST_CASES) {
-                status.textContent = `実行中: ${testCase.id}…`;
-                const outcome = await runCase(testCase);
-                results.push(outcome.pass);
-                casesRoot.appendChild(outcome.section);
+                await paintStatus(`実行中: ${testCase.id}…`);
+                try {
+                    const outcome = await runCase(testCase);
+                    results.push(outcome.pass);
+                    casesRoot.appendChild(outcome.section);
+                } catch (error) {
+                    results.push(false);
+                    const section = document.createElement('section');
+                    section.className = 'case';
+                    section.innerHTML = `
+                        <h2>${testCase.id} <span class="fail">FAIL</span></h2>
+                        <div class="result fail">${error.message}</div>
+                    `;
+                    casesRoot.appendChild(section);
+                    console.error(testCase.id, error);
+                }
             }
 
             const passed = results.filter(Boolean).length;
             summary.textContent = `${passed}/${TEST_CASES.length} passed`;
             summary.className = passed === TEST_CASES.length ? 'pass' : 'fail';
-            status.textContent = '完了';
+            await paintStatus('完了');
         } catch (error) {
             status.textContent = `エラー: ${error.message}`;
+            status.className = 'fail';
+            summary.textContent = 'テスト未実行';
+            summary.className = 'fail';
             console.error(error);
         }
     </script>

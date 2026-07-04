@@ -9,10 +9,11 @@ import {
 } from './catalog.js';
 import {
     extractEventNamesLenient,
-    getEventNameOcrRegions,
+    getEventNameOcrRegionsAsync,
+    ensureEventOcrOpenCv,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250704z';
+} from './event-ocr.js?v=20250705e';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -430,27 +431,29 @@ function appendOcrRegionOverlay(className, imageRect, label) {
     ocrRegionOverlays.appendChild(overlay);
 }
 
-function showOcrRegionOverlays(image) {
+async function showOcrRegionOverlays(image) {
     if (!eventModeNew.checked || editingEventId || !image) {
         clearOcrRegionOverlays();
         return;
     }
 
-    const regions = getEventNameOcrRegions(image);
+    const regions = await getEventNameOcrRegionsAsync(image);
     ocrRegionOverlays.innerHTML = '';
 
-    appendOcrRegionOverlay('admin-ocr-region-header', regions.headerScan, regions.headerScan.label);
-    if (regions.ornament) {
-        appendOcrRegionOverlay('admin-ocr-region-ornament', regions.ornament, regions.ornament.label);
-    }
-    if (regions.separator) {
-        appendOcrRegionOverlay('admin-ocr-region-separator', regions.separator, regions.separator.label);
-    }
     if (regions.abbr) {
         appendOcrRegionOverlay('admin-ocr-region-abbr', regions.abbr, regions.abbr.label);
     }
     if (regions.title) {
         appendOcrRegionOverlay('admin-ocr-region-title', regions.title, regions.title.label);
+    }
+    if (regions.separator) {
+        appendOcrRegionOverlay('admin-ocr-region-separator', regions.separator, regions.separator.label);
+    }
+    if (regions.ornament) {
+        const ornamentClass = regions.ornament.tentative
+            ? 'admin-ocr-region-ornament admin-ocr-region-ornament-tentative'
+            : 'admin-ocr-region-ornament';
+        appendOcrRegionOverlay(ornamentClass, regions.ornament, regions.ornament.label);
     }
 
     ocrRegionOverlays.hidden = ocrRegionOverlays.childElementCount === 0;
@@ -1465,6 +1468,8 @@ export function initAdmin(db, onReloadCatalog) {
     imagePreviewStage.addEventListener('pointercancel', handleOcrPointerUp);
     imagePreview.addEventListener('load', scheduleOcrRegionOverlayRefresh);
     window.addEventListener('resize', scheduleOcrRegionOverlayRefresh);
+
+    ensureEventOcrOpenCv().catch(() => {});
 
     dialog.addEventListener('keydown', event => {
         if (event.key === 'Escape' && ocrSelectTarget) {
