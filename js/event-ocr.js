@@ -3,9 +3,11 @@ const TESSERACT_WORKER_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/
 const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js';
 const TESSERACT_LANG_PATH = 'https://tessdata.projectnaptha.com/4.0.0';
 
-const HEADER_SCAN_BAND = { top: 0, height: 0.42, left: 0, right: 1 };
-const TEXT_LEFT_RATIO = 0.1;
+const HEADER_SCAN_BAND = { top: 0, height: 0.5, left: 0, right: 1 };
+const TEXT_LEFT_RATIO = 0.12;
 const TEXT_RIGHT_RATIO = 0.99;
+const MIN_TEXT_RUN_HEIGHT = 6;
+const MAX_SEPARATOR_RUN_HEIGHT = 7;
 const MIN_OCR_WIDTH = 1200;
 const MIN_OCR_HEIGHT = 56;
 const SINGLE_LINE_PSM = '7';
@@ -248,8 +250,8 @@ function rowSeparatorDensity(data, width, y) {
     return count / width;
 }
 
-function findTextRuns(rowDensities, width, minHeight = 4) {
-    const threshold = Math.max(0.02, width > 0 ? 0.018 : 0.02);
+function findTextRuns(rowDensities, width, minHeight = MIN_TEXT_RUN_HEIGHT) {
+    const threshold = Math.max(0.015, width > 0 ? 0.015 : 0.02);
     const runs = [];
     let start = null;
 
@@ -269,15 +271,64 @@ function findTextRuns(rowDensities, width, minHeight = 4) {
     return runs;
 }
 
+function averageRunDensity(run, rowDensities) {
+    let total = 0;
+    for (let y = run.y0; y <= run.y1; y += 1) {
+        total += rowDensities[y] ?? 0;
+    }
+    return total / Math.max(1, run.y1 - run.y0 + 1);
+}
+
+function isSeparatorLikeRun(run, rowDensities) {
+    const height = run.y1 - run.y0 + 1;
+    if (height > MAX_SEPARATOR_RUN_HEIGHT) return false;
+    return averageRunDensity(run, rowDensities) >= 0.22;
+}
+
+function filterMeaningfulTextRuns(runs, rowDensities) {
+    return runs.filter(run => {
+        const height = run.y1 - run.y0 + 1;
+        if (height < MIN_TEXT_RUN_HEIGHT) return false;
+        if (isSeparatorLikeRun(run, rowDensities)) return false;
+        return averageRunDensity(run, rowDensities) >= 0.02;
+    });
+}
+
+function buildRowDensities(data, width, yStart, yEnd) {
+    const rowDensities = [];
+    for (let y = yStart; y <= yEnd; y += 1) {
+        rowDensities.push(rowTextDensity(data, width, y));
+    }
+    return rowDensities;
+}
+
+function findPrimaryTextRun(data, width, yStart, yEnd) {
+    const rowDensities = buildRowDensities(data, width, yStart, yEnd);
+    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities);
+    if (runs.length === 0) return null;
+
+    runs.sort((left, right) => {
+        const heightDiff = (right.y1 - right.y0) - (left.y1 - left.y0);
+        if (heightDiff !== 0) return heightDiff;
+        return left.y0 - right.y0;
+    });
+
+    const run = runs[0];
+    return {
+        y0: yStart + run.y0,
+        y1: yStart + run.y1
+    };
+}
+
 function findHorizontalSeparatorY(data, width, height) {
     let bestY = null;
     let bestScore = 0;
 
-    for (let y = Math.floor(height * 0.08); y < Math.floor(height * 0.45); y += 1) {
+    for (let y = Math.floor(height * 0.06); y < Math.floor(height * 0.55); y += 1) {
         const separatorDensity = rowSeparatorDensity(data, width, y);
         const textDensity = rowTextDensity(data, width, y);
-        if (separatorDensity < 0.28) continue;
-        if (textDensity > 0.12) continue;
+        if (separatorDensity < 0.24) continue;
+        if (textDensity > 0.1) continue;
 
         const score = separatorDensity - textDensity * 0.5;
         if (score > bestScore) {
@@ -340,6 +391,35 @@ function toImageRect(offsetX, offsetY, canvasWidth, bounds, y0, y1) {
     };
 }
 
+function runToImageRect(canvas, offsetX, offsetY, canvasWidth, run) {
+    const lineHeight = run.y1 - run.y0 + 1;
+    const lineCanvas = document.createElement('canvas');
+    lineCanvas.width = canvas.width;
+    lineCanvas.height = lineHeight;
+    lineCanvas.getContext('2d').drawImage(
+        canvas,
+        0,
+        run.y0,
+        canvas.width,
+        lineHeight,
+        0,
+        0,
+        canvas.width,
+        lineHeight
+    );
+
+    const bounds = detectTextBoundsInCanvas(lineCanvas);
+    const paddingY = Math.max(1, Math.floor(lineHeight * 0.12));
+    return toImageRect(
+        offsetX,
+        offsetY,
+        canvasWidth,
+        bounds,
+        Math.max(0, run.y0 - paddingY),
+        Math.min(canvas.height - 1, run.y1 + paddingY)
+    );
+}
+
 function detectHeaderTextLineRects(image) {
     const { canvas, offsetX, offsetY } = cropImageBand(image, HEADER_SCAN_BAND);
     const context = canvas.getContext('2d', { willReadFrequently: true });
@@ -348,56 +428,23 @@ function detectHeaderTextLineRects(image) {
     const { data } = imageData;
 
     const separatorY = findHorizontalSeparatorY(data, width, height);
-    const imageHeight = image.naturalHeight || image.height;
-    const imageWidth = image.naturalWidth || image.width;
+    const rects = [];
 
     if (separatorY !== null) {
-        const abbrCanvas = document.createElement('canvas');
-        const abbrHeight = Math.max(4, separatorY - 2);
-        abbrCanvas.width = width;
-        abbrCanvas.height = abbrHeight;
-        abbrCanvas.getContext('2d').drawImage(canvas, 0, 0, width, abbrHeight, 0, 0, width, abbrHeight);
+        const abbrRun = findPrimaryTextRun(data, width, 0, Math.max(0, separatorY - 2));
+        const titleRun = findPrimaryTextRun(data, width, Math.min(height - 1, separatorY + 2), height - 1);
 
-        const titleTop = Math.min(height - 4, separatorY + 3);
-        const titleBottom = Math.min(height - 1, Math.max(titleTop + 4, Math.floor(imageHeight * 0.33) - offsetY));
-        const titleHeight = Math.max(4, titleBottom - titleTop);
-        const titleCanvas = document.createElement('canvas');
-        titleCanvas.width = width;
-        titleCanvas.height = titleHeight;
-        titleCanvas.getContext('2d').drawImage(canvas, 0, titleTop, width, titleHeight, 0, 0, width, titleHeight);
-
-        const abbrBounds = detectTextBoundsInCanvas(abbrCanvas);
-        const titleBounds = detectTextBoundsInCanvas(titleCanvas);
-
-        return [
-            toImageRect(offsetX, offsetY, width, abbrBounds, 0, abbrHeight - 1),
-            toImageRect(offsetX, offsetY, width, titleBounds, titleTop, titleTop + titleHeight - 1)
-        ];
+        if (abbrRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, abbrRun));
+        if (titleRun) rects.push(runToImageRect(canvas, offsetX, offsetY, width, titleRun));
+        if (rects.length >= 2) return rects.slice(0, 2);
     }
 
-    const rowDensities = new Array(height).fill(0);
-    for (let y = 0; y < height; y += 1) {
-        rowDensities[y] = rowTextDensity(data, width, y);
-    }
+    const rowDensities = buildRowDensities(data, width, 0, height - 1);
+    const runs = filterMeaningfulTextRuns(findTextRuns(rowDensities, width), rowDensities)
+        .sort((left, right) => left.y0 - right.y0)
+        .slice(0, 2);
 
-    const runs = findTextRuns(rowDensities, width).slice(0, 2);
-    return runs.map(run => {
-        const lineCanvas = document.createElement('canvas');
-        const lineHeight = run.y1 - run.y0 + 1;
-        lineCanvas.width = width;
-        lineCanvas.height = lineHeight;
-        lineCanvas.getContext('2d').drawImage(canvas, 0, run.y0, width, lineHeight, 0, 0, width, lineHeight);
-        const bounds = detectTextBoundsInCanvas(lineCanvas);
-        const paddingY = Math.max(1, Math.floor(lineHeight * 0.15));
-        return toImageRect(
-            offsetX,
-            offsetY,
-            width,
-            bounds,
-            Math.max(0, run.y0 - paddingY),
-            Math.min(height - 1, run.y1 + paddingY)
-        );
-    });
+    return runs.map(run => runToImageRect(canvas, offsetX, offsetY, width, run));
 }
 
 async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false } = {}) {
@@ -429,6 +476,33 @@ async function recognizeLineRect(worker, image, rect, { preserveSpaces = false }
     }
 
     return best;
+}
+
+function looksLikeJapaneseLine(text) {
+    return /[\u3040-\u9fff\u30a0-\u30ff]/.test(text);
+}
+
+function looksLikeEnglishLine(text) {
+    return /[A-Za-z]{3,}/.test(text);
+}
+
+function maybeSwapAbbrAndTitle(abbr, title) {
+    if (!abbr || !title) return { abbr, title };
+
+    const abbrIsJp = looksLikeJapaneseLine(abbr);
+    const titleIsJp = looksLikeJapaneseLine(title);
+    const abbrIsEn = looksLikeEnglishLine(abbr);
+    const titleIsEn = looksLikeEnglishLine(title);
+
+    if (abbrIsEn && titleIsJp && !titleIsEn) {
+        return { abbr: title, title: abbr };
+    }
+
+    if (abbr.length <= 3 && titleIsJp && title.length >= 4) {
+        return { abbr: title, title: abbr };
+    }
+
+    return { abbr, title };
 }
 
 function isBetterTitleCandidate(nextTitle, abbr) {
@@ -527,6 +601,8 @@ export async function extractEventNamesFromImage(image) {
         const titleResult = await recognizeLineRect(worker, image, lineRects[1], { preserveSpaces: true });
         title = titleResult.text;
     }
+
+    ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
 
     const result = finalizeEventHeaderResult({ abbr, title });
 
