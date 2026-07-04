@@ -2765,10 +2765,33 @@ export function debugEventOcrAnalysis(image, layout = null) {
     };
 }
 
+function resolveEventNameLineRects(image, layout) {
+    const lineRects = detectHeaderTextLineRects(image, layout);
+    const bandRects = buildHeaderBandRects(layout, image);
+    const { ornamentCandidate, separatorLine } = resolveOrnamentCandidate(layout);
+    const ornamentRects = buildOrnamentBasedHeaderTextRects(
+        image,
+        layout,
+        ornamentCandidate,
+        separatorLine
+    );
+
+    let abbr = lineRects.abbr ?? bandRects.abbr;
+    let title = lineRects.title ?? bandRects.title;
+    if (ornamentRects?.abbr) abbr = ornamentRects.abbr;
+    if (ornamentRects?.title) title = ornamentRects.title;
+
+    return { abbr, title, bandRects, lineRects, ornamentRects, ornamentCandidate, separatorLine };
+}
+
 function buildEventNameOcrRegions(image, layout) {
     const imageWidth = image.naturalWidth || image.width;
     const imageHeight = image.naturalHeight || image.height;
-    const { ornamentCandidate, separatorLine } = resolveOrnamentCandidate(layout);
+    const {
+        abbr: abbrRect,
+        title: titleRect,
+        ornamentCandidate
+    } = resolveEventNameLineRects(image, layout);
     const ornamentAccepted = isValidDecorativeOrnamentRect(
         ornamentCandidate,
         layout.width,
@@ -2781,19 +2804,7 @@ function buildEventNameOcrRegions(image, layout) {
         layout.height,
         imageHeight
     );
-    const lineRects = detectHeaderTextLineRects(image, layout);
-    const bandRects = buildHeaderBandRects(layout, image);
-
-    let abbrRect = lineRects.abbr ?? bandRects.abbr;
-    let titleRect = lineRects.title ?? bandRects.title;
-    const ornamentRects = buildOrnamentBasedHeaderTextRects(
-        image,
-        layout,
-        ornamentCandidate,
-        separatorLine
-    );
-    if (ornamentRects?.abbr) abbrRect = ornamentRects.abbr;
-    if (ornamentRects?.title) titleRect = ornamentRects.title;
+    const separatorLine = resolveLayoutSeparatorLine(layout, ornamentCandidate);
 
     return {
         headerScan: {
@@ -2870,7 +2881,7 @@ export async function recognizeTextFromImageRect(image, rect) {
 export async function extractEventNamesFromImage(image, existingLayout = null) {
     const worker = await getOcrWorker();
     const layout = existingLayout ?? await prepareEventOcrLayout(image);
-    const { abbr: abbrRect, title: titleRect } = detectHeaderTextLineRects(image, layout);
+    const { abbr: abbrRect, title: titleRect } = resolveEventNameLineRects(image, layout);
 
     let abbr = '';
     let title = '';
@@ -2905,36 +2916,38 @@ export async function extractEventNamesFromImage(image, existingLayout = null) {
  * @param {HTMLImageElement} image
  * @returns {Promise<{ abbr: string, title: string }>}
  */
-export async function extractEventNamesLenient(image) {
+export async function extractEventNamesLenient(image, existingLayout = null) {
+    try {
+        return await extractEventNamesFromImage(image, existingLayout);
+    } catch {
+        // strict path failed — fall through to lenient reads below
+    }
+
     const worker = await getOcrWorker();
-    const layout = await prepareEventOcrLayout(image);
-    const bandRects = buildHeaderBandRects(layout, image);
-    const lineRects = detectHeaderTextLineRects(image, layout);
+    const layout = existingLayout ?? await prepareEventOcrLayout(image);
+    const { abbr: abbrRect, title: titleRect, bandRects } = resolveEventNameLineRects(image, layout);
 
-    const abbrCandidates = [];
-    const titleCandidates = [];
+    let abbr = '';
+    let title = '';
 
-    if (lineRects.abbr) {
-        abbrCandidates.push(await readLineFromRectLenient(worker, image, lineRects.abbr, false));
+    if (abbrRect) {
+        abbr = (await readLineFromRectLenient(worker, image, abbrRect, false)).text;
     }
-    if (bandRects.abbr) {
-        abbrCandidates.push(await readLineFromRectLenient(worker, image, bandRects.abbr, false));
-    }
-
-    if (lineRects.title) {
-        titleCandidates.push(await recognizeTitleRectLenient(worker, image, lineRects.title));
-    }
-    if (bandRects.title) {
-        titleCandidates.push(await recognizeTitleRectLenient(worker, image, bandRects.title));
+    if (!abbr && bandRects.abbr && bandRects.abbr !== abbrRect) {
+        abbr = (await readLineFromRectLenient(worker, image, bandRects.abbr, false)).text;
     }
 
-    let abbr = pickBestOcrText(abbrCandidates);
-    let title = pickBestOcrText(titleCandidates);
+    if (titleRect) {
+        title = await recognizeTitleRectLenient(worker, image, titleRect);
+    }
+    if (!title && bandRects.title && bandRects.title !== titleRect) {
+        title = await recognizeTitleRectLenient(worker, image, bandRects.title);
+    }
 
     ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
 
     if (title && abbr && title === abbr) {
-        title = pickBestOcrText(titleCandidates.filter(text => text && text !== abbr));
+        title = '';
     }
 
     return { abbr, title };
@@ -2984,7 +2997,7 @@ export async function compareEventNameOcrSanitization(image, existingLayout = nu
     let abbrRect = regionRects?.abbr ?? null;
     let titleRect = regionRects?.title ?? null;
     if (!abbrRect || !titleRect) {
-        const lineRects = detectHeaderTextLineRects(image, layout);
+        const lineRects = resolveEventNameLineRects(image, layout);
         abbrRect = abbrRect ?? lineRects.abbr;
         titleRect = titleRect ?? lineRects.title;
     }

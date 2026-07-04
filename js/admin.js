@@ -8,12 +8,13 @@ import {
     uploadSpiritImage
 } from './catalog.js';
 import {
-    extractEventNamesLenient,
+    extractEventNamesFromImage,
     ensureEventOcrOpenCv,
-    getEventNameOcrRegions,
+    getEventNameOcrRegionsAsync,
+    prepareEventOcrLayout,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250705e';
+} from './event-ocr.js?v=20250705n';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -546,16 +547,19 @@ async function fillEventNamesFromImage(image) {
 
     let abbr = '';
     let title = '';
+    let layout = null;
 
     try {
-        ({ abbr, title } = await extractEventNamesLenient(image));
+        layout = await prepareEventOcrLayout(image);
+        ({ abbr, title } = await extractEventNamesFromImage(image, layout));
     } catch (error) {
         console.warn('Event name OCR failed:', error);
     }
 
     if (!abbr) {
         try {
-            const regions = getEventNameOcrRegions(image);
+            layout = layout ?? await prepareEventOcrLayout(image);
+            const regions = await getEventNameOcrRegionsAsync(image, layout);
             if (regions.abbr) {
                 abbr = await recognizeTextFromImageRectLenient(image, regions.abbr, { preserveSpaces: false });
             }
@@ -574,7 +578,8 @@ async function fillEventNamesFromImage(image) {
 
     if (!title) {
         try {
-            const regions = getEventNameOcrRegions(image);
+            layout = layout ?? await prepareEventOcrLayout(image);
+            const regions = await getEventNameOcrRegionsAsync(image, layout);
             if (regions.title) {
                 title = await recognizeTextFromImageRectLenient(image, regions.title, { preserveSpaces: true });
             }

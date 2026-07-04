@@ -112,7 +112,7 @@
             warmupEventOcr,
             ensureEventOcrOpenCv,
             getEventOcrOpenCvLoadError
-        } from '../js/event-ocr.js?v=20250705h';
+        } from '../js/event-ocr.js?v=20250705n';
 
         const OPENCV_LOAD_TIMEOUT_MS = 60_000;
 
@@ -144,6 +144,14 @@
                 ],
                 looseAbbr: ['マグゼロ2'],
                 looseTitle: ['マグナゼロ', 'episode', 'vanishing', 'blood']
+            },
+            {
+                id: 'rerecord3',
+                src: '../test-assets/event-header-rerecord3.png',
+                expectedAbbr: ['リレコード3', 'リレコード３'],
+                expectedTitle: ['FairyChord ReRechord3', 'FairyChord ReRechord 3'],
+                looseAbbr: ['リレコード'],
+                looseTitle: ['fairychord', 'rerechord']
             }
         ];
 
