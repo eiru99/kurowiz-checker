@@ -13,6 +13,7 @@
         .overlay { position: absolute; border: 2px solid; box-sizing: border-box; pointer-events: none; }
         .overlay-abbr { border-color: rgba(30, 100, 255, 0.85); background: rgba(30, 100, 255, 0.12); }
         .overlay-title { border-color: rgba(20, 160, 70, 0.85); background: rgba(20, 160, 70, 0.12); }
+        .overlay-ornament { border-color: rgba(230, 126, 34, 0.95); background: rgba(243, 156, 18, 0.18); }
         .result { margin-top: 12px; line-height: 1.6; }
         .pass { color: #0a7a2f; font-weight: bold; }
         .fail { color: #b00020; font-weight: bold; }
@@ -26,9 +27,17 @@
     <p id="summary"></p>
 
     <script type="module">
-        import { extractEventNamesFromImage, getEventNameOcrRegions, debugEventOcrAnalysis } from '../js/event-ocr.js?v=20250704x';
+        import { extractEventNamesFromImage, getEventNameOcrRegions, debugEventOcrAnalysis } from '../js/event-ocr.js?v=20250704z';
 
         const TEST_CASES = [
+            {
+                id: 'valentine2026',
+                src: '../test-assets/event-header-valentine2026.png',
+                expectedAbbr: ['バレンタイン2026', 'バレンタイン２０２６'],
+                expectedTitle: ['Valentine2026', 'Valentine 2026'],
+                looseAbbr: ['バレンタイン', '2026'],
+                looseTitle: ['valentine', '2026']
+            },
             {
                 id: 'glorious-memorial',
                 src: '../test-assets/event-header-glorious-memorial.png',
@@ -85,7 +94,11 @@
 
         function renderOverlays(container, image, regions) {
             const scale = container.clientWidth / (image.naturalWidth || image.width);
-            for (const [key, className] of [['abbr', 'overlay-abbr'], ['title', 'overlay-title']]) {
+            for (const [key, className] of [
+                ['ornament', 'overlay-ornament'],
+                ['abbr', 'overlay-abbr'],
+                ['title', 'overlay-title']
+            ]) {
                 const rect = regions[key];
                 if (!rect) continue;
                 const overlay = document.createElement('div');

@@ -548,6 +548,15 @@ button:hover {
     background: rgba(211, 47, 47, 0.55);
 }
 
+.admin-ocr-region-ornament {
+    border-color: rgba(230, 126, 34, 0.95);
+    background: rgba(243, 156, 18, 0.22);
+}
+
+.admin-ocr-region-ornament .admin-ocr-region-label {
+    background: rgba(211, 84, 0, 0.92);
+}
+
 .spirit-queue-block {
     margin-bottom: 14px;
 }

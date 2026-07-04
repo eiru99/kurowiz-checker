@@ -12,7 +12,7 @@ import {
     getEventNameOcrRegions,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250704y';
+} from './event-ocr.js?v=20250704z';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -440,6 +440,9 @@ function showOcrRegionOverlays(image) {
     ocrRegionOverlays.innerHTML = '';
 
     appendOcrRegionOverlay('admin-ocr-region-header', regions.headerScan, regions.headerScan.label);
+    if (regions.ornament) {
+        appendOcrRegionOverlay('admin-ocr-region-ornament', regions.ornament, regions.ornament.label);
+    }
     if (regions.separator) {
         appendOcrRegionOverlay('admin-ocr-region-separator', regions.separator, regions.separator.label);
     }

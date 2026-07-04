@@ -850,6 +850,11 @@ function detectHeaderTextLineRectsMask(layout) {
 
 function detectHeaderTextLineRects(image) {
     const layout = analyzeHeaderLayout(image);
+    const ornamentRects = detectOrnamentBasedHeaderTextRects(image, layout);
+    if (ornamentRects?.abbr && ornamentRects?.title) {
+        return ornamentRects;
+    }
+
     const projectionResult = detectTextLinesByHorizontalProjection(layout);
     const bandRects = buildHeaderBandRects(layout, image);
 
@@ -863,7 +868,215 @@ function isDecorativePillarPixel(r, g, b) {
     return r > 145 && g > 95 && b < 95 && r > g && g > b * 1.1;
 }
 
-function findDecorativePillarRightX(data, width, height) {
+function isGoldFramePixel(r, g, b, lum) {
+    if (isDecorativePillarPixel(r, g, b)) return true;
+    if (r > 120 && g > 70 && b < 100 && r > g && lum >= 55 && lum <= 185) return true;
+    return r > 90 && g > 50 && b < 65 && r > g && lum >= 40 && lum <= 130;
+}
+
+function isOrnamentInteriorPixel(r, g, b, lum, sat) {
+    return lum >= 172 && lum <= 255 && sat < 0.24 && r >= 165 && g >= 165 && b >= 155;
+}
+
+function maxPixelRun(predicate, data, width, fixedAxis, start, end, crossStart, crossEnd) {
+    let best = 0;
+    let current = 0;
+
+    for (let i = start; i <= end; i += 1) {
+        let matched = false;
+        for (let cross = crossStart; cross <= crossEnd; cross += 1) {
+            const x = fixedAxis === 'x' ? i : cross;
+            const y = fixedAxis === 'x' ? cross : i;
+            if (predicate(data, width, x, y)) {
+                matched = true;
+                break;
+            }
+        }
+
+        if (matched) {
+            current += 1;
+            best = Math.max(best, current);
+        } else {
+            current = 0;
+        }
+    }
+
+    return best;
+}
+
+function countPredicateInBand(predicate, data, width, x0, x1, y0, y1) {
+    let count = 0;
+    for (let y = y0; y <= y1; y += 1) {
+        for (let x = x0; x <= x1; x += 1) {
+            if (predicate(data, width, x, y)) count += 1;
+        }
+    }
+    return count;
+}
+
+/**
+ * 左上の金枠意匠（縦長の装飾）の矩形を検出する。
+ * @param {number | null} separatorY 区切り線の Y（ヘッダー帯内座標）。略称行の下端上限に使う。
+ * @returns {{ x: number, y: number, w: number, h: number } | null}
+ */
+function detectDecorativeOrnamentRect(data, width, height, separatorY = null) {
+    const scanWidth = Math.min(width, Math.floor(width * 0.2));
+    const scanHeight = Math.min(height, Math.floor(height * 0.35));
+    const minFrameRun = Math.max(8, Math.floor(scanHeight * 0.12));
+
+    const isStrictGoldPixel = (pixelData, imageWidth, x, y) => {
+        const { r, g, b } = getPixelLuminance(pixelData, imageWidth, x, y);
+        return isDecorativePillarPixel(r, g, b);
+    };
+    const isFramePixel = (pixelData, imageWidth, x, y) => {
+        const { r, g, b, lum } = getPixelLuminance(pixelData, imageWidth, x, y);
+        return isGoldFramePixel(r, g, b, lum);
+    };
+    const isInteriorPixel = (pixelData, imageWidth, x, y) => {
+        const { r, g, b, lum, sat } = getPixelLuminance(pixelData, imageWidth, x, y);
+        return isOrnamentInteriorPixel(r, g, b, lum, sat);
+    };
+
+    const frameColumns = [];
+    for (let x = 0; x < scanWidth; x += 1) {
+        const maxRun = maxPixelRun(isFramePixel, data, width, 'x', x, x, 0, scanHeight - 1);
+        if (maxRun >= minFrameRun) {
+            frameColumns.push(x);
+        }
+    }
+
+    if (frameColumns.length === 0) return null;
+
+    const frameCluster = [frameColumns[0]];
+    for (let index = 1; index < frameColumns.length; index += 1) {
+        const x = frameColumns[index];
+        if (x <= frameCluster[frameCluster.length - 1] + 8) {
+            frameCluster.push(x);
+        } else {
+            break;
+        }
+    }
+
+    const frameLeftX = frameCluster[0];
+    let y0 = scanHeight;
+    for (const x of frameCluster) {
+        for (let y = 0; y < scanHeight; y += 1) {
+            if (isStrictGoldPixel(data, width, x, y)) {
+                y0 = Math.min(y0, y);
+            }
+        }
+    }
+
+    if (y0 >= scanHeight) {
+        for (const x of frameCluster) {
+            for (let y = 0; y < scanHeight; y += 1) {
+                if (isFramePixel(data, width, x, y)) {
+                    y0 = Math.min(y0, y);
+                }
+            }
+        }
+    }
+
+    let y1 = separatorY !== null
+        ? Math.max(y0 + 7, separatorY - 2)
+        : Math.min(scanHeight - 1, y0 + Math.max(24, Math.floor(scanHeight * 0.22)));
+
+    if (separatorY === null) {
+        for (const x of frameCluster) {
+            for (let y = 0; y < scanHeight; y += 1) {
+                if (isStrictGoldPixel(data, width, x, y)) {
+                    y1 = Math.max(y1, y);
+                }
+            }
+        }
+    }
+
+    let frameRightX = frameLeftX;
+    for (let x = frameLeftX; x < Math.min(scanWidth, frameLeftX + 16); x += 1) {
+        const goldCount = countPredicateInBand(isStrictGoldPixel, data, width, x, x, y0, y1);
+        if (goldCount >= 3) {
+            frameRightX = x;
+        }
+    }
+
+    let x0 = frameLeftX;
+    const bandHeight = Math.max(1, y1 - y0 + 1);
+    while (x0 > 0) {
+        const interiorCount = countPredicateInBand(isInteriorPixel, data, width, x0 - 1, x0 - 1, y0, y1);
+        if (interiorCount >= bandHeight * 0.55) {
+            x0 -= 1;
+            continue;
+        }
+        break;
+    }
+
+    let ornamentWidth = frameRightX - x0 + 1;
+    let ornamentHeight = y1 - y0 + 1;
+    const maxWidth = Math.max(10, Math.min(22, Math.floor(ornamentHeight * 0.85) + 4));
+
+    if (ornamentWidth > maxWidth) {
+        frameRightX = x0 + maxWidth - 1;
+        ornamentWidth = maxWidth;
+    }
+
+    if (ornamentHeight > ornamentWidth * 2.6) {
+        y1 = Math.min(scanHeight - 1, y0 + Math.floor(ornamentWidth * 2.2));
+        ornamentHeight = y1 - y0 + 1;
+    }
+
+    if (ornamentWidth < 5 || ornamentHeight < 8) return null;
+    if (ornamentWidth > width * 0.15 || ornamentHeight > height * 0.3) return null;
+    if (ornamentHeight / ornamentWidth > 3.2 || ornamentHeight / ornamentWidth < 0.45) return null;
+
+    return {
+        x: x0,
+        y: y0,
+        w: ornamentWidth,
+        h: ornamentHeight
+    };
+}
+
+/**
+ * 意匠矩形を基準に略称・正式名の OCR 領域を算出する。
+ * @param {{ x: number, y: number, w: number, h: number }} ornament
+ */
+function buildOrnamentBasedTitleRects(ornament, imageWidth, offsetX = 0, offsetY = 0) {
+    const { x, y, w, h } = ornament;
+    const abbrLeft = offsetX + x + w + w;
+
+    return {
+        abbr: {
+            x: abbrLeft,
+            y: offsetY + y,
+            w: Math.max(1, imageWidth - abbrLeft),
+            h
+        },
+        title: {
+            x: offsetX + x,
+            y: offsetY + y + h,
+            w: Math.max(1, imageWidth - (offsetX + x)),
+            h: Math.max(1, Math.round(h * 1.5))
+        }
+    };
+}
+
+function detectOrnamentBasedHeaderTextRects(image, layout) {
+    const ornament = detectDecorativeOrnamentRect(
+        layout.data,
+        layout.width,
+        layout.height,
+        layout.separatorY
+    );
+    if (!ornament) return null;
+
+    const imageWidth = image.naturalWidth || image.width;
+    return buildOrnamentBasedTitleRects(ornament, imageWidth, layout.offsetX, layout.offsetY);
+}
+
+function findDecorativePillarRightX(data, width, height, separatorY = null) {
+    const ornament = detectDecorativeOrnamentRect(data, width, height, separatorY);
+    if (ornament) return ornament.x + ornament.w;
+
     const scanWidth = Math.min(width, Math.floor(width * 0.12));
     let inPillar = false;
     let rightEdge = 0;
@@ -2077,10 +2290,25 @@ function finalizeEventHeaderResult(result) {
 
 export function debugEventOcrAnalysis(image) {
     const layout = analyzeHeaderLayout(image);
+    const ornament = detectDecorativeOrnamentRect(
+        layout.data,
+        layout.width,
+        layout.height,
+        layout.separatorY
+    );
     const projection = detectTextLinesByHorizontalProjection(layout);
     const roles = detectHeaderTextLineRects(image);
 
     return {
+        ornament,
+        ornamentRects: ornament
+            ? buildOrnamentBasedTitleRects(
+                ornament,
+                image.naturalWidth || image.width,
+                layout.offsetX,
+                layout.offsetY
+            )
+            : null,
         goldLine: layout.goldLine,
         separatorY: layout.separatorY,
         minLeft: layout.minLeft,
@@ -2101,6 +2329,12 @@ export function getEventNameOcrRegions(image) {
     const imageWidth = image.naturalWidth || image.width;
     const imageHeight = image.naturalHeight || image.height;
     const layout = analyzeHeaderLayout(image);
+    const ornament = detectDecorativeOrnamentRect(
+        layout.data,
+        layout.width,
+        layout.height,
+        layout.separatorY
+    );
     const lineRects = detectHeaderTextLineRects(image);
     const bandRects = buildHeaderBandRects(layout, image);
 
@@ -2115,6 +2349,13 @@ export function getEventNameOcrRegions(image) {
             h: Math.max(1, Math.floor(imageHeight * HEADER_SCAN_BAND.height)),
             label: '走査範囲'
         },
+        ornament: ornament ? {
+            x: layout.offsetX + ornament.x,
+            y: layout.offsetY + ornament.y,
+            w: ornament.w,
+            h: ornament.h,
+            label: '意匠'
+        } : null,
         separator: layout.goldLine ? {
             x: layout.offsetX + layout.textLeft,
             y: layout.offsetY + layout.goldLine.y0,
