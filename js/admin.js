@@ -10,8 +10,9 @@ import {
 import {
     extractEventNamesLenient,
     getEventNameOcrRegions,
+    recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250704w';
+} from './event-ocr.js?v=20250704x';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -623,17 +624,33 @@ async function fillEventNamesFromImage(image) {
         console.warn('Event name OCR failed:', error);
     }
 
-    if (!abbr || !title) {
+    if (!abbr) {
         try {
             const regions = getEventNameOcrRegions(image);
-            if (!abbr && regions.abbr) {
+            if (regions.abbr) {
                 abbr = await recognizeTextFromImageRectLenient(image, regions.abbr, { preserveSpaces: false });
             }
-            if (!title && regions.title) {
+        } catch (error) {
+            console.warn('Abbr OCR fallback failed:', error);
+        }
+    }
+
+    if (!title) {
+        try {
+            title = await recognizeHeaderTitleBand(image);
+        } catch (error) {
+            console.warn('Title band OCR failed:', error);
+        }
+    }
+
+    if (!title) {
+        try {
+            const regions = getEventNameOcrRegions(image);
+            if (regions.title) {
                 title = await recognizeTextFromImageRectLenient(image, regions.title, { preserveSpaces: true });
             }
         } catch (error) {
-            console.warn('Region OCR fallback failed:', error);
+            console.warn('Title OCR fallback failed:', error);
         }
     }
 

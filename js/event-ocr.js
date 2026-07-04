@@ -1720,6 +1720,105 @@ function buildFallbackLineRects(image, minLeft = 0) {
     };
 }
 
+function buildHeaderBandRects(layout, image) {
+    const {
+        offsetX,
+        offsetY,
+        height,
+        goldLine,
+        textLeft,
+        textRight,
+        iconRowTopY,
+        minLeft
+    } = layout;
+
+    if (!goldLine) {
+        return buildFallbackLineRects(image, minLeft);
+    }
+
+    const abbrBandY0 = Math.floor(height * 0.02);
+    const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 4);
+    const titleBandY0 = Math.min(height - 1, goldLine.y1 + 4);
+    const titleBandY1 = iconRowTopY !== null
+        ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
+        : Math.min(height - 1, Math.floor(height * 0.42));
+
+    return {
+        abbr: {
+            x: offsetX + textLeft,
+            y: offsetY + abbrBandY0,
+            w: Math.max(1, textRight - textLeft),
+            h: Math.max(24, abbrBandY1 - abbrBandY0)
+        },
+        title: {
+            x: offsetX + textLeft,
+            y: offsetY + titleBandY0,
+            w: Math.max(1, textRight - textLeft),
+            h: Math.max(28, titleBandY1 - titleBandY0)
+        }
+    };
+}
+
+function pickBestOcrText(candidates) {
+    const unique = [...new Set(candidates.filter(text => typeof text === 'string' && text.trim()))];
+    if (unique.length === 0) return '';
+
+    unique.sort((left, right) => {
+        const lengthDiff = right.length - left.length;
+        if (lengthDiff !== 0) return lengthDiff;
+        return right.replace(/\s+/g, '').length - left.replace(/\s+/g, '').length;
+    });
+
+    return unique[0];
+}
+
+async function readLineFromRectLenient(worker, image, rect, preserveSpaces) {
+    if (!rect) return '';
+
+    const primary = await recognizeLineRectLenient(worker, image, rect, { preserveSpaces });
+    if (primary.text) return primary.text;
+
+    const alternate = await recognizeLineRectLenient(worker, image, rect, { preserveSpaces: !preserveSpaces });
+    return alternate.text || '';
+}
+
+async function recognizeTitleRectLenient(worker, image, rect) {
+    if (!rect) return '';
+
+    const singleLineCandidates = [
+        await readLineFromRectLenient(worker, image, rect, true),
+        await readLineFromRectLenient(worker, image, rect, false)
+    ];
+
+    const imageWidth = image.naturalWidth || image.width;
+    const padX = Math.max(6, Math.floor(rect.w * 0.015));
+    const expandedRect = {
+        x: Math.max(0, rect.x - padX),
+        y: rect.y,
+        w: Math.min(imageWidth - Math.max(0, rect.x - padX), rect.w + padX * 2),
+        h: rect.h
+    };
+    const sourceCanvas = cropImageRect(image, expandedRect);
+    const variants = buildOcrVariants(sourceCanvas);
+    const blockCandidates = [];
+
+    for (const canvas of variants) {
+        await worker.setParameters({ tessedit_pageseg_mode: AUTO_PSM });
+        const { data } = await worker.recognize(canvas);
+        const text = lightSanitizeForFill(data.text ?? '', { preserveSpaces: true });
+        if (text) blockCandidates.push(text);
+
+        if (Array.isArray(data.lines)) {
+            for (const line of data.lines) {
+                const lineText = lightSanitizeForFill(line.text ?? '', { preserveSpaces: true });
+                if (lineText) blockCandidates.push(lineText);
+            }
+        }
+    }
+
+    return pickBestOcrText([...singleLineCandidates, ...blockCandidates]);
+}
+
 async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false, psm = SINGLE_LINE_PSM } = {}) {
     await worker.setParameters({ tessedit_pageseg_mode: psm });
     const { data } = await worker.recognize(canvas);
@@ -1974,39 +2073,54 @@ export async function extractEventNamesFromImage(image) {
  */
 export async function extractEventNamesLenient(image) {
     const worker = await getOcrWorker();
-    let { abbr: abbrRect, title: titleRect } = detectHeaderTextLineRects(image);
+    const layout = analyzeHeaderLayout(image);
+    const bandRects = buildHeaderBandRects(layout, image);
+    const lineRects = detectHeaderTextLineRects(image);
 
-    if (!abbrRect || !titleRect) {
-        const layout = analyzeHeaderLayout(image);
-        const fallback = buildFallbackLineRects(image, layout.minLeft);
-        abbrRect = abbrRect ?? fallback.abbr;
-        titleRect = titleRect ?? fallback.title;
+    const abbrCandidates = [];
+    const titleCandidates = [];
+
+    if (lineRects.abbr) {
+        abbrCandidates.push(await readLineFromRectLenient(worker, image, lineRects.abbr, false));
+    }
+    if (bandRects.abbr) {
+        abbrCandidates.push(await readLineFromRectLenient(worker, image, bandRects.abbr, false));
     }
 
-    let abbr = '';
-    let title = '';
-
-    if (abbrRect) {
-        abbr = (await recognizeLineRectLenient(worker, image, abbrRect, { preserveSpaces: false })).text;
-        if (!abbr) {
-            abbr = (await recognizeLineRectLenient(worker, image, abbrRect, { preserveSpaces: true })).text;
-        }
+    if (lineRects.title) {
+        titleCandidates.push(await recognizeTitleRectLenient(worker, image, lineRects.title));
+    }
+    if (bandRects.title) {
+        titleCandidates.push(await recognizeTitleRectLenient(worker, image, bandRects.title));
     }
 
-    if (titleRect) {
-        title = (await recognizeLineRectLenient(worker, image, titleRect, { preserveSpaces: true })).text;
-        if (!title) {
-            title = (await recognizeLineRectLenient(worker, image, titleRect, { preserveSpaces: false })).text;
-        }
-    }
+    let abbr = pickBestOcrText(abbrCandidates);
+    let title = pickBestOcrText(titleCandidates);
 
     ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
 
     if (title && abbr && title === abbr) {
-        title = '';
+        title = pickBestOcrText(titleCandidates.filter(text => text && text !== abbr));
     }
 
     return { abbr, title };
+}
+
+/**
+ * 区切り線〜精霊アイコン行の帯域から正式名だけ OCR する。
+ * @param {HTMLImageElement} image
+ * @returns {Promise<string>}
+ */
+export async function recognizeHeaderTitleBand(image) {
+    const worker = await getOcrWorker();
+    const layout = analyzeHeaderLayout(image);
+    const bandRects = buildHeaderBandRects(layout, image);
+    const lineRects = detectHeaderTextLineRects(image);
+
+    return pickBestOcrText([
+        await recognizeTitleRectLenient(worker, image, lineRects.title),
+        await recognizeTitleRectLenient(worker, image, bandRects.title)
+    ]);
 }
 
 /**
