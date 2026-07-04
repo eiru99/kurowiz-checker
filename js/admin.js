@@ -493,7 +493,12 @@ async function tryExtractEventNamesFromScreenshot(image) {
         if (title) eventTitleInput.value = title;
     } catch (error) {
         console.warn('Event name OCR failed:', error);
-        imageHint.textContent = previousHint;
+        imageHint.textContent = 'イベント名を自動取得できませんでした。略称・正式名を手入力してください';
+        window.setTimeout(() => {
+            if (imageHint.textContent.includes('手入力')) {
+                imageHint.textContent = previousHint;
+            }
+        }, 5000);
     }
 }
 

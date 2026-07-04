@@ -1,6 +1,6 @@
 const TESSERACT_MODULE_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js';
 const TESSERACT_WORKER_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js';
-const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.0.0/tesseract-core.wasm.js';
+const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js';
 const TESSERACT_LANG_PATH = 'https://tessdata.projectnaptha.com/4.0.0';
 
 /** スクショ上部のイベント名テキスト領域（精霊アイコンより上） */
@@ -12,17 +12,28 @@ const MIN_OCR_WIDTH = 640;
 
 let workerPromise = null;
 
+async function loadTesseractModule() {
+    const module = await import(TESSERACT_MODULE_URL);
+    return module.default ?? module;
+}
+
 async function getOcrWorker() {
     if (!workerPromise) {
         workerPromise = (async () => {
-            const { createWorker } = await import(TESSERACT_MODULE_URL);
-            const worker = await createWorker('jpn', 1, {
+            const Tesseract = await loadTesseractModule();
+            if (typeof Tesseract.createWorker !== 'function') {
+                throw new Error('Tesseract.js の読み込みに失敗しました。');
+            }
+
+            return Tesseract.createWorker('jpn', 1, {
                 workerPath: TESSERACT_WORKER_PATH,
                 corePath: TESSERACT_CORE_PATH,
                 langPath: TESSERACT_LANG_PATH
             });
-            return worker;
-        })();
+        })().catch(error => {
+            workerPromise = null;
+            throw error;
+        });
     }
     return workerPromise;
 }
@@ -83,9 +94,8 @@ function enhanceHeaderCanvasForOcr(canvas) {
 function parseEventHeaderLines(lines) {
     const candidates = lines
         .map(line => ({
-            text: normalizeEventOcrText(line.text ?? ''),
-            y0: line.bbox?.y0 ?? 0,
-            height: Math.max(1, (line.bbox?.y1 ?? 0) - (line.bbox?.y0 ?? 0))
+            text: normalizeEventOcrText(typeof line === 'string' ? line : (line.text ?? '')),
+            y0: line.bbox?.y0 ?? 0
         }))
         .filter(line => line.text.length >= 2)
         .sort((left, right) => left.y0 - right.y0);
@@ -104,6 +114,24 @@ function parseEventHeaderLines(lines) {
     };
 }
 
+function parseEventHeaderText(rawText) {
+    const lines = rawText
+        .split(/\r?\n/)
+        .map(line => normalizeEventOcrText(line))
+        .filter(line => line.length >= 2);
+
+    return {
+        abbr: lines[0] ?? '',
+        title: lines[1] ?? ''
+    };
+}
+
+function parseEventHeaderResult(data) {
+    const fromLines = parseEventHeaderLines(data.lines ?? []);
+    if (fromLines.abbr) return fromLines;
+    return parseEventHeaderText(data.text ?? '');
+}
+
 /**
  * イベントスクショ上部から略称（1行目）と正式名（2行目）を OCR で取得する。
  * @param {HTMLImageElement} image
@@ -113,7 +141,7 @@ export async function extractEventNamesFromImage(image) {
     const worker = await getOcrWorker();
     const headerCanvas = enhanceHeaderCanvasForOcr(cropEventHeaderCanvas(image));
     const { data } = await worker.recognize(headerCanvas);
-    const result = parseEventHeaderLines(data.lines ?? []);
+    const result = parseEventHeaderResult(data);
 
     if (!result.abbr) {
         throw new Error('イベント名を読み取れませんでした。');
