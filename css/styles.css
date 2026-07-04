@@ -155,7 +155,7 @@ button:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 8px;
+    gap: calc(8px + 1rem);
 }
 
 .event-edit-btn {
