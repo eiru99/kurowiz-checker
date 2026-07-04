@@ -107,6 +107,44 @@ function matchesFilters(spirit) {
     return matchesSearch && matchesElement;
 }
 
+function updateStats() {
+    const ownedCount = ownedSpiritIds.length;
+    const totalCount = allSpiritIds.length;
+    const rate = totalCount === 0 ? 0 : Math.round((ownedCount / totalCount) * 100);
+    statsEl.textContent = `所持率: ${ownedCount} / ${totalCount} (${rate}%)`;
+}
+
+function setSpiritTileOwnedState(button, isOwned, spiritName) {
+    const tile = button.closest('.spirit-tile-wrap');
+    button.classList.toggle('owned', isOwned);
+    tile?.classList.toggle('owned', isOwned);
+    button.setAttribute('aria-pressed', String(isOwned));
+    button.setAttribute('aria-label', `${spiritName} ${isOwned ? '所持' : '未所持'}`);
+}
+
+function updateSpiritTileOwnedState(spiritId) {
+    const spirit = spiritById.get(spiritId);
+    const button = catalogEl.querySelector(`button.spirit-tile[data-spirit-id="${spiritId}"]`);
+    if (!spirit || !button) return false;
+
+    setSpiritTileOwnedState(button, ownedSpiritIds.includes(spiritId), spirit.name);
+    return true;
+}
+
+function applyOwnedSpiritIdChanges(previousOwnedIds) {
+    const previous = new Set(previousOwnedIds);
+    const current = new Set(ownedSpiritIds);
+    let updatedDom = false;
+
+    for (const spiritId of new Set([...previous, ...current])) {
+        if (previous.has(spiritId) === current.has(spiritId)) continue;
+        updatedDom = updateSpiritTileOwnedState(spiritId) || updatedDom;
+    }
+
+    updateStats();
+    return updatedDom;
+}
+
 function createSpiritTile(spirit) {
     const isOwned = ownedSpiritIds.includes(spirit.id);
     const tile = document.createElement('div');
@@ -115,6 +153,7 @@ function createSpiritTile(spirit) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `spirit-tile${isOwned ? ' owned' : ''}`;
+    button.dataset.spiritId = spirit.id;
     button.setAttribute('aria-pressed', String(isOwned));
     button.setAttribute('aria-label', `${spirit.name} ${isOwned ? '所持' : '未所持'}`);
 
@@ -153,6 +192,7 @@ function createSpiritTile(spirit) {
 function renderCatalog() {
     if (!catalog) return;
 
+    const scrollY = window.scrollY;
     catalogEl.innerHTML = '';
     const searchText = searchInput.value.trim().toLowerCase();
     let visibleCount = 0;
@@ -229,24 +269,39 @@ function renderCatalog() {
         );
     }
 
-    const ownedCount = ownedSpiritIds.length;
-    const totalCount = allSpiritIds.length;
-    const rate = totalCount === 0 ? 0 : Math.round((ownedCount / totalCount) * 100);
-    statsEl.textContent = `所持率: ${ownedCount} / ${totalCount} (${rate}%)`;
+    updateStats();
+    window.scrollTo(0, scrollY);
+}
+
+function ownedSpiritIdsEqual(left, right) {
+    if (left.length !== right.length) return false;
+    const rightSet = new Set(right);
+    return left.every(id => rightSet.has(id));
 }
 
 async function toggleOwned(spiritId) {
+    const previousOwnedIds = ownedSpiritIds;
     ownedSpiritIds = ownedSpiritIds.includes(spiritId)
         ? ownedSpiritIds.filter(id => id !== spiritId)
         : [...ownedSpiritIds, spiritId];
 
-    renderCatalog();
+    if (!applyOwnedSpiritIdChanges(previousOwnedIds)) {
+        renderCatalog();
+    }
+
     await saveCloudData();
 }
 
 function applyRemoteOwnedIds(nextOwnedIds) {
-    ownedSpiritIds = normalizeOwnedSpiritIds(nextOwnedIds);
-    renderCatalog();
+    const normalized = normalizeOwnedSpiritIds(nextOwnedIds);
+    if (ownedSpiritIdsEqual(normalized, ownedSpiritIds)) return;
+
+    const previousOwnedIds = ownedSpiritIds;
+    ownedSpiritIds = normalized;
+
+    if (!applyOwnedSpiritIdChanges(previousOwnedIds)) {
+        renderCatalog();
+    }
 }
 
 function setupRealtimeListener() {
@@ -294,8 +349,11 @@ document.getElementById('sync-connect-btn').addEventListener('click', async () =
 
 document.getElementById('reset-btn').addEventListener('click', async () => {
     if (confirm('クラウド上のデータもすべてリセットされます。よろしいですか？')) {
+        const previousOwnedIds = ownedSpiritIds;
         ownedSpiritIds = [];
-        renderCatalog();
+        if (!applyOwnedSpiritIdChanges(previousOwnedIds)) {
+            renderCatalog();
+        }
         await saveCloudData();
     }
 });
