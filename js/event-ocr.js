@@ -606,6 +606,17 @@ function detectTextLinesByHorizontalProjection(layout) {
         [abbrRun, titleRun] = sorted;
     } else if (textRuns.length === 1) {
         abbrRun = textRuns[0];
+        const looseThreshold = Math.max(
+            PROJECTION_TEXT_DENSITY_FLOOR * 0.7,
+            textThreshold * 0.75
+        );
+        titleRun = inferTextRunInBand(
+            smoothedDark,
+            separator,
+            textRuns[0].y1 + 2,
+            searchEndY,
+            looseThreshold
+        );
     }
 
     return {
@@ -840,31 +851,12 @@ function detectHeaderTextLineRectsMask(layout) {
 function detectHeaderTextLineRects(image) {
     const layout = analyzeHeaderLayout(image);
     const projectionResult = detectTextLinesByHorizontalProjection(layout);
+    const bandRects = buildHeaderBandRects(layout, image);
 
-    if (projectionResult.abbr && projectionResult.title) {
-        return {
-            abbr: projectionResult.abbr,
-            title: projectionResult.title
-        };
-    }
-
-    const maskResult = detectHeaderTextLineRectsMask(layout);
-    if (maskResult?.abbr && maskResult?.title) {
-        return maskResult;
-    }
-
-    if (projectionResult.abbr || projectionResult.title) {
-        return {
-            abbr: projectionResult.abbr ?? maskResult?.abbr ?? null,
-            title: projectionResult.title ?? maskResult?.title ?? null
-        };
-    }
-
-    if (maskResult) {
-        return maskResult;
-    }
-
-    return buildFallbackLineRects(image, layout.minLeft);
+    return {
+        abbr: projectionResult.abbr ?? bandRects.abbr,
+        title: projectionResult.title ?? bandRects.title
+    };
 }
 
 function isDecorativePillarPixel(r, g, b) {
@@ -1720,11 +1712,79 @@ function buildFallbackLineRects(image, minLeft = 0) {
     };
 }
 
+function dedupeProjectionRuns(runs) {
+    if (runs.length === 0) return [];
+
+    const sorted = [...runs].sort((left, right) => left.y0 - right.y0);
+    const merged = [{ ...sorted[0] }];
+
+    for (let index = 1; index < sorted.length; index += 1) {
+        const current = sorted[index];
+        const previous = merged[merged.length - 1];
+
+        if (current.y0 <= previous.y1 + 6) {
+            previous.y1 = Math.max(previous.y1, current.y1);
+            previous.height = previous.y1 - previous.y0 + 1;
+            previous.centerY = (previous.y0 + previous.y1) / 2;
+            continue;
+        }
+
+        merged.push({ ...current });
+    }
+
+    return merged;
+}
+
+function collectHeaderTextRuns(layout) {
+    const {
+        data,
+        width,
+        height,
+        textLeft,
+        textRight,
+        iconRowTopY
+    } = layout;
+
+    const searchEndY = iconRowTopY !== null
+        ? Math.max(Math.floor(height * 0.12), iconRowTopY - 6)
+        : Math.floor(height * 0.48);
+
+    const { dark, separator } = buildHorizontalProjection(data, width, height, textLeft, textRight);
+    const smoothedDark = smoothProjection(dark);
+    const textThreshold = computeAdaptiveProjectionThreshold(smoothedDark, 0, searchEndY);
+    const looseThreshold = Math.max(PROJECTION_TEXT_DENSITY_FLOOR * 0.65, textThreshold * 0.72);
+
+    let runs = findProjectionRuns(
+        smoothedDark,
+        0,
+        searchEndY,
+        textThreshold,
+        PROJECTION_MIN_TEXT_RUN
+    );
+    const looseRuns = findProjectionRuns(
+        smoothedDark,
+        0,
+        searchEndY,
+        looseThreshold,
+        4
+    );
+
+    runs = dedupeProjectionRuns([
+        ...runs,
+        ...looseRuns.filter(run => !isProjectionSeparatorLikeRun(run, smoothedDark, separator))
+    ]).filter(run => !isProjectionSeparatorLikeRun(run, smoothedDark, separator));
+
+    return { runs, searchEndY, smoothedDark, separator, looseThreshold };
+}
+
 function buildHeaderBandRects(layout, image) {
     const {
         offsetX,
         offsetY,
         height,
+        width,
+        data,
+        canvas,
         goldLine,
         textLeft,
         textRight,
@@ -1732,29 +1792,80 @@ function buildHeaderBandRects(layout, image) {
         minLeft
     } = layout;
 
-    if (!goldLine) {
-        return buildFallbackLineRects(image, minLeft);
+    const bandWidth = Math.max(1, textRight - textLeft);
+    const { runs, searchEndY, smoothedDark, separator, looseThreshold } = collectHeaderTextRuns(layout);
+
+    if (goldLine) {
+        const abbrBandY0 = Math.floor(height * 0.02);
+        const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 4);
+        const titleBandY0 = Math.min(height - 1, goldLine.y1 + 4);
+        const titleBandY1 = iconRowTopY !== null
+            ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
+            : Math.min(height - 1, Math.floor(height * 0.42));
+
+        return {
+            abbr: {
+                x: offsetX + textLeft,
+                y: offsetY + abbrBandY0,
+                w: bandWidth,
+                h: Math.max(24, abbrBandY1 - abbrBandY0)
+            },
+            title: {
+                x: offsetX + textLeft,
+                y: offsetY + titleBandY0,
+                w: bandWidth,
+                h: Math.max(28, titleBandY1 - titleBandY0)
+            }
+        };
     }
 
-    const abbrBandY0 = Math.floor(height * 0.02);
-    const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 4);
-    const titleBandY0 = Math.min(height - 1, goldLine.y1 + 4);
-    const titleBandY1 = iconRowTopY !== null
-        ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
-        : Math.min(height - 1, Math.floor(height * 0.42));
+    if (runs.length >= 2) {
+        return {
+            abbr: projectionRunToImageRect(canvas, offsetX, offsetY, width, runs[0], data, textLeft, textRight),
+            title: projectionRunToImageRect(canvas, offsetX, offsetY, width, runs[1], data, textLeft, textRight)
+        };
+    }
 
+    if (runs.length === 1) {
+        const abbrRun = runs[0];
+        let titleRun = inferTextRunInBand(
+            smoothedDark,
+            separator,
+            abbrRun.y1 + 2,
+            searchEndY,
+            looseThreshold
+        );
+
+        if (!titleRun) {
+            const titleY0 = Math.min(searchEndY - 8, abbrRun.y1 + 4);
+            const titleY1 = Math.min(searchEndY, titleY0 + Math.max(20, Math.floor((searchEndY - titleY0) * 0.85)));
+            titleRun = {
+                y0: titleY0,
+                y1: titleY1,
+                height: titleY1 - titleY0 + 1,
+                centerY: (titleY0 + titleY1) / 2
+            };
+        }
+
+        return {
+            abbr: projectionRunToImageRect(canvas, offsetX, offsetY, width, abbrRun, data, textLeft, textRight),
+            title: projectionRunToImageRect(canvas, offsetX, offsetY, width, titleRun, data, textLeft, textRight)
+        };
+    }
+
+    const splitY = Math.max(24, Math.floor(searchEndY * 0.38));
     return {
         abbr: {
             x: offsetX + textLeft,
-            y: offsetY + abbrBandY0,
-            w: Math.max(1, textRight - textLeft),
-            h: Math.max(24, abbrBandY1 - abbrBandY0)
+            y: offsetY,
+            w: bandWidth,
+            h: splitY
         },
         title: {
             x: offsetX + textLeft,
-            y: offsetY + titleBandY0,
-            w: Math.max(1, textRight - textLeft),
-            h: Math.max(28, titleBandY1 - titleBandY0)
+            y: offsetY + splitY,
+            w: bandWidth,
+            h: Math.max(24, searchEndY - splitY)
         }
     };
 }
@@ -1991,6 +2102,10 @@ export function getEventNameOcrRegions(image) {
     const imageHeight = image.naturalHeight || image.height;
     const layout = analyzeHeaderLayout(image);
     const lineRects = detectHeaderTextLineRects(image);
+    const bandRects = buildHeaderBandRects(layout, image);
+
+    const abbrRect = lineRects.abbr ?? bandRects.abbr;
+    const titleRect = lineRects.title ?? bandRects.title;
 
     return {
         headerScan: {
@@ -2007,8 +2122,8 @@ export function getEventNameOcrRegions(image) {
             h: Math.max(2, layout.goldLine.y1 - layout.goldLine.y0 + 1),
             label: '区切り線'
         } : null,
-        abbr: lineRects.abbr ? { ...lineRects.abbr, label: '略称' } : null,
-        title: lineRects.title ? { ...lineRects.title, label: '正式名' } : null
+        abbr: abbrRect ? { ...abbrRect, label: '略称' } : null,
+        title: titleRect ? { ...titleRect, label: '正式名' } : null
     };
 }
 

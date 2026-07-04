@@ -12,7 +12,7 @@ import {
     getEventNameOcrRegions,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250704x';
+} from './event-ocr.js?v=20250704y';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -453,19 +453,19 @@ function showOcrRegionOverlays(image) {
     ocrRegionOverlays.hidden = ocrRegionOverlays.childElementCount === 0;
 }
 
-function scheduleOcrRegionOverlayRefresh() {
-    const sourceImage = getOcrSourceImage();
-    if (!sourceImage || !eventModeNew.checked || editingEventId) {
+function scheduleOcrRegionOverlayRefresh(sourceImage = null) {
+    const image = sourceImage ?? getOcrSourceImage();
+    if (!image || !eventModeNew.checked || editingEventId) {
         clearOcrRegionOverlays();
         return;
     }
 
     const render = () => {
-        if (sourceImage.complete && sourceImage.naturalWidth > 0) {
-            showOcrRegionOverlays(sourceImage);
+        if (image.complete && image.naturalWidth > 0) {
+            showOcrRegionOverlays(image);
             return;
         }
-        sourceImage.addEventListener('load', () => showOcrRegionOverlays(sourceImage), { once: true });
+        image.addEventListener('load', () => showOcrRegionOverlays(image), { once: true });
     };
 
     if (typeof requestAnimationFrame === 'function') {
@@ -614,6 +614,7 @@ function applyRecognizedEventNames(abbr, title) {
 async function fillEventNamesFromImage(image) {
     if (editingEventId || eventModeExisting.checked) return false;
     ensureNewEventModeForScreenshot();
+    scheduleOcrRegionOverlayRefresh(image);
 
     let abbr = '';
     let title = '';
@@ -654,7 +655,9 @@ async function fillEventNamesFromImage(image) {
         }
     }
 
-    return applyRecognizedEventNames(abbr, title);
+    const filled = applyRecognizedEventNames(abbr, title);
+    scheduleOcrRegionOverlayRefresh(image);
+    return filled;
 }
 
 async function runAutoOcrForTarget(target, button) {
@@ -974,6 +977,10 @@ async function processIncomingImage(file) {
 
     const normalizedFile = normalizePastedImageFile(file);
     const { image, objectUrl } = await loadImageFromFile(normalizedFile);
+
+    if (!editingEventId && !eventModeExisting.checked) {
+        scheduleOcrRegionOverlayRefresh(image);
+    }
 
     await tryExtractEventNamesFromScreenshot(image);
 
