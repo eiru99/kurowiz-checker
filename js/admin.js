@@ -9,7 +9,6 @@ import {
 } from './catalog.js';
 import {
     extractEventNamesLenient,
-    getEventNameOcrRegionsAsync,
     ensureEventOcrOpenCv,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
@@ -395,90 +394,13 @@ function getImageFitMetrics() {
     };
 }
 
-function imageRectToDisplayRect(imageRect) {
-    const metrics = getImageFitMetrics();
-    if (!metrics || !imageRect) return null;
-
-    return {
-        x: metrics.offsetLeft + imageRect.x * metrics.scale,
-        y: metrics.offsetTop + imageRect.y * metrics.scale,
-        w: imageRect.w * metrics.scale,
-        h: imageRect.h * metrics.scale
-    };
-}
-
 function clearOcrRegionOverlays() {
     ocrRegionOverlays.innerHTML = '';
     ocrRegionOverlays.hidden = true;
 }
 
-function appendOcrRegionOverlay(className, imageRect, label) {
-    const displayRect = imageRectToDisplayRect(imageRect);
-    if (!displayRect || displayRect.w < 1 || displayRect.h < 1) return;
-
-    const overlay = document.createElement('div');
-    overlay.className = `admin-ocr-region ${className}`;
-    overlay.style.left = `${displayRect.x}px`;
-    overlay.style.top = `${displayRect.y}px`;
-    overlay.style.width = `${displayRect.w}px`;
-    overlay.style.height = `${displayRect.h}px`;
-
-    const labelEl = document.createElement('span');
-    labelEl.className = 'admin-ocr-region-label';
-    labelEl.textContent = label;
-    overlay.appendChild(labelEl);
-
-    ocrRegionOverlays.appendChild(overlay);
-}
-
-async function showOcrRegionOverlays(image) {
-    if (!eventModeNew.checked || editingEventId || !image) {
-        clearOcrRegionOverlays();
-        return;
-    }
-
-    const regions = await getEventNameOcrRegionsAsync(image);
-    ocrRegionOverlays.innerHTML = '';
-
-    if (regions.abbr) {
-        appendOcrRegionOverlay('admin-ocr-region-abbr', regions.abbr, regions.abbr.label);
-    }
-    if (regions.title) {
-        appendOcrRegionOverlay('admin-ocr-region-title', regions.title, regions.title.label);
-    }
-    if (regions.separator) {
-        appendOcrRegionOverlay('admin-ocr-region-separator', regions.separator, regions.separator.label);
-    }
-    if (regions.ornament) {
-        const ornamentClass = regions.ornament.tentative
-            ? 'admin-ocr-region-ornament admin-ocr-region-ornament-tentative'
-            : 'admin-ocr-region-ornament';
-        appendOcrRegionOverlay(ornamentClass, regions.ornament, regions.ornament.label);
-    }
-
-    ocrRegionOverlays.hidden = ocrRegionOverlays.childElementCount === 0;
-}
-
-function scheduleOcrRegionOverlayRefresh(sourceImage = null) {
-    const image = sourceImage ?? getOcrSourceImage();
-    if (!image || !eventModeNew.checked || editingEventId) {
-        clearOcrRegionOverlays();
-        return;
-    }
-
-    const render = () => {
-        if (image.complete && image.naturalWidth > 0) {
-            showOcrRegionOverlays(image);
-            return;
-        }
-        image.addEventListener('load', () => showOcrRegionOverlays(image), { once: true });
-    };
-
-    if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(render);
-    } else {
-        render();
-    }
+function scheduleOcrRegionOverlayRefresh() {
+    clearOcrRegionOverlays();
 }
 
 function clientToDisplayPoint(clientX, clientY) {
