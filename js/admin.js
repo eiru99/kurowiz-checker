@@ -578,6 +578,87 @@ function restoreImageHintAfterOcr() {
     imageHint.textContent = 'PNG / JPG など。新規イベントは自動取得または「自動認識」で範囲指定。精霊はクリックで切り抜き（複数可）';
 }
 
+function ensureNewEventModeForScreenshot() {
+    if (editingEventId || eventModeExisting.checked) return false;
+
+    if (!eventModeNew.checked) {
+        eventModeNew.checked = true;
+        setEventMode('new');
+    }
+
+    return eventModeNew.checked;
+}
+
+function applyExtractedEventNames({ abbr, title }) {
+    let filled = false;
+
+    if (abbr) {
+        eventAbbrInput.value = abbr;
+        filled = true;
+    }
+    if (title) {
+        eventTitleInput.value = title;
+        filled = true;
+    }
+
+    return filled;
+}
+
+async function runAutoOcrForTarget(target, button) {
+    if (!ensureNewEventModeForScreenshot()) return;
+
+    const sourceImage = getOcrSourceImage();
+    if (!sourceImage) {
+        alert('先に画像を貼り付けるか選択してください。');
+        return;
+    }
+
+    const previousHint = imageHint.textContent;
+    imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
+
+    try {
+        const result = await extractEventNamesFromImage(sourceImage);
+        const filled = applyExtractedEventNames(result);
+
+        if (filled) {
+            if (result.abbr && !result.title) {
+                imageHint.textContent = '略称のみ取得できました。正式名を手入力するか「自動認識」を再試行してください';
+            } else if (!result.abbr && result.title) {
+                imageHint.textContent = '正式名のみ取得できました。略称を手入力するか「自動認識」を再試行してください';
+            } else {
+                imageHint.textContent = 'イベント名を取得しました。精霊をクリックして切り抜いてください';
+            }
+            scheduleOcrRegionOverlayRefresh();
+            return;
+        }
+
+        const regions = getEventNameOcrRegions(sourceImage);
+        const rect = target === 'abbr' ? regions.abbr : regions.title;
+
+        if (rect) {
+            const text = await recognizeTextFromImageRect(sourceImage, rect);
+            if (text) {
+                if (target === 'abbr') {
+                    eventAbbrInput.value = text;
+                } else {
+                    eventTitleInput.value = text;
+                }
+                imageHint.textContent = target === 'abbr'
+                    ? '略称を取得しました'
+                    : '正式名を取得しました';
+                return;
+            }
+        }
+
+        imageHint.textContent = '自動取得できませんでした。画像上で文字をドラッグして囲んでください';
+        startOcrSelectMode(target, button);
+    } catch (error) {
+        console.warn('Auto OCR failed:', error);
+        imageHint.textContent = '自動取得できませんでした。画像上で文字をドラッグして囲んでください';
+        startOcrSelectMode(target, button);
+    }
+}
+
 function startOcrSelectMode(target, button) {
     if (!eventModeNew.checked || editingEventId) return;
 
@@ -812,35 +893,40 @@ async function handleCropClick(event) {
 }
 
 async function tryExtractEventNamesFromScreenshot(image) {
-    if (editingEventId || !eventModeNew.checked) return;
+    if (editingEventId || eventModeExisting.checked) return;
+    if (!ensureNewEventModeForScreenshot()) return;
 
     const previousHint = imageHint.textContent;
     imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
 
     try {
-        const { abbr, title } = await extractEventNamesFromImage(image);
-        if (abbr) eventAbbrInput.value = abbr;
-        if (title) eventTitleInput.value = title;
-        if (abbr && !title) {
-            imageHint.textContent = '略称のみ取得できました。正式名を手入力してください';
+        const result = await extractEventNamesFromImage(image);
+        const filled = applyExtractedEventNames(result);
+
+        if (!filled) {
+            imageHint.textContent = 'イベント名を自動取得できませんでした。「自動認識」ボタンまたは手入力で入力してください';
             window.setTimeout(() => {
-                if (imageHint.textContent.includes('正式名を手入力')) {
+                if (imageHint.textContent.includes('自動取得できません')) {
                     imageHint.textContent = previousHint;
                 }
             }, 5000);
-        } else if (!abbr && title) {
-            imageHint.textContent = '正式名のみ取得できました。略称を手入力してください';
-            window.setTimeout(() => {
-                if (imageHint.textContent.includes('略称を手入力')) {
-                    imageHint.textContent = previousHint;
-                }
-            }, 5000);
+            return;
         }
+
+        if (result.abbr && !result.title) {
+            imageHint.textContent = '略称のみ取得できました。正式名を手入力するか「自動認識」を試してください';
+        } else if (!result.abbr && result.title) {
+            imageHint.textContent = '正式名のみ取得できました。略称を手入力するか「自動認識」を試してください';
+        } else {
+            imageHint.textContent = 'イベント名を取得しました。精霊をクリックして切り抜いてください';
+        }
+
+        scheduleOcrRegionOverlayRefresh();
     } catch (error) {
         console.warn('Event name OCR failed:', error);
-        imageHint.textContent = 'イベント名を自動取得できませんでした。略称・正式名を手入力してください';
+        imageHint.textContent = 'イベント名を自動取得できませんでした。「自動認識」ボタンまたは手入力で入力してください';
         window.setTimeout(() => {
-            if (imageHint.textContent.includes('手入力')) {
+            if (imageHint.textContent.includes('自動取得できません')) {
                 imageHint.textContent = previousHint;
             }
         }, 5000);
@@ -853,7 +939,8 @@ async function processIncomingImage(file) {
         return;
     }
 
-    if (!editingEventId && eventModeNew.checked) {
+    if (!editingEventId && !eventModeExisting.checked) {
+        ensureNewEventModeForScreenshot();
         clearOcrRegionOverlays();
         eventAbbrInput.value = '';
         eventTitleInput.value = '';
@@ -1326,7 +1413,10 @@ export function initAdmin(db, onReloadCatalog) {
 
     document.querySelectorAll('.btn-ocr-select').forEach(button => {
         button.addEventListener('click', () => {
-            startOcrSelectMode(button.dataset.ocrTarget, button);
+            runAutoOcrForTarget(button.dataset.ocrTarget, button).catch(error => {
+                console.error(error);
+                alert(error.message || '文字認識に失敗しました。');
+            });
         });
     });
 
