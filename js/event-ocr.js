@@ -4,6 +4,8 @@ const TESSERACT_CORE_PATH = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/te
 const TESSERACT_LANG_PATH = 'https://tessdata.projectnaptha.com/4.0.0';
 
 const HEADER_SCAN_BAND = { top: 0, height: 0.5, left: 0, right: 1 };
+/** 略称左端 = 意匠右端 + この余白（px） */
+const ABBR_ORNAMENT_GAP_PX = 6;
 const TEXT_LEFT_RATIO = 0.02;
 const TEXT_RIGHT_RATIO = 0.99;
 const MIN_TEXT_RUN_HEIGHT = 6;
@@ -62,6 +64,39 @@ function hasLatinText(text) {
     return /[A-Za-z]/.test(text);
 }
 
+/** 囲み付き数字1文字を半角アラビア数字へ（未対応は null） */
+function circledDigitToAscii(char) {
+    const code = char.charCodeAt(0);
+
+    if (code >= 0x2460 && code <= 0x2473) return String(code - 0x2460 + 1);
+    if (code >= 0x2474 && code <= 0x2487) return String(code - 0x2474 + 1);
+    if (code >= 0x2488 && code <= 0x249B) return String(code - 0x2488 + 1);
+    if (code === 0x24EA || code === 0x24FF) return '0';
+    if (code >= 0x24EB && code <= 0x24F4) return String(code - 0x24EB + 11);
+    if (code >= 0x24F5 && code <= 0x24FE) return String(code - 0x24F5 + 1);
+    if (code >= 0x2776 && code <= 0x277F) return String(code - 0x2776 + 1);
+    if (code >= 0x2780 && code <= 0x2789) return String(code - 0x2780 + 1);
+    if (code >= 0x278A && code <= 0x2793) return String(code - 0x278A + 1);
+    if (code >= 0x3220 && code <= 0x3229) return String(code - 0x3220 + 1);
+    if (code >= 0x3280 && code <= 0x3289) return String(code - 0x3280 + 1);
+
+    return null;
+}
+
+/** 丸囲み・括弧付きなどの数字表記を半角アラビア数字へ */
+function normalizeCircledDigits(text) {
+    let result = '';
+    for (const char of text) {
+        result += circledDigitToAscii(char) ?? char;
+    }
+
+    return result
+        .replace(/([0-9])\u20DD/g, '$1')
+        .replace(/[○◯◎〇]\s*(?=[0-9])/g, '')
+        .replace(/(?<=[0-9])\s*[○◯◎〇]/g, '')
+        .replace(/[（(]\s*([0-9]+)\s*[）)]/g, '$1');
+}
+
 function normalizeEventOcrText(text, { preserveSpaces = false } = {}) {
     let result = text
         .replace(/[\r\n\t]+/g, preserveSpaces ? ' ' : '')
@@ -73,20 +108,18 @@ function normalizeEventOcrText(text, { preserveSpaces = false } = {}) {
         result = result.replace(/\s+/g, '');
     }
 
-    return result
+    return normalizeCircledDigits(result
         .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
         .replace(/[！-～]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
-        .replace(/[①②③④⑤⑥⑦⑧⑨⑩]/g, char => String(char.charCodeAt(0) - 0x2460 + 1))
-        .replace(/[⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽]/g, char => String(char.charCodeAt(0) - 0x2473))
         .replace(/[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]/g, char => {
             const map = { 'Ⅰ': 'I', 'Ⅱ': 'II', 'Ⅲ': 'III', 'Ⅳ': 'IV', 'Ⅴ': 'V', 'Ⅵ': 'VI', 'Ⅶ': 'VII', 'Ⅷ': 'VIII', 'Ⅸ': 'IX', 'Ⅹ': 'X' };
             return map[char] ?? char;
         })
-        .replace(/[　]/g, preserveSpaces ? ' ' : '')
+        .replace(/[　]/g, preserveSpaces ? ' ' : ''))
         .trim();
 }
 
-function sanitizeOcrOutput(text, { preserveSpaces = false } = {}) {
+function sanitizeOcrOutput(text, { preserveSpaces = false, stripNoisyPrefix = false } = {}) {
     let result = normalizeEventOcrText(text, { preserveSpaces });
     if (!result) return '';
 
@@ -97,7 +130,7 @@ function sanitizeOcrOutput(text, { preserveSpaces = false } = {}) {
         .replace(/[Xx×](?=$)/g, '')
         .trim();
 
-    if (!preserveSpaces && result.length >= 5) {
+    if (stripNoisyPrefix && !preserveSpaces && result.length >= 5) {
         const noisyPrefix = result.match(/^(.{1,2})([\u3040-\u9fff\u30a0-\u30ffA-Za-z0-9・]{4,})$/u);
         if (noisyPrefix) {
             result = noisyPrefix[2];
@@ -1165,14 +1198,93 @@ function probeDecorativeOrnamentRect(data, width, height, separatorY = null) {
     return bestRect;
 }
 
-function isValidDecorativeOrnamentRect(rect, width, height) {
-    if (!rect) return false;
-    if (rect.w < 8 || rect.h < 12) return false;
-    if (rect.w * rect.h < 96) return false;
-    if (rect.x > width * 0.055 || rect.x + rect.w > width * 0.18) return false;
-    if (rect.w > width * 0.15 || rect.h > height * 0.3) return false;
-    if (rect.h / rect.w > 3.2 || rect.h / rect.w < 0.45) return false;
-    return true;
+const ORNAMENT_MAX_ASPECT_RATIO = 4;
+
+function evaluateDecorativeOrnamentRect(rect, bandWidth, bandHeight, imageHeight = null) {
+    if (!rect) {
+        return {
+            valid: false,
+            failures: [{ id: 'missing', message: '矩形がありません' }]
+        };
+    }
+
+    const failures = [];
+    const area = rect.w * rect.h;
+    const aspectRatio = rect.w > 0 ? rect.h / rect.w : 0;
+    const maxX = bandWidth * 0.055;
+    const maxRight = bandWidth * 0.18;
+    const maxWidth = bandWidth * 0.15;
+    const resolvedImageHeight = imageHeight ?? (bandHeight / HEADER_SCAN_BAND.height);
+    const maxHeight = Math.floor(resolvedImageHeight * 0.5);
+
+    if (rect.w < 8) {
+        failures.push({ id: 'min-width', message: `幅が 8px 未満（${rect.w}px）` });
+    }
+    if (rect.h < 12) {
+        failures.push({ id: 'min-height', message: `高さが 12px 未満（${rect.h}px）` });
+    }
+    if (area < 96) {
+        failures.push({ id: 'min-area', message: `面積が 96px² 未満（${area}px²）` });
+    }
+    if (rect.x > maxX) {
+        failures.push({
+            id: 'x-too-right',
+            message: `左端が右に寄りすぎ（x=${rect.x}px、上限 ${Math.floor(maxX)}px）`
+        });
+    }
+    if (rect.x + rect.w > maxRight) {
+        failures.push({
+            id: 'extends-too-right',
+            message: `右端が左エリアをはみ出し（x+w=${rect.x + rect.w}px、上限 ${Math.floor(maxRight)}px）`
+        });
+    }
+    if (rect.w > maxWidth) {
+        failures.push({
+            id: 'max-width',
+            message: `幅が広すぎ（${rect.w}px、上限 ${Math.floor(maxWidth)}px）`
+        });
+    }
+    if (rect.h > maxHeight) {
+        failures.push({
+            id: 'max-height',
+            message: `高さが大きすぎ（${rect.h}px、上限 ${maxHeight}px＝画像高さの半分）`
+        });
+    }
+    if (aspectRatio > ORNAMENT_MAX_ASPECT_RATIO) {
+        failures.push({
+            id: 'aspect-too-tall',
+            message: `縦横比 h/w=${aspectRatio.toFixed(2)} が細長すぎ（上限 ${ORNAMENT_MAX_ASPECT_RATIO}）`
+        });
+    }
+    if (aspectRatio < 0.45) {
+        failures.push({
+            id: 'aspect-too-wide',
+            message: `縦横比 h/w=${aspectRatio.toFixed(2)} が横長すぎ（下限 0.45）`
+        });
+    }
+
+    return {
+        valid: failures.length === 0,
+        failures,
+        metrics: {
+            area,
+            aspectRatio,
+            imageHeight: Math.floor(resolvedImageHeight),
+            maxX: Math.floor(maxX),
+            maxRight: Math.floor(maxRight),
+            maxWidth: Math.floor(maxWidth),
+            maxHeight
+        }
+    };
+}
+
+function isValidDecorativeOrnamentRect(rect, bandWidth, bandHeight, imageHeight = null) {
+    return evaluateDecorativeOrnamentRect(rect, bandWidth, bandHeight, imageHeight).valid;
+}
+
+/** 意匠矩形が validation を通らない理由（デバッグ用） */
+export function explainDecorativeOrnamentValidation(rect, bandWidth, bandHeight, imageHeight = null) {
+    return evaluateDecorativeOrnamentRect(rect, bandWidth, bandHeight, imageHeight);
 }
 
 function resolveDecorativeOrnamentRect(layout, separatorY = null) {
@@ -1232,6 +1344,35 @@ function applySeparatorLineToOrnamentBottom(ornament, separatorLine) {
         w: ornament.w,
         h: Math.max(8, bottomY - ornament.y + 1)
     };
+}
+
+/** OpenCV / probe の意匠候補と区切り線を解決（検証前の tentative も含む）。 */
+function resolveOrnamentCandidate(layout) {
+    const baseOrnament = layout.openCvOrnament
+        ?? probeDecorativeOrnamentRect(
+            layout.data,
+            layout.width,
+            layout.height,
+            layout.separatorY
+        );
+    if (!baseOrnament) {
+        return { ornamentCandidate: null, separatorLine: null };
+    }
+
+    const separatorLine = resolveLayoutSeparatorLine(layout, baseOrnament);
+    const ornamentCandidate = applySeparatorLineToOrnamentBottom(baseOrnament, separatorLine);
+    return { ornamentCandidate, separatorLine };
+}
+
+function buildOrnamentBasedHeaderTextRects(image, layout, ornament, separatorLine) {
+    if (!ornament || ornament.w < 8 || ornament.h < 10) return null;
+
+    const imageWidth = image.naturalWidth || image.width;
+    return buildOrnamentBasedTitleRects(ornament, imageWidth, layout.offsetX, layout.offsetY, {
+        separatorLine,
+        iconRowTopY: layout.iconRowTopY,
+        bandHeight: layout.height
+    });
 }
 
 /**
@@ -1301,8 +1442,11 @@ function findOrnamentBottomExtensionLine(data, width, height, ornament, textRigh
  */
 function buildOrnamentBasedTitleRects(ornament, imageWidth, offsetX = 0, offsetY = 0, options = {}) {
     const { x, y, w, h } = ornament;
-    const { separatorLine, iconRowTopY = null, bandHeight = null } = options;
-    const abbrLeft = offsetX + x + w + w;
+    const { separatorLine, bandHeight = null } = options;
+    // 略称左端 = 意匠右端 + 小さな余白（案A: 4〜8px）
+    const abbrLeft = offsetX + x + w + ABBR_ORNAMENT_GAP_PX;
+    // 正式名左端 = 意匠左端
+    const titleLeft = offsetX + x;
 
     let abbrTop = y;
     let abbrBottom;
@@ -1321,14 +1465,8 @@ function buildOrnamentBasedTitleRects(ornament, imageWidth, offsetX = 0, offsetY
 
     const abbrH = Math.max(8, abbrBottom - abbrTop + 1);
 
-    let titleH;
-    if (iconRowTopY !== null) {
-        titleH = Math.max(16, iconRowTopY - 6 - titleTop);
-    } else if (bandHeight !== null) {
-        titleH = Math.max(16, Math.min(Math.round(h * 1.5), bandHeight - titleTop - 4));
-    } else {
-        titleH = Math.max(16, Math.round(h * 1.5));
-    }
+    // 正式名行は略称行と同じ字高想定のため、意匠矩形と同じ縦幅を使う
+    const titleH = Math.max(8, h);
 
     return {
         abbr: {
@@ -1338,26 +1476,17 @@ function buildOrnamentBasedTitleRects(ornament, imageWidth, offsetX = 0, offsetY
             h: abbrH
         },
         title: {
-            x: offsetX + x,
+            x: titleLeft,
             y: offsetY + titleTop,
-            w: Math.max(1, imageWidth - (offsetX + x)),
+            w: Math.max(1, imageWidth - titleLeft),
             h: titleH
         }
     };
 }
 
 function detectOrnamentBasedHeaderTextRects(image, layout) {
-    const ornament = resolveDecorativeOrnamentRect(layout, layout.separatorY);
-    if (!ornament) return null;
-
-    const separatorLine = resolveLayoutSeparatorLine(layout, ornament);
-
-    const imageWidth = image.naturalWidth || image.width;
-    return buildOrnamentBasedTitleRects(ornament, imageWidth, layout.offsetX, layout.offsetY, {
-        separatorLine,
-        iconRowTopY: layout.iconRowTopY,
-        bandHeight: layout.height
-    });
+    const { ornamentCandidate, separatorLine } = resolveOrnamentCandidate(layout);
+    return buildOrnamentBasedHeaderTextRects(image, layout, ornamentCandidate, separatorLine);
 }
 
 function findDecorativePillarRightX(data, width, height, separatorY = null) {
@@ -2432,15 +2561,15 @@ async function recognizeTitleRectLenient(worker, image, rect) {
     return pickBestOcrText([...singleLineCandidates, ...blockCandidates]);
 }
 
-async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false, psm = SINGLE_LINE_PSM } = {}) {
+async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false, psm = SINGLE_LINE_PSM, stripNoisyPrefix = false } = {}) {
     await worker.setParameters({ tessedit_pageseg_mode: psm });
     const { data } = await worker.recognize(canvas);
-    const text = sanitizeOcrOutput(data.text ?? '', { preserveSpaces });
+    const text = sanitizeOcrOutput(data.text ?? '', { preserveSpaces, stripNoisyPrefix });
     const confidence = data.confidence ?? 0;
     return { text, confidence };
 }
 
-async function recognizeLineRect(worker, image, rect, { preserveSpaces = false } = {}) {
+async function recognizeLineRect(worker, image, rect, { preserveSpaces = false, stripNoisyPrefix = false } = {}) {
     const imageWidth = image.naturalWidth || image.width;
     const padX = Math.max(6, Math.floor(rect.w * 0.015));
     const expandedRect = {
@@ -2454,7 +2583,7 @@ async function recognizeLineRect(worker, image, rect, { preserveSpaces = false }
 
     let best = { text: '', confidence: -1 };
     for (const canvas of variants) {
-        const result = await recognizePreparedCanvas(worker, canvas, { preserveSpaces, psm: SINGLE_LINE_PSM });
+        const result = await recognizePreparedCanvas(worker, canvas, { preserveSpaces, psm: SINGLE_LINE_PSM, stripNoisyPrefix });
         if (!result.text) continue;
         const adjustedConfidence = result.confidence - gibberishPenalty(result.text) * 0.4;
         if (adjustedConfidence > best.confidence) {
@@ -2463,7 +2592,7 @@ async function recognizeLineRect(worker, image, rect, { preserveSpaces = false }
     }
 
     if (best.text && best.confidence < MIN_CONFIDENCE) {
-        const secondPass = await recognizePreparedCanvas(worker, variants[1], { preserveSpaces, psm: AUTO_PSM });
+        const secondPass = await recognizePreparedCanvas(worker, variants[1], { preserveSpaces, psm: AUTO_PSM, stripNoisyPrefix });
         const adjustedConfidence = secondPass.confidence - gibberishPenalty(secondPass.text) * 0.4;
         if (secondPass.text && adjustedConfidence > best.confidence) {
             best = { ...secondPass, confidence: adjustedConfidence };
@@ -2598,7 +2727,18 @@ export function debugEventOcrAnalysis(image, layout = null) {
         openCvOrnament: resolvedLayout.openCvOrnament ?? null,
         openCvExtensionLine: resolvedLayout.openCvExtensionLine ?? null,
         ornamentCandidate,
-        ornamentAccepted: isValidDecorativeOrnamentRect(ornamentCandidate, resolvedLayout.width, resolvedLayout.height),
+        ornamentAccepted: isValidDecorativeOrnamentRect(
+            ornamentCandidate,
+            resolvedLayout.width,
+            resolvedLayout.height,
+            image.naturalHeight || image.height
+        ),
+        ornamentValidation: evaluateDecorativeOrnamentRect(
+            ornamentCandidate,
+            resolvedLayout.width,
+            resolvedLayout.height,
+            image.naturalHeight || image.height
+        ),
         ornamentExtensionLine: ornamentSeparatorLine,
         ornamentRects: ornament
             ? buildOrnamentBasedTitleRects(
@@ -2628,27 +2768,32 @@ export function debugEventOcrAnalysis(image, layout = null) {
 function buildEventNameOcrRegions(image, layout) {
     const imageWidth = image.naturalWidth || image.width;
     const imageHeight = image.naturalHeight || image.height;
-    const baseOrnament = layout.openCvOrnament
-        ?? probeDecorativeOrnamentRect(
-            layout.data,
-            layout.width,
-            layout.height,
-            layout.separatorY
-        );
-    const separatorLine = resolveLayoutSeparatorLine(layout, baseOrnament);
-    const ornamentCandidate = baseOrnament
-        ? applySeparatorLineToOrnamentBottom(baseOrnament, separatorLine)
-        : null;
+    const { ornamentCandidate, separatorLine } = resolveOrnamentCandidate(layout);
     const ornamentAccepted = isValidDecorativeOrnamentRect(
         ornamentCandidate,
         layout.width,
-        layout.height
+        layout.height,
+        imageHeight
+    );
+    const ornamentValidation = evaluateDecorativeOrnamentRect(
+        ornamentCandidate,
+        layout.width,
+        layout.height,
+        imageHeight
     );
     const lineRects = detectHeaderTextLineRects(image, layout);
     const bandRects = buildHeaderBandRects(layout, image);
 
-    const abbrRect = lineRects.abbr ?? bandRects.abbr;
-    const titleRect = lineRects.title ?? bandRects.title;
+    let abbrRect = lineRects.abbr ?? bandRects.abbr;
+    let titleRect = lineRects.title ?? bandRects.title;
+    const ornamentRects = buildOrnamentBasedHeaderTextRects(
+        image,
+        layout,
+        ornamentCandidate,
+        separatorLine
+    );
+    if (ornamentRects?.abbr) abbrRect = ornamentRects.abbr;
+    if (ornamentRects?.title) titleRect = ornamentRects.title;
 
     return {
         headerScan: {
@@ -2667,7 +2812,8 @@ function buildEventNameOcrRegions(image, layout) {
                 ? (layout.openCvOrnament ? '意匠(OpenCV)' : '意匠')
                 : '意匠?',
             tentative: !ornamentAccepted,
-            openCv: Boolean(layout.openCvOrnament)
+            openCv: Boolean(layout.openCvOrnament),
+            validation: ornamentValidation
         } : null,
         separator: separatorLine ? {
             x: layout.offsetX + layout.textLeft,
@@ -2822,4 +2968,44 @@ export async function recognizeTextFromImageRectLenient(image, rect, { preserveS
     const worker = await getOcrWorker();
     const result = await recognizeLineRectLenient(worker, image, rect, { preserveSpaces });
     return result.text ?? '';
+}
+
+/**
+ * 可視化領域と同じ矩形で、先頭ノイズ除去 ON/OFF の OCR 結果を比較する（デバッグ用）。
+ * preserveSpaces=false 時のみ先頭 1〜2 文字除去の差が出る。
+ * @param {HTMLImageElement} image
+ * @param {object | null} existingLayout
+ * @param {{ abbr?: object | null, title?: object | null } | null} regionRects
+ */
+export async function compareEventNameOcrSanitization(image, existingLayout = null, regionRects = null) {
+    const worker = await getOcrWorker();
+    const layout = existingLayout ?? await prepareEventOcrLayout(image);
+
+    let abbrRect = regionRects?.abbr ?? null;
+    let titleRect = regionRects?.title ?? null;
+    if (!abbrRect || !titleRect) {
+        const lineRects = detectHeaderTextLineRects(image, layout);
+        abbrRect = abbrRect ?? lineRects.abbr;
+        titleRect = titleRect ?? lineRects.title;
+    }
+
+    async function readLine(rect, stripNoisyPrefix) {
+        if (!rect) return '';
+        const { text } = await recognizeLineRect(worker, image, rect, {
+            preserveSpaces: false,
+            stripNoisyPrefix
+        });
+        return text ?? '';
+    }
+
+    return {
+        abbr: {
+            noisyPrefixOn: await readLine(abbrRect, true),
+            noisyPrefixOff: await readLine(abbrRect, false)
+        },
+        title: {
+            noisyPrefixOn: await readLine(titleRect, true),
+            noisyPrefixOff: await readLine(titleRect, false)
+        }
+    };
 }

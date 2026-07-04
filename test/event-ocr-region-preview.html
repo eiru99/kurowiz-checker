@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event OCR 領域プレビュー</title>
+    <style>
+        body { font-family: sans-serif; margin: 24px; background: #f5f5f5; color: #222; }
+        h1 { font-size: 1.25rem; margin-bottom: 8px; }
+        .hint { font-size: 0.85rem; color: #546e7a; margin: 0 0 16px; line-height: 1.55; max-width: 720px; }
+        .hint code { font-size: 0.82rem; }
+        .hint a { color: #1565c0; }
+        #status { font-weight: 600; margin: 0 0 16px; }
+        #status.is-error { color: #b00020; }
+        #status.is-ready { color: #0a7a2f; }
+
+        .paste-panel {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            max-width: 720px;
+            margin-bottom: 20px;
+        }
+
+        .paste-dropzone {
+            position: relative;
+            min-height: 140px;
+            border: 2px dashed #b0bec5;
+            border-radius: 8px;
+            background: #eceff1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .paste-dropzone:focus {
+            outline: 2px solid #3949ab;
+            outline-offset: 2px;
+        }
+
+        .paste-dropzone.is-dragover {
+            border-color: #3949ab;
+            background: #e8eaf6;
+        }
+
+        .paste-dropzone.has-image {
+            border-style: solid;
+            padding: 8px;
+            min-height: 0;
+        }
+
+        .paste-dropzone-label {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #607d8b;
+            text-align: center;
+            line-height: 1.5;
+            pointer-events: none;
+        }
+
+        .paste-dropzone.has-image .paste-dropzone-label {
+            display: none;
+        }
+
+        .paste-file-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: none;
+            opacity: 0;
+            cursor: pointer;
+            font-size: 0;
+        }
+
+        .paste-dropzone.has-image .paste-file-input {
+            pointer-events: none;
+        }
+
+        .preview-wrap {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .preview-wrap img {
+            display: block;
+            width: 100%;
+            max-height: 480px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .region-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin: 0 0 12px;
+            font-size: 0.82rem;
+            color: #455a64;
+        }
+
+        .region-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .region-legend i {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid;
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+
+        .region-legend .legend-ornament i { border-color: rgba(230, 126, 34, 0.98); background: rgba(243, 156, 18, 0.42); }
+        .region-legend .legend-abbr i { border-color: rgba(25, 118, 210, 0.9); background: rgba(33, 150, 243, 0.3); }
+        .region-legend .legend-title i { border-color: rgba(56, 142, 60, 0.9); background: rgba(76, 175, 80, 0.3); }
+        .region-legend .legend-separator i { border-color: rgba(211, 47, 47, 0.85); background: rgba(211, 47, 47, 0.25); }
+
+        .ocr-region-overlay {
+            position: absolute;
+            box-sizing: border-box;
+            border-width: 2px;
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .ocr-region-label {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .ocr-region-ornament {
+            z-index: 4;
+            border-width: 3px;
+            border-color: rgba(230, 126, 34, 0.98);
+            background: rgba(243, 156, 18, 0.42);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+        }
+
+        .ocr-region-ornament .ocr-region-label { background: rgba(211, 84, 0, 0.95); }
+
+        .ocr-region-ornament-tentative {
+            border-style: dashed;
+            background: rgba(243, 156, 18, 0.28);
+        }
+
+        .ocr-region-abbr {
+            z-index: 2;
+            border-color: rgba(25, 118, 210, 0.9);
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .ocr-region-abbr .ocr-region-label { background: rgba(21, 101, 192, 0.92); }
+
+        .ocr-region-title {
+            z-index: 2;
+            border-color: rgba(56, 142, 60, 0.9);
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .ocr-region-title .ocr-region-label { background: rgba(46, 125, 50, 0.92); }
+
+        .ocr-region-separator {
+            z-index: 1;
+            border-color: rgba(211, 47, 47, 0.85);
+            background: rgba(211, 47, 47, 0.25);
+        }
+
+        .ocr-region-separator .ocr-region-label { background: rgba(183, 28, 28, 0.92); }
+
+        .result-panel {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            line-height: 1.65;
+        }
+
+        .result-panel code {
+            font-size: 0.82rem;
+            word-break: break-all;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .toolbar button {
+            padding: 6px 12px;
+            border: 1px solid #b0bec5;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .toolbar button:hover { background: #eceff1; }
+        .toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .validation-box {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        .validation-box.ok {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #1b5e20;
+        }
+
+        .validation-box.warn {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+            color: #e65100;
+        }
+
+        .validation-box.missing {
+            background: #fce4ec;
+            border: 1px solid #f48fb1;
+            color: #880e4f;
+        }
+
+        .validation-box h3 {
+            margin: 0 0 8px;
+            font-size: 0.92rem;
+        }
+
+        .validation-box ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+
+        .validation-box li + li { margin-top: 4px; }
+
+        .validation-metrics {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: inherit;
+            opacity: 0.85;
+        }
+
+        .ocr-compare {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .ocr-compare h3 {
+            margin: 0 0 8px;
+            font-size: 0.92rem;
+        }
+
+        .ocr-compare-note {
+            margin: 0 0 10px;
+            font-size: 0.8rem;
+            color: #546e7a;
+            line-height: 1.45;
+        }
+
+        .ocr-compare table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .ocr-compare th,
+        .ocr-compare td {
+            border: 1px solid #dfe6e9;
+            padding: 6px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .ocr-compare th {
+            background: #eceff1;
+            font-weight: 600;
+        }
+
+        .ocr-compare td code {
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event OCR 領域プレビュー</h1>
+    <p class="hint">
+        add 画面で非表示にしている OCR 領域（意匠・略称・正式名）を確認するテストページです。
+        ローカル HTTP サーバー必須（<code>file://</code> では動きません）。リポジトリ直下で
+        <code>python -m http.server 8765</code> →
+        <a href="event-ocr-region-preview.html">http://127.0.0.1:8765/test/event-ocr-region-preview.html</a>。
+        OpenCV 読込は初回数十秒かかることがあります。
+        固定サンプルとの比較は <a href="event-ocr-debug.html">event-ocr-debug.html</a> を参照。
+    </p>
+    <p id="status">準備中…</p>
+
+    <section class="paste-panel">
+        <div class="region-legend">
+            <span class="legend-ornament"><i></i>橙 = 意匠（意匠? = 検証未通過）</span>
+            <span class="legend-abbr"><i></i>青 = 略称</span>
+            <span class="legend-title"><i></i>緑 = 正式名</span>
+            <span class="legend-separator"><i></i>赤 = 区切り線</span>
+        </div>
+
+        <div class="paste-dropzone" id="dropzone" tabindex="0">
+            <input type="file" id="file-input" class="paste-file-input" accept="image/png,image/jpeg,image/webp,image/gif">
+            <p class="paste-dropzone-label" id="dropzone-label">
+                クリックしてファイルを選択<br>
+                または <kbd>Ctrl</kbd>+<kbd>V</kbd> で貼り付け<br>
+                <small>イベントスクショ上部の OCR 領域を可視化します</small>
+            </p>
+            <div class="preview-wrap" id="preview-wrap" hidden>
+                <img id="preview" alt="">
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button type="button" id="clear-btn" disabled>クリア</button>
+        </div>
+
+        <div class="result-panel" id="result-panel" hidden></div>
+    </section>
+
+    <script type="module">
+        import {
+            compareEventNameOcrSanitization,
+            debugEventOcrAnalysis,
+            ensureEventOcrOpenCv,
+            extractEventNamesFromImage,
+            getEventNameOcrRegionsAsync,
+            getEventOcrOpenCvLoadError,
+            prepareEventOcrLayout,
+            warmupEventOcr
+        } from '../js/event-ocr.js?v=20250705m';
+
+        const OPENCV_LOAD_TIMEOUT_MS = 60_000;
+
+        const statusEl = document.getElementById('status');
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const previewWrap = document.getElementById('preview-wrap');
+        const preview = document.getElementById('preview');
+        const resultPanel = document.getElementById('result-panel');
+        const clearBtn = document.getElementById('clear-btn');
+
+        let previewObjectUrl = null;
+        let openCvReady = false;
+        let analyzeToken = 0;
+
+        function setStatus(message, kind = '') {
+            statusEl.textContent = message;
+            statusEl.className = kind ? `is-${kind}` : '';
+        }
+
+        function clearOverlays() {
+            previewWrap.querySelectorAll('.ocr-region-overlays').forEach(node => node.remove());
+        }
+
+        function renderOcrRegionOverlays(container, image, regions) {
+            const imageWidth = image.naturalWidth || image.width;
+            const imageHeight = image.naturalHeight || image.height;
+            if (!imageWidth || !imageHeight) return;
+
+            clearOverlays();
+
+            const overlayRoot = document.createElement('div');
+            overlayRoot.className = 'ocr-region-overlays';
+            overlayRoot.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
+
+            const entries = [
+                ['abbr', 'ocr-region-abbr'],
+                ['title', 'ocr-region-title'],
+                ['separator', 'ocr-region-separator'],
+                ['ornament', 'ocr-region-ornament']
+            ];
+
+            for (const [key, className] of entries) {
+                const rect = regions[key];
+                if (!rect || rect.w < 1 || rect.h < 1) continue;
+
+                const overlay = document.createElement('div');
+                overlay.className = `ocr-region-overlay ${className}`;
+                if (key === 'ornament' && rect.tentative) {
+                    overlay.classList.add('ocr-region-ornament-tentative');
+                }
+                overlay.style.left = `${(rect.x / imageWidth) * 100}%`;
+                overlay.style.top = `${(rect.y / imageHeight) * 100}%`;
+                overlay.style.width = `${(rect.w / imageWidth) * 100}%`;
+                overlay.style.height = `${(rect.h / imageHeight) * 100}%`;
+
+                const labelEl = document.createElement('span');
+                labelEl.className = 'ocr-region-label';
+                labelEl.textContent = rect.label ?? key;
+                overlay.appendChild(labelEl);
+
+                overlayRoot.appendChild(overlay);
+            }
+
+            container.appendChild(overlayRoot);
+        }
+
+        function formatRect(rect) {
+            if (!rect) return '(none)';
+            return `x=${rect.x} y=${rect.y} w=${rect.w} h=${rect.h}`;
+        }
+
+        function renderOrnamentValidationBox(ornament, debug) {
+            const validation = ornament?.validation ?? debug?.ornamentValidation;
+            if (!validation) {
+                return `
+                    <div class="validation-box missing">
+                        <h3>意匠検証</h3>
+                        <p>意匠候補が検出されませんでした（OpenCV / probe ともに矩形なし、または 8×10 未満）。</p>
+                    </div>
+                `;
+            }
+
+            if (validation.valid) {
+                return `
+                    <div class="validation-box ok">
+                        <h3>意匠検証: 合格</h3>
+                        <p>すべての基準を満たしています（表示ラベル: ${ornament?.openCv ? '意匠(OpenCV)' : '意匠'}）。</p>
+                    </div>
+                `;
+            }
+
+            const items = validation.failures
+                .map(failure => `<li>${failure.message}</li>`)
+                .join('');
+            const metrics = validation.metrics
+                ? `<p class="validation-metrics">参考: 面積=${validation.metrics.area}px²、縦横比 h/w=${validation.metrics.aspectRatio.toFixed(2)}、画像高さ=${validation.metrics.imageHeight ?? '—'}px、高さ上限=${validation.metrics.maxHeight ?? '—'}px</p>`
+                : '';
+
+            return `
+                <div class="validation-box warn">
+                    <h3>意匠? — 検証未通過（${validation.failures.length} 件）</h3>
+                    <p>候補矩形は表示していますが、次の基準を満たしていません。</p>
+                    <ul>${items}</ul>
+                    ${metrics}
+                </div>
+            `;
+        }
+
+        function renderOcrSanitizeCompareBox(ocrCompare, ocrResult) {
+            const cell = value => `<code>${value || '(empty)'}</code>`;
+            return `
+                <div class="ocr-compare">
+                    <h3>先頭ノイズ除去の比較（preserveSpaces=false）</h3>
+                    <p class="ocr-compare-note">
+                        可視化と同じ略称・正式名矩形で OCR。先頭 1〜2 文字をノイズとして削る処理の ON/OFF 差分を表示します。
+                        本番は先頭ノイズ除去 OFF（stripNoisyPrefix=false）です。下表はデバッグ用の ON/OFF 比較です。
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>領域</th>
+                                <th>ノイズ除去 ON</th>
+                                <th>ノイズ除去 OFF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">略称</th>
+                                <td>${cell(ocrCompare.abbr.noisyPrefixOn)}</td>
+                                <td>${cell(ocrCompare.abbr.noisyPrefixOff)}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">正式名</th>
+                                <td>${cell(ocrCompare.title.noisyPrefixOn)}</td>
+                                <td>${cell(ocrCompare.title.noisyPrefixOff)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="ocr-compare-note" style="margin-top:10px;margin-bottom:0">
+                        本番経路（extractEventNamesFromImage）: 略称 <code>${ocrResult.abbr || '(empty)'}</code> /
+                        正式名 <code>${ocrResult.title || '(empty)'}</code>
+                    </p>
+                </div>
+            `;
+        }
+
+        function renderResultPanel({ regions, layout, debug, ocrResult, ocrCompare, image }) {
+            resultPanel.hidden = false;
+            resultPanel.innerHTML = `
+                ${renderOrnamentValidationBox(regions.ornament, debug)}
+                ${renderOcrSanitizeCompareBox(ocrCompare, ocrResult)}
+                <div>画像サイズ: <code>${image.naturalWidth}×${image.naturalHeight}</code></div>
+                <div>意匠: <code>${formatRect(regions.ornament)}</code>${regions.ornament?.openCv ? ' (OpenCV)' : ''}${regions.ornament?.tentative ? ' → 意匠?' : ''}</div>
+                <div>略称: <code>${formatRect(regions.abbr)}</code></div>
+                <div>正式名: <code>${formatRect(regions.title)}</code></div>
+                <div>区切り線: <code>${formatRect(regions.separator)}</code></div>
+                <div>OpenCV意匠: <code>${formatRect(layout.openCvOrnament)}</code></div>
+                <details>
+                    <summary>debug JSON</summary>
+                    <pre>${JSON.stringify({ regions, layout: {
+                        openCvOrnament: layout.openCvOrnament,
+                        openCvExtensionLine: layout.openCvExtensionLine,
+                        goldLine: layout.goldLine,
+                        separatorY: layout.separatorY
+                    }, debug }, null, 2)}</pre>
+                </details>
+            `;
+        }
+
+        async function loadImageFromFile(file) {
+            if (previewObjectUrl) {
+                URL.revokeObjectURL(previewObjectUrl);
+                previewObjectUrl = null;
+            }
+
+            previewObjectUrl = URL.createObjectURL(file);
+            await new Promise((resolve, reject) => {
+                preview.onload = () => resolve();
+                preview.onerror = () => reject(new Error('画像の読み込みに失敗しました'));
+                preview.src = previewObjectUrl;
+            });
+            return preview;
+        }
+
+        async function analyzeImage(file) {
+            if (!openCvReady) {
+                alert('OpenCV の読込が完了していません。しばらく待ってから再試行してください。');
+                return;
+            }
+
+            const token = ++analyzeToken;
+            clearBtn.disabled = false;
+            dropzone.classList.add('has-image');
+            previewWrap.hidden = false;
+            setStatus('画像を読み込み中…');
+
+            let image;
+            try {
+                image = await loadImageFromFile(file);
+            } catch (error) {
+                setStatus(error.message, 'error');
+                return;
+            }
+
+            if (token !== analyzeToken) return;
+
+            setStatus('OCR 領域を解析中…（初回は数十秒かかることがあります）');
+            clearOverlays();
+            resultPanel.hidden = true;
+
+            try {
+                const layout = await prepareEventOcrLayout(image);
+                if (token !== analyzeToken) return;
+
+                const regions = await getEventNameOcrRegionsAsync(image, layout);
+                if (token !== analyzeToken) return;
+
+                renderOcrRegionOverlays(previewWrap, image, regions);
+
+                let ocrResult = { abbr: '', title: '' };
+                try {
+                    ocrResult = await extractEventNamesFromImage(image, layout);
+                } catch (error) {
+                    console.warn('OCR text extraction failed:', error);
+                }
+
+                const ocrCompare = await compareEventNameOcrSanitization(image, layout, {
+                    abbr: regions.abbr,
+                    title: regions.title
+                });
+
+                const debug = debugEventOcrAnalysis(image, layout);
+                renderResultPanel({ regions, layout, debug, ocrResult, ocrCompare, image });
+                setStatus('領域を表示しました。別の画像を貼り付けると再解析します。', 'ready');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message || '領域解析に失敗しました', 'error');
+            }
+        }
+
+        function clearPreview() {
+            analyzeToken += 1;
+            clearOverlays();
+            if (previewObjectUrl) {
+                URL.revokeObjectURL(previewObjectUrl);
+                previewObjectUrl = null;
+            }
+            preview.removeAttribute('src');
+            previewWrap.hidden = true;
+            resultPanel.hidden = true;
+            resultPanel.innerHTML = '';
+            dropzone.classList.remove('has-image');
+            fileInput.value = '';
+            clearBtn.disabled = true;
+            setStatus(openCvReady
+                ? '画像を貼り付けるか選択してください'
+                : 'OpenCV 読込中…');
+        }
+
+        function handlePaste(event) {
+            const items = event.clipboardData?.items;
+            if (!items) return;
+
+            for (const item of items) {
+                if (!item.type.startsWith('image/')) continue;
+                const file = item.getAsFile();
+                if (!file) continue;
+
+                event.preventDefault();
+                analyzeImage(file).catch(error => {
+                    console.error(error);
+                    setStatus(error.message || '画像の処理に失敗しました', 'error');
+                });
+                return;
+            }
+        }
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+            analyzeImage(file).catch(error => {
+                console.error(error);
+                setStatus(error.message || '画像の処理に失敗しました', 'error');
+            });
+        });
+
+        clearBtn.addEventListener('click', clearPreview);
+
+        dropzone.addEventListener('dragover', event => {
+            event.preventDefault();
+            dropzone.classList.add('is-dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('is-dragover');
+        });
+
+        dropzone.addEventListener('drop', event => {
+            event.preventDefault();
+            dropzone.classList.remove('is-dragover');
+            const file = event.dataTransfer?.files?.[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            analyzeImage(file).catch(error => {
+                console.error(error);
+                setStatus(error.message || '画像の処理に失敗しました', 'error');
+            });
+        });
+
+        document.addEventListener('paste', handlePaste);
+
+        async function boot() {
+            try {
+                setStatus(`OpenCV.js 読込中…（上限 ${OPENCV_LOAD_TIMEOUT_MS / 1000} 秒）`);
+                const ready = await ensureEventOcrOpenCv({ initTimeoutMs: OPENCV_LOAD_TIMEOUT_MS });
+                if (!ready) {
+                    const detail = getEventOcrOpenCvLoadError();
+                    throw new Error(
+                        `OpenCV.js の読込に失敗しました。${detail ? ` 詳細: ${detail}` : ''}`
+                        + ' — python test/download-opencv-worker.py を実行してください。'
+                    );
+                }
+                await warmupEventOcr();
+                openCvReady = true;
+                setStatus('準備完了。画像を貼り付けるか選択してください', 'ready');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message, 'error');
+            }
+        }
+
+        boot();
+    </script>
+</body>
+</html>
