@@ -7,7 +7,7 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
-import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js?v=20250704q';
+import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js?v=20250704u';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,

@@ -132,9 +132,324 @@ function isHeaderTextPixel(data, width, x, y) {
     return lum < 125 && sat > 0.24;
 }
 
+function isGoldHorizontalLinePixel(r, g, b) {
+    return (r > 115 && g > 72 && b < 110 && r > g && g > b)
+        || (r > 100 && g > 65 && b < 85 && r > g + 4 && g > b * 1.02);
+}
+
+function isBrownSeparatorPixel(r, g, b, lum, sat) {
+    return (lum >= 30 && lum <= 100 && r > 45 && r > g && g >= b && sat < 0.42)
+        || (lum >= 25 && lum <= 80 && r > 70 && g < 70 && b < 60);
+}
+
+function isDecorativeLinePixel(data, width, x, y) {
+    const { r, g, b, lum, sat } = getPixelLuminance(data, width, x, y);
+    return isGoldHorizontalLinePixel(r, g, b) || isBrownSeparatorPixel(r, g, b, lum, sat);
+}
+
 function isSeparatorPixel(data, width, x, y) {
-    const { lum, sat } = getPixelLuminance(data, width, x, y);
-    return lum >= 40 && lum <= 115 && sat < 0.22;
+    return isDecorativeLinePixel(data, width, x, y);
+}
+
+function isRegionTextPixel(data, width, x, y) {
+    const { r, g, b, lum, sat } = getPixelLuminance(data, width, x, y);
+
+    if (isDecorativePillarPixel(r, g, b)) return false;
+    if (isDecorativeLinePixel(data, width, x, y)) return false;
+    if (lum > 168 && sat < 0.14) return false;
+    if (lum > 148 && sat < 0.09) return false;
+    if (lum < 98) return true;
+    if (lum < 118 && sat < 0.22) return true;
+    return false;
+}
+
+function buildRegionTextMask(data, width, height) {
+    const mask = new Uint8Array(width * height);
+    for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+            if (isRegionTextPixel(data, width, x, y)) {
+                mask[y * width + x] = 1;
+            }
+        }
+    }
+    return mask;
+}
+
+function rowDecorativeLineDensity(data, width, y, scanLeft, scanRight) {
+    const span = Math.max(1, scanRight - scanLeft);
+    let count = 0;
+    for (let x = scanLeft; x < scanRight; x += 1) {
+        if (isDecorativeLinePixel(data, width, x, y)) count += 1;
+    }
+    return count / span;
+}
+
+function scoreGoldLineRun(data, width, y0, y1, scanLeft, scanRight) {
+    const heightPx = y1 - y0 + 1;
+    if (heightPx > 10) return null;
+
+    let avgDensity = 0;
+    for (let y = y0; y <= y1; y += 1) {
+        avgDensity += rowDecorativeLineDensity(data, width, y, scanLeft, scanRight);
+    }
+    avgDensity /= heightPx;
+    if (avgDensity < 0.03) return null;
+
+    return {
+        y0,
+        y1,
+        centerY: (y0 + y1) / 2,
+        score: avgDensity * Math.min(heightPx, 4)
+    };
+}
+
+function rowMaskTextDensity(mask, width, y, scanLeft, scanRight) {
+    let count = 0;
+    const span = Math.max(1, scanRight - scanLeft);
+    for (let x = scanLeft; x < scanRight; x += 1) {
+        if (mask[y * width + x]) count += 1;
+    }
+    return count / span;
+}
+
+function findMaskTextRuns(mask, width, height, scanLeft, scanRight, minHeight = 8) {
+    const threshold = 0.035;
+    const runs = [];
+    let start = null;
+
+    for (let y = 0; y < height; y += 1) {
+        const density = rowMaskTextDensity(mask, width, y, scanLeft, scanRight);
+        if (density >= threshold) {
+            if (start === null) start = y;
+        } else if (start !== null) {
+            if (y - start >= minHeight) runs.push({ y0: start, y1: y - 1 });
+            start = null;
+        }
+    }
+
+    if (start !== null && height - start >= minHeight) {
+        runs.push({ y0: start, y1: height - 1 });
+    }
+
+    return runs;
+}
+
+function findPeakDecorativeLineInRange(data, width, yStart, yEnd, scanLeft, scanRight) {
+    if (yEnd <= yStart) return null;
+
+    let peakY = null;
+    let peakDensity = 0;
+    for (let y = yStart; y <= yEnd; y += 1) {
+        const density = rowDecorativeLineDensity(data, width, y, scanLeft, scanRight);
+        if (density > peakDensity) {
+            peakDensity = density;
+            peakY = y;
+        }
+    }
+
+    if (peakY === null || peakDensity < 0.012) return null;
+
+    let y0 = peakY;
+    let y1 = peakY;
+    while (y0 > yStart && rowDecorativeLineDensity(data, width, y0 - 1, scanLeft, scanRight) >= peakDensity * 0.4) {
+        y0 -= 1;
+    }
+    while (y1 < yEnd && rowDecorativeLineDensity(data, width, y1 + 1, scanLeft, scanRight) >= peakDensity * 0.4) {
+        y1 += 1;
+    }
+
+    return { y0, y1, centerY: (y0 + y1) / 2, score: peakDensity };
+}
+
+function findGoldSeparatorLine(data, width, height, minLeft, mask) {
+    const scanLeft = Math.max(minLeft + 8, Math.floor(width * 0.08));
+    const scanRight = Math.floor(width * 0.97);
+    const textRuns = findMaskTextRuns(mask, width, height, scanLeft, scanRight)
+        .filter(run => run.y0 < height * 0.45);
+
+    if (textRuns.length >= 2) {
+        const betweenLine = findPeakDecorativeLineInRange(
+            data,
+            width,
+            textRuns[0].y1 + 1,
+            textRuns[1].y0 - 1,
+            scanLeft,
+            scanRight
+        );
+        if (betweenLine) return betweenLine;
+    }
+
+    if (textRuns.length >= 1) {
+        const belowLine = findPeakDecorativeLineInRange(
+            data,
+            width,
+            textRuns[0].y1 + 2,
+            Math.min(height - 1, textRuns[0].y1 + 40),
+            scanLeft,
+            scanRight
+        );
+        if (belowLine) return belowLine;
+    }
+
+    const yStart = Math.floor(height * 0.12);
+    const yEnd = Math.floor(height * 0.52);
+    let bestRun = null;
+    let runStart = null;
+
+    for (let y = yStart; y <= yEnd; y += 1) {
+        const density = rowDecorativeLineDensity(data, width, y, scanLeft, scanRight);
+        if (density >= 0.025) {
+            if (runStart === null) runStart = y;
+        } else if (runStart !== null) {
+            const run = scoreGoldLineRun(data, width, runStart, y - 1, scanLeft, scanRight);
+            if (run && (!bestRun || run.score > bestRun.score)) bestRun = run;
+            runStart = null;
+        }
+    }
+
+    if (runStart !== null) {
+        const run = scoreGoldLineRun(data, width, runStart, yEnd, scanLeft, scanRight);
+        if (run && (!bestRun || run.score > bestRun.score)) bestRun = run;
+    }
+
+    return bestRun ?? findPeakDecorativeLineInRange(data, width, yStart, yEnd, scanLeft, scanRight);
+}
+
+function findTextBoundsInBand(mask, width, yStart, yEnd, minLeft) {
+    let minY = yEnd + 1;
+    let maxY = yStart - 1;
+    let minX = width;
+    let maxX = 0;
+
+    for (let y = yStart; y <= yEnd; y += 1) {
+        for (let x = minLeft; x < width; x += 1) {
+            if (!mask[y * width + x]) continue;
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+        }
+    }
+
+    if (minY > maxY || minX > maxX) return null;
+    return { y0: minY, y1: maxY, x0: minX, x1: maxX };
+}
+
+function boundsToImageRect(offsetX, offsetY, bounds, fallbackLeft, fallbackRight, bandY0, bandY1) {
+    const padY = 8;
+    let y0 = bandY0;
+    let y1 = bandY1;
+    const x0 = fallbackLeft;
+    const x1 = fallbackRight;
+
+    if (bounds) {
+        y0 = Math.max(bandY0, bounds.y0 - padY);
+        y1 = Math.min(bandY1, bounds.y1 + padY);
+    }
+
+    const minHeight = 28;
+    if (y1 - y0 + 1 < minHeight) {
+        const extra = minHeight - (y1 - y0 + 1);
+        y0 = Math.max(bandY0, y0 - Math.floor(extra / 2));
+        y1 = Math.min(bandY1, y1 + Math.ceil(extra / 2));
+    }
+
+    return {
+        x: offsetX + x0,
+        y: offsetY + y0,
+        w: Math.max(1, x1 - x0),
+        h: Math.max(1, y1 - y0 + 1)
+    };
+}
+
+function analyzeHeaderLayout(image) {
+    const { canvas, offsetX, offsetY } = cropImageBand(image, HEADER_SCAN_BAND);
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const { width, height } = canvas;
+    const { data } = context.getImageData(0, 0, width, height);
+
+    const minLeft = findDecorativePillarRightX(data, width, height);
+    const textLeft = minLeft > 0 ? minLeft : Math.floor(width * 0.02);
+    const textRight = Math.floor(width * 0.98);
+    const mask = buildRegionTextMask(data, width, height);
+    const goldLine = findGoldSeparatorLine(data, width, height, minLeft, mask);
+    const textRuns = findMaskTextRuns(mask, width, height, textLeft, textRight)
+        .filter(run => run.y0 < height * 0.45);
+    const iconRowTopY = findSpiritIconRowTopY(data, width, height);
+
+    return {
+        canvas,
+        offsetX,
+        offsetY,
+        width,
+        height,
+        data,
+        mask,
+        minLeft,
+        goldLine,
+        iconRowTopY,
+        textLeft,
+        textRight,
+        separatorY: goldLine ? Math.round(goldLine.centerY) : null,
+        textRuns
+    };
+}
+
+function detectHeaderTextLineRects(image) {
+    const layout = analyzeHeaderLayout(image);
+    const {
+        offsetX,
+        offsetY,
+        width,
+        height,
+        mask,
+        goldLine,
+        iconRowTopY,
+        textLeft,
+        textRight,
+        textRuns
+    } = layout;
+
+    if (goldLine && textRuns.length >= 1) {
+        const abbrRun = textRuns[0];
+        const titleRun = textRuns.length >= 2 ? textRuns[1] : null;
+        const abbrBandY0 = Math.max(0, abbrRun.y0 - 4);
+        const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 3);
+        const titleBandY0 = Math.min(height - 1, goldLine.y1 + 3);
+        const titleBandY1 = titleRun
+            ? Math.min(height - 1, titleRun.y1 + 6)
+            : iconRowTopY !== null
+                ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
+                : Math.min(height - 1, Math.floor(height * 0.42));
+
+        const abbrBounds = findTextBoundsInBand(mask, width, abbrBandY0, abbrBandY1, textLeft);
+        const titleBounds = findTextBoundsInBand(mask, width, titleBandY0, titleBandY1, textLeft);
+
+        return {
+            abbr: boundsToImageRect(offsetX, offsetY, abbrBounds, textLeft, textRight, abbrBandY0, abbrBandY1),
+            title: boundsToImageRect(offsetX, offsetY, titleBounds, textLeft, textRight, titleBandY0, titleBandY1)
+        };
+    }
+
+    if (goldLine) {
+        const abbrBandY0 = Math.floor(height * 0.02);
+        const abbrBandY1 = Math.max(abbrBandY0 + 8, goldLine.y0 - 4);
+        const titleBandY0 = Math.min(height - 1, goldLine.y1 + 4);
+        const titleBandY1 = iconRowTopY !== null
+            ? Math.max(titleBandY0 + 8, iconRowTopY - 6)
+            : Math.min(height - 1, Math.floor(height * 0.42));
+
+        const abbrBounds = findTextBoundsInBand(mask, width, abbrBandY0, abbrBandY1, textLeft);
+        const titleBounds = findTextBoundsInBand(mask, width, titleBandY0, titleBandY1, textLeft);
+
+        return {
+            abbr: boundsToImageRect(offsetX, offsetY, abbrBounds, textLeft, textRight, abbrBandY0, abbrBandY1),
+            title: boundsToImageRect(offsetX, offsetY, titleBounds, textLeft, textRight, titleBandY0, titleBandY1)
+        };
+    }
+
+    const fallback = buildFallbackLineRects(image, layout.minLeft);
+    return { abbr: fallback.abbr, title: fallback.title };
 }
 
 function isDecorativePillarPixel(r, g, b) {
@@ -326,9 +641,9 @@ function binarizeCanvasForOcr(canvas) {
 }
 
 function buildOcrVariants(sourceCanvas) {
-    const binarized = scaleCanvasForOcr(binarizeCanvasForOcr(sourceCanvas));
-    const masked = scaleCanvasForOcr(maskTextPixelsForOcr(sourceCanvas));
-    return [binarized, masked];
+    const grayscale = scaleCanvasForOcr(grayscaleCanvasForOcr(sourceCanvas));
+    const raw = scaleCanvasForOcr(sourceCanvas);
+    return [grayscale, raw];
 }
 
 function rowTextDensity(data, width, y) {
@@ -990,12 +1305,6 @@ function buildFallbackLineRects(image, minLeft = 0) {
     };
 }
 
-function detectHeaderTextLineRects(image) {
-    const band = analyzeHeaderBand(image);
-    const candidates = collectHeaderTextLineCandidates(image);
-    return selectSyncLineRoles(candidates, band.height);
-}
-
 async function recognizePreparedCanvas(worker, canvas, { preserveSpaces = false, psm = SINGLE_LINE_PSM } = {}) {
     await worker.setParameters({ tessedit_pageseg_mode: psm });
     const { data } = await worker.recognize(canvas);
@@ -1089,24 +1398,15 @@ function finalizeEventHeaderResult(result) {
 }
 
 export function debugEventOcrAnalysis(image) {
-    const band = analyzeHeaderBand(image);
-    const candidates = collectHeaderTextLineCandidates(image);
-    const roles = selectSyncLineRoles(candidates, band.height);
+    const layout = analyzeHeaderLayout(image);
+    const roles = detectHeaderTextLineRects(image);
 
     return {
-        separatorY: band.separatorY,
-        minLeft: band.minLeft,
-        iconRowTopY: band.iconRowTopY,
-        bandHeight: band.height,
-        runCount: band.runs.length,
-        candidates: candidates.map(candidate => ({
-            centerY: candidate.centerY,
-            aboveSeparator: candidate.aboveSeparator,
-            belowSeparator: candidate.belowSeparator,
-            readability: Number(candidate.readability.toFixed(3)),
-            decorative: candidate.decorative,
-            rect: candidate.rect
-        })),
+        goldLine: layout.goldLine,
+        separatorY: layout.separatorY,
+        minLeft: layout.minLeft,
+        iconRowTopY: layout.iconRowTopY,
+        bandHeight: layout.height,
         roles
     };
 }
@@ -1118,9 +1418,8 @@ export function debugEventOcrAnalysis(image) {
 export function getEventNameOcrRegions(image) {
     const imageWidth = image.naturalWidth || image.width;
     const imageHeight = image.naturalHeight || image.height;
-    const band = analyzeHeaderBand(image);
-    const candidates = collectHeaderTextLineCandidates(image);
-    const lineRects = selectSyncLineRoles(candidates, band.height);
+    const layout = analyzeHeaderLayout(image);
+    const lineRects = detectHeaderTextLineRects(image);
 
     return {
         headerScan: {
@@ -1130,13 +1429,13 @@ export function getEventNameOcrRegions(image) {
             h: Math.max(1, Math.floor(imageHeight * HEADER_SCAN_BAND.height)),
             label: '走査範囲'
         },
-        separator: band.separatorY === null ? null : {
-            x: band.offsetX,
-            y: band.offsetY + band.separatorY,
-            w: band.width,
-            h: Math.max(2, Math.floor(imageHeight * 0.004)),
+        separator: layout.goldLine ? {
+            x: layout.offsetX + layout.textLeft,
+            y: layout.offsetY + layout.goldLine.y0,
+            w: layout.textRight - layout.textLeft,
+            h: Math.max(2, layout.goldLine.y1 - layout.goldLine.y0 + 1),
             label: '区切り線'
-        },
+        } : null,
         abbr: lineRects.abbr ? { ...lineRects.abbr, label: '略称' } : null,
         title: lineRects.title ? { ...lineRects.title, label: '正式名' } : null
     };
@@ -1164,80 +1463,26 @@ export async function recognizeTextFromImageRect(image, rect) {
  * @param {HTMLImageElement} image
  * @returns {Promise<{ abbr: string, title: string }>}
  */
-function scorePlainOcrText(text, role) {
-    if (!text) return -1000;
-    let score = 100 - gibberishPenalty(text);
-    const jpRatio = japaneseCharRatio(text);
-    const enRatio = latinCharRatio(text);
+export async function extractEventNamesFromImage(image) {
+    const worker = await getOcrWorker();
+    const { abbr: abbrRect, title: titleRect } = detectHeaderTextLineRects(image);
 
-    if (role === 'abbr') {
-        score += jpRatio * 40;
-        if (text.length <= 18) score += 10;
-        if (enRatio > 0.5 && jpRatio < 0.2) score -= 30;
-    } else {
-        score += Math.min(24, text.length * 0.7);
-        if (/EPISODE|Memorial|Blood|Vanishing|Magna|Glorious/i.test(text)) score += 20;
-        if (jpRatio > 0.1 && enRatio > 0.08) score += 15;
-    }
+    let abbr = '';
+    let title = '';
 
-    return score;
-}
-
-function pickBestOcrAttempt(attempts, role) {
-    let best = { text: '', score: -Infinity, preserveSpaces: role === 'title' };
-
-    for (const attempt of attempts) {
-        const text = sanitizeOcrOutput(attempt.text ?? '', { preserveSpaces: attempt.preserveSpaces });
-        if (!text) continue;
-        const score = scorePlainOcrText(text, role) + (attempt.confidence ?? 0) * 0.15;
-        if (score > best.score) {
-            best = { text, score, preserveSpaces: attempt.preserveSpaces };
+    if (abbrRect) {
+        abbr = (await recognizeLineRect(worker, image, abbrRect, { preserveSpaces: true })).text;
+        if (!abbr) {
+            abbr = (await recognizeLineRect(worker, image, abbrRect, { preserveSpaces: false })).text;
         }
     }
 
-    return best.text;
-}
-
-export async function extractEventNamesFromImage(image) {
-    const worker = await getOcrWorker();
-    const band = analyzeHeaderBand(image);
-    const candidates = collectHeaderTextLineCandidates(image);
-    const fallbackRects = buildFallbackLineRects(image, band.minLeft);
-    const syncRoles = selectSyncLineRoles(candidates, band.height);
-
-    const abbrAttempts = [];
-    const titleAttempts = [];
-
-    abbrAttempts.push({
-        ...(await recognizeLineRect(worker, image, fallbackRects.abbr, { preserveSpaces: false })),
-        preserveSpaces: false
-    });
-
-    titleAttempts.push({
-        ...(await recognizeLineRect(worker, image, fallbackRects.title, { preserveSpaces: true })),
-        preserveSpaces: true
-    });
-    titleAttempts.push({
-        ...(await recognizeLineRect(worker, image, fallbackRects.title, { preserveSpaces: false })),
-        preserveSpaces: false
-    });
-
-    if (syncRoles.abbr) {
-        abbrAttempts.push({
-            ...(await recognizeLineRect(worker, image, syncRoles.abbr, { preserveSpaces: false })),
-            preserveSpaces: false
-        });
+    if (titleRect) {
+        title = (await recognizeLineRect(worker, image, titleRect, { preserveSpaces: true })).text;
+        if (!title) {
+            title = (await recognizeLineRect(worker, image, titleRect, { preserveSpaces: false })).text;
+        }
     }
-
-    if (syncRoles.title) {
-        titleAttempts.push({
-            ...(await recognizeLineRect(worker, image, syncRoles.title, { preserveSpaces: false })),
-            preserveSpaces: false
-        });
-    }
-
-    let abbr = pickBestOcrAttempt(abbrAttempts, 'abbr');
-    let title = pickBestOcrAttempt(titleAttempts, 'title');
 
     ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
 
