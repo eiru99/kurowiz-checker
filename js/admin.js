@@ -70,6 +70,7 @@ let ocrSelectButton = null;
 /** @type {{ startX: number, startY: number, currentX: number, currentY: number } | null} */
 let ocrDragState = null;
 let ocrSelectHint = '';
+let blockSpiritCropClick = false;
 /** @type {string[]} */
 let spiritsToDelete = [];
 
@@ -338,15 +339,29 @@ function extensionFromMime(mime) {
     return IMAGE_MIME_EXTENSIONS[mime] ?? 'png';
 }
 
+function syncSpiritCropClickListener() {
+    imagePreviewStage.removeEventListener('click', handleCropClick);
+    if (pendingCropImage && !ocrSelectTarget) {
+        imagePreviewStage.addEventListener('click', handleCropClick);
+    }
+}
+
+function suppressSpiritCropClickBriefly() {
+    blockSpiritCropClick = true;
+    window.setTimeout(() => {
+        blockSpiritCropClick = false;
+    }, 400);
+}
+
 function clearPendingCrop() {
-    clearOcrSelectMode();
+    clearOcrSelectMode({ restoreCropClick: false });
     pendingCropImage = null;
     if (pendingCropObjectUrl) {
         URL.revokeObjectURL(pendingCropObjectUrl);
         pendingCropObjectUrl = null;
     }
     imageDropzone.classList.remove('crop-mode');
-    imagePreviewStage.removeEventListener('click', handleCropClick);
+    syncSpiritCropClickListener();
 }
 
 function getImageFitMetrics() {
@@ -460,7 +475,7 @@ function getOcrSelectHint(target) {
     return 'イベント正式名の文字を画像上でドラッグして囲んでください';
 }
 
-function clearOcrSelectMode() {
+function clearOcrSelectMode({ restoreCropClick = true } = {}) {
     ocrSelectTarget = null;
     ocrSelectButton = null;
     ocrDragState = null;
@@ -468,6 +483,9 @@ function clearOcrSelectMode() {
     imageDropzone.classList.remove('ocr-select-mode');
     ocrSelection.hidden = true;
     updateOcrSelectButtons();
+    if (restoreCropClick) {
+        window.setTimeout(() => syncSpiritCropClickListener(), 0);
+    }
 }
 
 function restoreImageHintAfterOcr() {
@@ -500,6 +518,7 @@ function startOcrSelectMode(target, button) {
     imageDropzone.classList.add('ocr-select-mode');
     imageHint.textContent = ocrSelectHint;
     updateOcrSelectButtons();
+    syncSpiritCropClickListener();
 }
 
 async function completeOcrSelection(displayRect) {
@@ -534,6 +553,7 @@ function handleOcrPointerDown(event) {
     if (!point) return;
 
     event.preventDefault();
+    event.stopPropagation();
     ocrDragState = {
         startX: point.x,
         startY: point.y,
@@ -560,6 +580,8 @@ function handleOcrPointerUp(event) {
     if (!ocrDragState) return;
 
     event.preventDefault();
+    event.stopPropagation();
+    suppressSpiritCropClickBriefly();
     if (imagePreviewStage.hasPointerCapture(event.pointerId)) {
         imagePreviewStage.releasePointerCapture(event.pointerId);
     }
@@ -667,11 +689,11 @@ function enterCropMode(image, objectUrl) {
     imageDropzone.classList.add('has-image', 'crop-mode');
     updateCropHint();
     updateOcrSelectButtons();
-    imagePreviewStage.addEventListener('click', handleCropClick);
+    syncSpiritCropClickListener();
 }
 
 async function handleCropClick(event) {
-    if (!pendingCropImage || ocrSelectTarget) return;
+    if (!pendingCropImage || ocrSelectTarget || blockSpiritCropClick) return;
     event.preventDefault();
     event.stopPropagation();
 
