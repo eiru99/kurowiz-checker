@@ -152,6 +152,10 @@ button:hover {
 .event-header-text {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
 }
 
 .event-edit-btn {
@@ -177,7 +181,7 @@ button:hover {
 }
 
 .event-title {
-    margin: 4px 0 0;
+    margin: 0;
     font-size: 0.85rem;
     color: var(--muted-text);
 }
