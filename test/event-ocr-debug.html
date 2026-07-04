@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event OCR Debug</title>
+    <style>
+        body { font-family: sans-serif; margin: 24px; background: #f5f5f5; color: #222; }
+        h1 { font-size: 1.25rem; }
+        .case { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .case img { display: block; width: 100%; max-width: 720px; border: 1px solid #ccc; }
+        .preview-wrap { position: relative; display: inline-block; width: 100%; max-width: 720px; }
+        .overlay { position: absolute; border: 2px solid; box-sizing: border-box; pointer-events: none; }
+        .overlay-abbr { border-color: rgba(30, 100, 255, 0.85); background: rgba(30, 100, 255, 0.12); }
+        .overlay-title { border-color: rgba(20, 160, 70, 0.85); background: rgba(20, 160, 70, 0.12); }
+        .result { margin-top: 12px; line-height: 1.6; }
+        .pass { color: #0a7a2f; font-weight: bold; }
+        .fail { color: #b00020; font-weight: bold; }
+        #summary { font-size: 1.1rem; margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <h1>Event OCR Debug</h1>
+    <p id="status">Tesseract 読み込み中…（初回は数十秒）</p>
+    <div id="cases"></div>
+    <p id="summary"></p>
+
+    <script type="module">
+        import { extractEventNamesFromImage, getEventNameOcrRegions, debugEventOcrAnalysis } from '../js/event-ocr.js?v=20250704q';
+
+        const TEST_CASES = [
+            {
+                id: 'glorious-memorial',
+                src: '../test-assets/event-header-glorious-memorial.png',
+                expectedAbbr: ['グロリアスメモリアル3', 'グロリアスメモリアル３'],
+                expectedTitle: ['Glorious Memorial III', 'Glorious Memorial 3', 'Glorious Memorial Ⅲ'],
+                looseAbbr: ['メモリアル3'],
+                looseTitle: ['glorious', 'memorial', 'iii']
+            },
+            {
+                id: 'kuromaguzero2',
+                src: '../test-assets/event-header-kuromaguzero2.png',
+                expectedAbbr: ['クロマグゼロ2', 'クロマグゼロ２'],
+                expectedTitle: [
+                    'クロム・マグナゼロEPISODEII Vanishing Blood',
+                    'クロム・マグナゼロEPISODEⅡ Vanishing Blood',
+                    'クロム・マグナゼロ EPISODE II Vanishing Blood'
+                ],
+                looseAbbr: ['マグゼロ2'],
+                looseTitle: ['マグナゼロ', 'episode', 'vanishing', 'blood']
+            }
+        ];
+
+        function normalizeForCompare(text) {
+            return (text ?? '')
+                .replace(/\s+/g, '')
+                .replace(/[・･]/g, '')
+                .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
+                .replace(/[！-～]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
+                .replace(/[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]/g, char => {
+                    const map = { 'Ⅰ': 'I', 'Ⅱ': 'II', 'Ⅲ': 'III', 'Ⅳ': 'IV', 'Ⅴ': 'V', 'Ⅵ': 'VI', 'Ⅶ': 'VII', 'Ⅷ': 'VIII', 'Ⅸ': 'IX', 'Ⅹ': 'X' };
+                    return map[char] ?? char;
+                })
+                .toLowerCase();
+        }
+
+        function matchesExpected(actual, expectedList) {
+            const normalizedActual = normalizeForCompare(actual);
+            return expectedList.some(expected => normalizeForCompare(expected) === normalizedActual);
+        }
+
+        function matchesExpectedLoose(actual, mustInclude) {
+            const normalizedActual = normalizeForCompare(actual);
+            return mustInclude.every(part => normalizedActual.includes(normalizeForCompare(part)));
+        }
+
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(new Error(`Failed to load ${src}`));
+                image.src = src;
+            });
+        }
+
+        function renderOverlays(container, image, regions) {
+            const scale = container.clientWidth / (image.naturalWidth || image.width);
+            for (const [key, className] of [['abbr', 'overlay-abbr'], ['title', 'overlay-title']]) {
+                const rect = regions[key];
+                if (!rect) continue;
+                const overlay = document.createElement('div');
+                overlay.className = `overlay ${className}`;
+                overlay.style.left = `${rect.x * scale}px`;
+                overlay.style.top = `${rect.y * scale}px`;
+                overlay.style.width = `${rect.w * scale}px`;
+                overlay.style.height = `${rect.h * scale}px`;
+                container.appendChild(overlay);
+            }
+        }
+
+        async function runCase(testCase) {
+            const image = await loadImage(testCase.src);
+            const regions = getEventNameOcrRegions(image);
+            const debug = debugEventOcrAnalysis(image);
+            console.log(testCase.id, debug);
+            const result = await extractEventNamesFromImage(image);
+            const abbrOk = matchesExpected(result.abbr, testCase.expectedAbbr)
+                || matchesExpectedLoose(result.abbr, testCase.looseAbbr);
+            const titleOk = matchesExpected(result.title, testCase.expectedTitle)
+                || matchesExpectedLoose(result.title, testCase.looseTitle);
+            const pass = abbrOk && titleOk;
+
+            const section = document.createElement('section');
+            section.className = 'case';
+            section.innerHTML = `
+                <h2>${testCase.id} <span class="${pass ? 'pass' : 'fail'}">${pass ? 'PASS' : 'FAIL'}</span></h2>
+                <div class="preview-wrap">
+                    <img src="${testCase.src}" alt="${testCase.id}">
+                </div>
+                <div class="result">
+                    <div>略称: <code>${result.abbr || '(empty)'}</code> ${abbrOk ? '✓' : '✗'}</div>
+                    <div>正式名: <code>${result.title || '(empty)'}</code> ${titleOk ? '✓' : '✗'}</div>
+                    <details>
+                        <summary>debug</summary>
+                        <pre>${JSON.stringify(debug, null, 2)}</pre>
+                    </details>
+                </div>
+            `;
+            renderOverlays(section.querySelector('.preview-wrap'), image, regions);
+            return { pass, section };
+        }
+
+        const casesRoot = document.getElementById('cases');
+        const status = document.getElementById('status');
+        const summary = document.getElementById('summary');
+
+        try {
+            const results = [];
+            for (const testCase of TEST_CASES) {
+                status.textContent = `実行中: ${testCase.id}…`;
+                const outcome = await runCase(testCase);
+                results.push(outcome.pass);
+                casesRoot.appendChild(outcome.section);
+            }
+
+            const passed = results.filter(Boolean).length;
+            summary.textContent = `${passed}/${TEST_CASES.length} passed`;
+            summary.className = passed === TEST_CASES.length ? 'pass' : 'fail';
+            status.textContent = '完了';
+        } catch (error) {
+            status.textContent = `エラー: ${error.message}`;
+            console.error(error);
+        }
+    </script>
+</body>
+</html>
