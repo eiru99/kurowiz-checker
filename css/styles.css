@@ -109,13 +109,16 @@ button:hover {
 .catalog {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
 }
 
 .section-block {
     background: var(--section-bg);
     border-radius: 10px;
     padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .section-title {
@@ -132,11 +135,6 @@ button:hover {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
-    margin-bottom: 12px;
-}
-
-.event-block:last-child {
-    margin-bottom: 0;
 }
 
 .event-header {
