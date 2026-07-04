@@ -20,6 +20,13 @@ const MAX_OCR_CANDIDATES = 5;
 const ICON_ROW_SAT_THRESHOLD = 0.32;
 const ICON_ROW_MIN_DENSITY = 0.08;
 const ICON_ROW_MIN_HEIGHT = 14;
+const PROJECTION_LUM_THRESHOLD = 140;
+const PROJECTION_MIN_TEXT_RUN = 6;
+const PROJECTION_MAX_SEPARATOR_RUN = 8;
+const PROJECTION_TEXT_DENSITY_FLOOR = 0.028;
+const PROJECTION_SEPARATOR_DENSITY_FLOOR = 0.10;
+const PROJECTION_MERGE_GAP = 3;
+const PROJECTION_SMOOTH_RADIUS = 1;
 
 let workerPromise = null;
 
@@ -234,6 +241,386 @@ function findMaskTextRuns(mask, width, height, scanLeft, scanRight, minHeight = 
     return runs;
 }
 
+function rowProjectionDarkDensity(data, width, y, scanLeft, scanRight) {
+    let count = 0;
+    const span = Math.max(1, scanRight - scanLeft);
+
+    for (let x = scanLeft; x < scanRight; x += 1) {
+        const { r, g, b, lum } = getPixelLuminance(data, width, x, y);
+        if (isDecorativePillarPixel(r, g, b)) continue;
+        if (isDecorativeLinePixel(data, width, x, y)) continue;
+        if (lum < PROJECTION_LUM_THRESHOLD) count += 1;
+    }
+
+    return count / span;
+}
+
+function rowSeparatorDensityInBand(data, width, y, scanLeft, scanRight) {
+    let count = 0;
+    const span = Math.max(1, scanRight - scanLeft);
+
+    for (let x = scanLeft; x < scanRight; x += 1) {
+        if (isSeparatorPixel(data, width, x, y)) count += 1;
+    }
+
+    return count / span;
+}
+
+function buildHorizontalProjection(data, width, height, scanLeft, scanRight) {
+    const dark = new Float64Array(height);
+    const separator = new Float64Array(height);
+
+    for (let y = 0; y < height; y += 1) {
+        dark[y] = rowProjectionDarkDensity(data, width, y, scanLeft, scanRight);
+        separator[y] = rowSeparatorDensityInBand(data, width, y, scanLeft, scanRight);
+    }
+
+    return { dark, separator };
+}
+
+function smoothProjection(projection, radius = PROJECTION_SMOOTH_RADIUS) {
+    const smoothed = new Float64Array(projection.length);
+
+    for (let y = 0; y < projection.length; y += 1) {
+        let sum = 0;
+        let count = 0;
+
+        for (let dy = -radius; dy <= radius; dy += 1) {
+            const index = y + dy;
+            if (index < 0 || index >= projection.length) continue;
+            sum += projection[index];
+            count += 1;
+        }
+
+        smoothed[y] = count > 0 ? sum / count : projection[y];
+    }
+
+    return smoothed;
+}
+
+function computeAdaptiveProjectionThreshold(projection, yStart, yEnd) {
+    const samples = [];
+
+    for (let y = yStart; y <= yEnd; y += 1) {
+        samples.push(projection[y]);
+    }
+
+    if (samples.length === 0) return PROJECTION_TEXT_DENSITY_FLOOR;
+
+    samples.sort((left, right) => left - right);
+    const median = samples[Math.floor(samples.length / 2)] ?? 0;
+    const p75 = samples[Math.floor(samples.length * 0.75)] ?? 0;
+
+    return Math.max(
+        PROJECTION_TEXT_DENSITY_FLOOR,
+        median * 2.4,
+        p75 * 0.6
+    );
+}
+
+function findProjectionRuns(projection, yStart, yEnd, threshold, minHeight, maxHeight = Infinity) {
+    const runs = [];
+    let start = null;
+
+    for (let y = yStart; y <= yEnd; y += 1) {
+        if (projection[y] >= threshold) {
+            if (start === null) start = y;
+        } else if (start !== null) {
+            const heightPx = y - start;
+            if (heightPx >= minHeight && heightPx <= maxHeight) {
+                runs.push({
+                    y0: start,
+                    y1: y - 1,
+                    height: heightPx,
+                    centerY: (start + y - 1) / 2
+                });
+            }
+            start = null;
+        }
+    }
+
+    if (start !== null) {
+        const heightPx = yEnd - start + 1;
+        if (heightPx >= minHeight && heightPx <= maxHeight) {
+            runs.push({
+                y0: start,
+                y1: yEnd,
+                height: heightPx,
+                centerY: (start + yEnd) / 2
+            });
+        }
+    }
+
+    return runs;
+}
+
+function mergeNearbyProjectionRuns(runs, maxGap = PROJECTION_MERGE_GAP) {
+    if (runs.length === 0) return [];
+
+    const sorted = [...runs].sort((left, right) => left.y0 - right.y0);
+    const merged = [{ ...sorted[0] }];
+
+    for (let index = 1; index < sorted.length; index += 1) {
+        const current = sorted[index];
+        const previous = merged[merged.length - 1];
+
+        if (current.y0 - previous.y1 <= maxGap) {
+            previous.y1 = current.y1;
+            previous.height = previous.y1 - previous.y0 + 1;
+            previous.centerY = (previous.y0 + previous.y1) / 2;
+            continue;
+        }
+
+        merged.push({ ...current });
+    }
+
+    return merged;
+}
+
+function averageProjectionInRun(projection, run) {
+    let total = 0;
+
+    for (let y = run.y0; y <= run.y1; y += 1) {
+        total += projection[y] ?? 0;
+    }
+
+    return total / Math.max(1, run.y1 - run.y0 + 1);
+}
+
+function isProjectionSeparatorLikeRun(run, darkProjection, separatorProjection) {
+    const heightPx = run.y1 - run.y0 + 1;
+    if (heightPx > PROJECTION_MAX_SEPARATOR_RUN) return false;
+
+    const separatorAvg = averageProjectionInRun(separatorProjection, run);
+    if (separatorAvg >= PROJECTION_SEPARATOR_DENSITY_FLOOR) return true;
+
+    const darkAvg = averageProjectionInRun(darkProjection, run);
+    return heightPx <= 4 && darkAvg >= 0.16;
+}
+
+function pickBestSeparatorRun(separatorRuns, textRuns, separatorProjection, darkProjection) {
+    let candidates = [...separatorRuns];
+
+    if (candidates.length === 0) {
+        const searchEnd = darkProjection.length - 1;
+        const thinDarkRuns = findProjectionRuns(
+            darkProjection,
+            0,
+            searchEnd,
+            0.14,
+            1,
+            PROJECTION_MAX_SEPARATOR_RUN
+        );
+        candidates = thinDarkRuns.filter(run => isProjectionSeparatorLikeRun(run, darkProjection, separatorProjection));
+    }
+
+    if (candidates.length === 0) return null;
+
+    if (textRuns.length >= 2) {
+        const sortedText = [...textRuns].sort((left, right) => left.y0 - right.y0);
+        const gapStart = sortedText[0].y1;
+        const gapEnd = sortedText[1].y0;
+        const inGap = candidates.filter(run => run.centerY >= gapStart && run.centerY <= gapEnd);
+
+        if (inGap.length > 0) {
+            inGap.sort((left, right) => (
+                averageProjectionInRun(separatorProjection, right)
+                - averageProjectionInRun(separatorProjection, left)
+            ));
+            return inGap[0];
+        }
+    }
+
+    if (textRuns.length >= 1) {
+        const firstText = [...textRuns].sort((left, right) => left.y0 - right.y0)[0];
+        const belowFirst = candidates.filter(run => run.y0 > firstText.y1 && run.y0 < firstText.y1 + 40);
+
+        if (belowFirst.length > 0) {
+            belowFirst.sort((left, right) => left.y0 - right.y0);
+            return belowFirst[0];
+        }
+    }
+
+    candidates.sort((left, right) => (
+        averageProjectionInRun(separatorProjection, right)
+        - averageProjectionInRun(separatorProjection, left)
+    ));
+    return candidates[0];
+}
+
+function inferTextRunInBand(darkProjection, separatorProjection, yStart, yEnd, threshold) {
+    if (yEnd <= yStart) return null;
+
+    const runs = findProjectionRuns(
+        darkProjection,
+        yStart,
+        yEnd,
+        threshold,
+        PROJECTION_MIN_TEXT_RUN
+    ).filter(run => !isProjectionSeparatorLikeRun(run, darkProjection, separatorProjection));
+
+    if (runs.length === 0) return null;
+
+    runs.sort((left, right) => right.height - left.height);
+    return runs[0];
+}
+
+function findHorizontalBoundsByProjection(data, width, y0, y1, scanLeft, scanRight) {
+    const span = Math.max(1, scanRight - scanLeft);
+    const colCounts = new Array(span).fill(0);
+    const rowSpan = y1 - y0 + 1;
+
+    for (let y = y0; y <= y1; y += 1) {
+        for (let x = scanLeft; x < scanRight; x += 1) {
+            const { r, g, b, lum } = getPixelLuminance(data, width, x, y);
+            if (isDecorativePillarPixel(r, g, b)) continue;
+            if (isDecorativeLinePixel(data, width, x, y)) continue;
+            if (lum < PROJECTION_LUM_THRESHOLD) {
+                colCounts[x - scanLeft] += 1;
+            }
+        }
+    }
+
+    const colThreshold = Math.max(2, Math.floor(rowSpan * 0.12));
+    let minX = scanRight;
+    let maxX = scanLeft;
+
+    for (let offset = 0; offset < span; offset += 1) {
+        if (colCounts[offset] < colThreshold) continue;
+        const x = scanLeft + offset;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+    }
+
+    if (minX >= maxX) return null;
+
+    const paddingX = Math.max(4, Math.floor(rowSpan * 0.15));
+    return {
+        x0: Math.max(scanLeft, minX - paddingX),
+        x1: Math.min(scanRight - 1, maxX + paddingX)
+    };
+}
+
+function projectionRunToImageRect(canvas, offsetX, offsetY, canvasWidth, run, data, textLeft, textRight) {
+    const lineHeight = run.y1 - run.y0 + 1;
+    const xBounds = findHorizontalBoundsByProjection(data, canvasWidth, run.y0, run.y1, textLeft, textRight);
+    const paddingY = Math.max(3, Math.floor(lineHeight * 0.14));
+    let y0 = Math.max(0, run.y0 - paddingY);
+    let y1 = Math.min(canvas.height - 1, run.y1 + paddingY);
+
+    const minCropHeight = Math.max(24, Math.floor(lineHeight * 1.12));
+    if (y1 - y0 + 1 < minCropHeight) {
+        const extra = minCropHeight - (y1 - y0 + 1);
+        y0 = Math.max(0, y0 - Math.floor(extra / 2));
+        y1 = Math.min(canvas.height - 1, y1 + Math.ceil(extra / 2));
+    }
+
+    const localX = xBounds?.x0 ?? textLeft;
+    const localRight = (xBounds?.x1 ?? textRight - 1) + 1;
+
+    return {
+        x: offsetX + localX,
+        y: offsetY + y0,
+        w: Math.max(1, localRight - localX),
+        h: Math.max(1, y1 - y0 + 1)
+    };
+}
+
+function detectTextLinesByHorizontalProjection(layout) {
+    const {
+        data,
+        width,
+        height,
+        offsetX,
+        offsetY,
+        textLeft,
+        textRight,
+        iconRowTopY,
+        goldLine,
+        canvas
+    } = layout;
+
+    const scanLeft = textLeft;
+    const scanRight = textRight;
+    const searchEndY = iconRowTopY !== null
+        ? Math.max(Math.floor(height * 0.12), iconRowTopY - 6)
+        : Math.floor(height * 0.48);
+
+    const { dark, separator } = buildHorizontalProjection(data, width, height, scanLeft, scanRight);
+    const smoothedDark = smoothProjection(dark, PROJECTION_SMOOTH_RADIUS);
+    const textThreshold = computeAdaptiveProjectionThreshold(smoothedDark, 0, searchEndY);
+
+    let textRuns = findProjectionRuns(
+        smoothedDark,
+        0,
+        searchEndY,
+        textThreshold,
+        PROJECTION_MIN_TEXT_RUN
+    );
+    textRuns = mergeNearbyProjectionRuns(textRuns, PROJECTION_MERGE_GAP);
+    textRuns = textRuns.filter(run => !isProjectionSeparatorLikeRun(run, smoothedDark, separator));
+
+    const separatorRuns = findProjectionRuns(
+        separator,
+        0,
+        searchEndY,
+        PROJECTION_SEPARATOR_DENSITY_FLOOR,
+        1,
+        PROJECTION_MAX_SEPARATOR_RUN
+    );
+
+    let separatorRun = pickBestSeparatorRun(separatorRuns, textRuns, separator, smoothedDark);
+
+    if (!separatorRun && goldLine) {
+        separatorRun = {
+            y0: goldLine.y0,
+            y1: goldLine.y1,
+            height: goldLine.y1 - goldLine.y0 + 1,
+            centerY: goldLine.centerY
+        };
+    }
+
+    let abbrRun = null;
+    let titleRun = null;
+
+    if (separatorRun) {
+        const above = textRuns.filter(run => run.y1 < separatorRun.y0 - 1).sort((left, right) => left.y0 - right.y0);
+        const below = textRuns.filter(run => run.y0 > separatorRun.y1 + 1).sort((left, right) => left.y0 - right.y0);
+        abbrRun = above[0] ?? null;
+        titleRun = below[0] ?? null;
+
+        if (!abbrRun) {
+            abbrRun = inferTextRunInBand(smoothedDark, separator, 0, Math.max(0, separatorRun.y0 - 2), textThreshold);
+        }
+        if (!titleRun) {
+            titleRun = inferTextRunInBand(
+                smoothedDark,
+                separator,
+                Math.min(height - 1, separatorRun.y1 + 2),
+                searchEndY,
+                textThreshold
+            );
+        }
+    } else if (textRuns.length >= 2) {
+        const sorted = [...textRuns].sort((left, right) => left.y0 - right.y0);
+        [abbrRun, titleRun] = sorted;
+    } else if (textRuns.length === 1) {
+        abbrRun = textRuns[0];
+    }
+
+    return {
+        abbr: abbrRun ? projectionRunToImageRect(canvas, offsetX, offsetY, width, abbrRun, data, textLeft, textRight) : null,
+        title: titleRun ? projectionRunToImageRect(canvas, offsetX, offsetY, width, titleRun, data, textLeft, textRight) : null,
+        separatorRun,
+        textRuns,
+        projection: {
+            dark: smoothedDark,
+            separator,
+            textThreshold
+        }
+    };
+}
+
 function findPeakDecorativeLineInRange(data, width, yStart, yEnd, scanLeft, scanRight) {
     if (yEnd <= yStart) return null;
 
@@ -395,8 +782,7 @@ function analyzeHeaderLayout(image) {
     };
 }
 
-function detectHeaderTextLineRects(image) {
-    const layout = analyzeHeaderLayout(image);
+function detectHeaderTextLineRectsMask(layout) {
     const {
         offsetX,
         offsetY,
@@ -448,8 +834,37 @@ function detectHeaderTextLineRects(image) {
         };
     }
 
-    const fallback = buildFallbackLineRects(image, layout.minLeft);
-    return { abbr: fallback.abbr, title: fallback.title };
+    return null;
+}
+
+function detectHeaderTextLineRects(image) {
+    const layout = analyzeHeaderLayout(image);
+    const projectionResult = detectTextLinesByHorizontalProjection(layout);
+
+    if (projectionResult.abbr && projectionResult.title) {
+        return {
+            abbr: projectionResult.abbr,
+            title: projectionResult.title
+        };
+    }
+
+    const maskResult = detectHeaderTextLineRectsMask(layout);
+    if (maskResult?.abbr && maskResult?.title) {
+        return maskResult;
+    }
+
+    if (projectionResult.abbr || projectionResult.title) {
+        return {
+            abbr: projectionResult.abbr ?? maskResult?.abbr ?? null,
+            title: projectionResult.title ?? maskResult?.title ?? null
+        };
+    }
+
+    if (maskResult) {
+        return maskResult;
+    }
+
+    return buildFallbackLineRects(image, layout.minLeft);
 }
 
 function isDecorativePillarPixel(r, g, b) {
@@ -1399,6 +1814,7 @@ function finalizeEventHeaderResult(result) {
 
 export function debugEventOcrAnalysis(image) {
     const layout = analyzeHeaderLayout(image);
+    const projection = detectTextLinesByHorizontalProjection(layout);
     const roles = detectHeaderTextLineRects(image);
 
     return {
@@ -1407,6 +1823,9 @@ export function debugEventOcrAnalysis(image) {
         minLeft: layout.minLeft,
         iconRowTopY: layout.iconRowTopY,
         bandHeight: layout.height,
+        projectionTextRuns: projection.textRuns,
+        projectionSeparator: projection.separatorRun,
+        projectionThreshold: projection.projection.textThreshold,
         roles
     };
 }
