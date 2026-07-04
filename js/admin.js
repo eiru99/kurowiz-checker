@@ -7,7 +7,11 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
-import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js?v=20250704v';
+import {
+    extractEventNamesLenient,
+    getEventNameOcrRegions,
+    recognizeTextFromImageRectLenient
+} from './event-ocr.js?v=20250704w';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -589,19 +593,51 @@ function ensureNewEventModeForScreenshot() {
     return eventModeNew.checked;
 }
 
-function applyExtractedEventNames({ abbr, title }) {
+function applyRecognizedEventNames(abbr, title) {
     let filled = false;
 
     if (abbr) {
         eventAbbrInput.value = abbr;
+        eventAbbrInput.dispatchEvent(new Event('input', { bubbles: true }));
         filled = true;
     }
     if (title) {
         eventTitleInput.value = title;
+        eventTitleInput.dispatchEvent(new Event('input', { bubbles: true }));
         filled = true;
     }
 
     return filled;
+}
+
+async function fillEventNamesFromImage(image) {
+    if (editingEventId || eventModeExisting.checked) return false;
+    ensureNewEventModeForScreenshot();
+
+    let abbr = '';
+    let title = '';
+
+    try {
+        ({ abbr, title } = await extractEventNamesLenient(image));
+    } catch (error) {
+        console.warn('Event name OCR failed:', error);
+    }
+
+    if (!abbr || !title) {
+        try {
+            const regions = getEventNameOcrRegions(image);
+            if (!abbr && regions.abbr) {
+                abbr = await recognizeTextFromImageRectLenient(image, regions.abbr, { preserveSpaces: false });
+            }
+            if (!title && regions.title) {
+                title = await recognizeTextFromImageRectLenient(image, regions.title, { preserveSpaces: true });
+            }
+        } catch (error) {
+            console.warn('Region OCR fallback failed:', error);
+        }
+    }
+
+    return applyRecognizedEventNames(abbr, title);
 }
 
 async function runAutoOcrForTarget(target, button) {
@@ -613,41 +649,15 @@ async function runAutoOcrForTarget(target, button) {
         return;
     }
 
-    const previousHint = imageHint.textContent;
     imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
 
     try {
-        const result = await extractEventNamesFromImage(sourceImage);
-        const filled = applyExtractedEventNames(result);
+        const filled = await fillEventNamesFromImage(sourceImage);
 
         if (filled) {
-            if (result.abbr && !result.title) {
-                imageHint.textContent = '略称のみ取得できました。正式名を手入力するか「自動認識」を再試行してください';
-            } else if (!result.abbr && result.title) {
-                imageHint.textContent = '正式名のみ取得できました。略称を手入力するか「自動認識」を再試行してください';
-            } else {
-                imageHint.textContent = 'イベント名を取得しました。精霊をクリックして切り抜いてください';
-            }
+            imageHint.textContent = '認識できた文字列を入力欄に反映しました。必要なら修正してください';
             scheduleOcrRegionOverlayRefresh();
             return;
-        }
-
-        const regions = getEventNameOcrRegions(sourceImage);
-        const rect = target === 'abbr' ? regions.abbr : regions.title;
-
-        if (rect) {
-            const text = await recognizeTextFromImageRect(sourceImage, rect);
-            if (text) {
-                if (target === 'abbr') {
-                    eventAbbrInput.value = text;
-                } else {
-                    eventTitleInput.value = text;
-                }
-                imageHint.textContent = target === 'abbr'
-                    ? '略称を取得しました'
-                    : '正式名を取得しました';
-                return;
-            }
         }
 
         imageHint.textContent = '自動取得できませんでした。画像上で文字をドラッグして囲んでください';
@@ -695,11 +705,19 @@ async function completeOcrSelection(displayRect) {
     imageHint.textContent = '文字を読み取り中...';
 
     try {
-        const text = await recognizeTextFromImageRect(sourceImage, imageRect);
-        if (target === 'abbr') {
-            eventAbbrInput.value = text;
+        const text = await recognizeTextFromImageRectLenient(
+            sourceImage,
+            imageRect,
+            { preserveSpaces: target !== 'abbr' }
+        );
+        if (text) {
+            if (target === 'abbr') {
+                eventAbbrInput.value = text;
+            } else {
+                eventTitleInput.value = text;
+            }
         } else {
-            eventTitleInput.value = text;
+            throw new Error('文字を読み取れませんでした。領域を大きくして再試行してください。');
         }
     } catch (error) {
         console.warn('Manual OCR failed:', error);
@@ -894,34 +912,25 @@ async function handleCropClick(event) {
 
 async function tryExtractEventNamesFromScreenshot(image) {
     if (editingEventId || eventModeExisting.checked) return;
-    if (!ensureNewEventModeForScreenshot()) return;
 
     const previousHint = imageHint.textContent;
     imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
 
     try {
-        const result = await extractEventNamesFromImage(image);
-        const filled = applyExtractedEventNames(result);
+        const filled = await fillEventNamesFromImage(image);
 
-        if (!filled) {
-            imageHint.textContent = 'イベント名を自動取得できませんでした。「自動認識」ボタンまたは手入力で入力してください';
-            window.setTimeout(() => {
-                if (imageHint.textContent.includes('自動取得できません')) {
-                    imageHint.textContent = previousHint;
-                }
-            }, 5000);
+        if (filled) {
+            imageHint.textContent = '認識できた文字列を入力欄に反映しました。精霊をクリックして切り抜いてください';
+            scheduleOcrRegionOverlayRefresh();
             return;
         }
 
-        if (result.abbr && !result.title) {
-            imageHint.textContent = '略称のみ取得できました。正式名を手入力するか「自動認識」を試してください';
-        } else if (!result.abbr && result.title) {
-            imageHint.textContent = '正式名のみ取得できました。略称を手入力するか「自動認識」を試してください';
-        } else {
-            imageHint.textContent = 'イベント名を取得しました。精霊をクリックして切り抜いてください';
-        }
-
-        scheduleOcrRegionOverlayRefresh();
+        imageHint.textContent = 'イベント名を自動取得できませんでした。「自動認識」ボタンまたは手入力で入力してください';
+        window.setTimeout(() => {
+            if (imageHint.textContent.includes('自動取得できません')) {
+                imageHint.textContent = previousHint;
+            }
+        }, 5000);
     } catch (error) {
         console.warn('Event name OCR failed:', error);
         imageHint.textContent = 'イベント名を自動取得できませんでした。「自動認識」ボタンまたは手入力で入力してください';
@@ -977,6 +986,9 @@ async function processIncomingImage(file) {
 
     if (imageNeedsCropMode(image)) {
         enterCropMode(image, objectUrl);
+        fillEventNamesFromImage(image).catch(error => {
+            console.warn('Event name OCR after crop mode failed:', error);
+        });
         return;
     }
 

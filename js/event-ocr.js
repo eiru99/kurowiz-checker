@@ -1761,6 +1761,59 @@ async function recognizeLineRect(worker, image, rect, { preserveSpaces = false }
     return best;
 }
 
+function lightSanitizeForFill(text, { preserveSpaces = false } = {}) {
+    let result = normalizeEventOcrText(text, { preserveSpaces });
+    if (!result) return '';
+
+    return result
+        .replace(/^[|｜—―‐─－_=\s]+/, '')
+        .replace(/[|｜—―‐─－_=\s]+$/, '')
+        .trim();
+}
+
+async function recognizeLineRectLenient(worker, image, rect, { preserveSpaces = false } = {}) {
+    const imageWidth = image.naturalWidth || image.width;
+    const padX = Math.max(6, Math.floor(rect.w * 0.015));
+    const expandedRect = {
+        x: Math.max(0, rect.x - padX),
+        y: rect.y,
+        w: Math.min(imageWidth - Math.max(0, rect.x - padX), rect.w + padX * 2),
+        h: rect.h
+    };
+    const sourceCanvas = cropImageRect(image, expandedRect);
+    const variants = buildOcrVariants(sourceCanvas);
+
+    let best = { text: '', confidence: -1 };
+
+    for (const canvas of variants) {
+        await worker.setParameters({ tessedit_pageseg_mode: SINGLE_LINE_PSM });
+        const { data } = await worker.recognize(canvas);
+        const text = lightSanitizeForFill(data.text ?? '', { preserveSpaces });
+        if (!text) continue;
+
+        const confidence = data.confidence ?? 0;
+        if (confidence > best.confidence) {
+            best = { text, confidence };
+        }
+    }
+
+    if (!best.text) {
+        for (const canvas of variants) {
+            await worker.setParameters({ tessedit_pageseg_mode: AUTO_PSM });
+            const { data } = await worker.recognize(canvas);
+            const text = lightSanitizeForFill(data.text ?? '', { preserveSpaces });
+            if (!text) continue;
+
+            const confidence = data.confidence ?? 0;
+            if (confidence > best.confidence) {
+                best = { text, confidence };
+            }
+        }
+    }
+
+    return best;
+}
+
 function looksLikeJapaneseLine(text) {
     return /[\u3040-\u9fff\u30a0-\u30ff]/.test(text);
 }
@@ -1912,4 +1965,59 @@ export async function extractEventNamesFromImage(image) {
     }
 
     return result;
+}
+
+/**
+ * 管理画面向け: 認識できた文字列をできるだけ捨てずに返す。
+ * @param {HTMLImageElement} image
+ * @returns {Promise<{ abbr: string, title: string }>}
+ */
+export async function extractEventNamesLenient(image) {
+    const worker = await getOcrWorker();
+    let { abbr: abbrRect, title: titleRect } = detectHeaderTextLineRects(image);
+
+    if (!abbrRect || !titleRect) {
+        const layout = analyzeHeaderLayout(image);
+        const fallback = buildFallbackLineRects(image, layout.minLeft);
+        abbrRect = abbrRect ?? fallback.abbr;
+        titleRect = titleRect ?? fallback.title;
+    }
+
+    let abbr = '';
+    let title = '';
+
+    if (abbrRect) {
+        abbr = (await recognizeLineRectLenient(worker, image, abbrRect, { preserveSpaces: false })).text;
+        if (!abbr) {
+            abbr = (await recognizeLineRectLenient(worker, image, abbrRect, { preserveSpaces: true })).text;
+        }
+    }
+
+    if (titleRect) {
+        title = (await recognizeLineRectLenient(worker, image, titleRect, { preserveSpaces: true })).text;
+        if (!title) {
+            title = (await recognizeLineRectLenient(worker, image, titleRect, { preserveSpaces: false })).text;
+        }
+    }
+
+    ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
+
+    if (title && abbr && title === abbr) {
+        title = '';
+    }
+
+    return { abbr, title };
+}
+
+/**
+ * 任意矩形から文字を OCR する（失敗時は空文字、管理画面向けに緩いサニタイズ）。
+ * @param {HTMLImageElement} image
+ * @param {{ x: number, y: number, w: number, h: number }} rect
+ * @param {{ preserveSpaces?: boolean }} [options]
+ * @returns {Promise<string>}
+ */
+export async function recognizeTextFromImageRectLenient(image, rect, { preserveSpaces = true } = {}) {
+    const worker = await getOcrWorker();
+    const result = await recognizeLineRectLenient(worker, image, rect, { preserveSpaces });
+    return result.text ?? '';
 }
