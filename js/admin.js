@@ -10,6 +10,7 @@ import {
 import {
     extractEventNamesLenient,
     ensureEventOcrOpenCv,
+    getEventNameOcrRegions,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
 } from './event-ocr.js?v=20250705e';
@@ -407,9 +408,8 @@ function clientToDisplayPoint(clientX, clientY) {
     const metrics = getImageFitMetrics();
     if (!metrics) return null;
 
-    const stageRect = imagePreviewStage.getBoundingClientRect();
-    const displayX = clientX - stageRect.left - metrics.offsetLeft;
-    const displayY = clientY - stageRect.top - metrics.offsetTop;
+    const displayX = clientX - metrics.rect.left - metrics.offsetLeft;
+    const displayY = clientY - metrics.rect.top - metrics.offsetTop;
 
     if (
         displayX < 0
@@ -588,33 +588,15 @@ async function fillEventNamesFromImage(image) {
     return filled;
 }
 
-async function runAutoOcrForTarget(target, button) {
+function runAutoOcrForTarget(target, button) {
     if (!ensureNewEventModeForScreenshot()) return;
 
-    const sourceImage = getOcrSourceImage();
-    if (!sourceImage) {
+    if (!getOcrSourceImage()) {
         alert('先に画像を貼り付けるか選択してください。');
         return;
     }
 
-    imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
-
-    try {
-        const filled = await fillEventNamesFromImage(sourceImage);
-
-        if (filled) {
-            imageHint.textContent = '認識できた文字列を入力欄に反映しました。必要なら修正してください';
-            scheduleOcrRegionOverlayRefresh();
-            return;
-        }
-
-        imageHint.textContent = '自動取得できませんでした。画像上で文字をドラッグして囲んでください';
-        startOcrSelectMode(target, button);
-    } catch (error) {
-        console.warn('Auto OCR failed:', error);
-        imageHint.textContent = '自動取得できませんでした。画像上で文字をドラッグして囲んでください';
-        startOcrSelectMode(target, button);
-    }
+    startOcrSelectMode(target, button);
 }
 
 function startOcrSelectMode(target, button) {
@@ -740,9 +722,8 @@ function clientToImagePoint(clientX, clientY) {
     const metrics = getImageFitMetrics();
     if (!metrics) return null;
 
-    const stageRect = imagePreviewStage.getBoundingClientRect();
-    const displayX = clientX - stageRect.left - metrics.offsetLeft;
-    const displayY = clientY - stageRect.top - metrics.offsetTop;
+    const displayX = clientX - metrics.rect.left - metrics.offsetLeft;
+    const displayY = clientY - metrics.rect.top - metrics.offsetTop;
 
     if (
         displayX < 0
@@ -1377,10 +1358,7 @@ export function initAdmin(db, onReloadCatalog) {
 
     document.querySelectorAll('.btn-ocr-select').forEach(button => {
         button.addEventListener('click', () => {
-            runAutoOcrForTarget(button.dataset.ocrTarget, button).catch(error => {
-                console.error(error);
-                alert(error.message || '文字認識に失敗しました。');
-            });
+            runAutoOcrForTarget(button.dataset.ocrTarget, button);
         });
     });
 
