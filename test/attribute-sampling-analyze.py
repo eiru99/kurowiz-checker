@@ -22,6 +22,7 @@ CASES = [
     ("sample-water-light.png", "水", "光"),
     ("sample-fire-dark.png", "火", "闇"),
     ("sample-fire-light.png", "火", "光"),
+    ("sample-thunder-water.png", "雷", "水"),
 ]
 
 
@@ -77,7 +78,7 @@ class ClassifyThresholds:
     hue_green_band: float = 155.0
     hue_water: float = 255.0
     hue_dark: float = 327.0
-    gold_light_b_min: float = 55.0
+    gold_light_b_min: float = 72.0
     gold_light_sat_max: float = 0.65
     rgb_diff: float = 20.0
 

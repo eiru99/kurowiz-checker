@@ -444,6 +444,95 @@
         "actual": "光",
         "match": true
       }
+    },
+    {
+      "file": "sample-thunder-water.png",
+      "imageSize": [
+        137,
+        138
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 137
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 25,
+          "h": 25
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "offset": 4,
+        "emblemSize": 25,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "雷",
+        "sub": "水"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 12,
+          "h": 25
+        },
+        "stats": {
+          "count": 249,
+          "frame": 51,
+          "min_samples": 36
+        },
+        "color": {
+          "rgb": [
+            153.73,
+            142.52,
+            66.73
+          ],
+          "hue": 52.27,
+          "saturation": 0.5659,
+          "luminance": 137.23
+        },
+        "actual": "雷",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 10,
+          "h": 25
+        },
+        "stats": {
+          "count": 245,
+          "frame": 5,
+          "min_samples": 30
+        },
+        "color": {
+          "rgb": [
+            116.38,
+            171.61,
+            198.38
+          ],
+          "hue": 199.58,
+          "saturation": 0.4133,
+          "luminance": 158.15
+        },
+        "actual": "水",
+        "match": true
+      }
     }
   ],
   "dataset": [
@@ -586,6 +675,34 @@
       "hue": 10.84,
       "saturation": 0.3433,
       "luminance": 158.74
+    },
+    {
+      "file": "sample-thunder-water.png",
+      "region": "main",
+      "expected": "雷",
+      "actual": "雷",
+      "rgb": [
+        153.73,
+        142.52,
+        66.73
+      ],
+      "hue": 52.27,
+      "saturation": 0.5659,
+      "luminance": 137.23
+    },
+    {
+      "file": "sample-thunder-water.png",
+      "region": "sub",
+      "expected": "水",
+      "actual": "水",
+      "rgb": [
+        116.38,
+        171.61,
+        198.38
+      ],
+      "hue": 199.58,
+      "saturation": 0.4133,
+      "luminance": 158.15
     }
   ],
   "matchingThresholds": [
@@ -598,7 +715,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -611,7 +728,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -624,7 +741,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -637,7 +754,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -650,7 +767,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     },
@@ -663,7 +780,7 @@
       "hue_green_band": 150.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -676,7 +793,7 @@
       "hue_green_band": 150.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -689,7 +806,7 @@
       "hue_green_band": 150.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -702,7 +819,7 @@
       "hue_green_band": 150.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -715,7 +832,7 @@
       "hue_green_band": 150.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     },
@@ -728,7 +845,7 @@
       "hue_green_band": 155.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -741,7 +858,7 @@
       "hue_green_band": 155.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -754,7 +871,7 @@
       "hue_green_band": 155.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -767,7 +884,7 @@
       "hue_green_band": 155.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -780,7 +897,7 @@
       "hue_green_band": 155.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     },
@@ -793,7 +910,7 @@
       "hue_green_band": 160.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -806,7 +923,7 @@
       "hue_green_band": 160.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -819,7 +936,7 @@
       "hue_green_band": 160.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -832,7 +949,7 @@
       "hue_green_band": 160.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -845,7 +962,7 @@
       "hue_green_band": 160.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     },
@@ -858,7 +975,7 @@
       "hue_green_band": 165.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -871,7 +988,7 @@
       "hue_green_band": 165.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -884,7 +1001,7 @@
       "hue_green_band": 165.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -897,7 +1014,7 @@
       "hue_green_band": 165.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -910,7 +1027,7 @@
       "hue_green_band": 165.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     },
@@ -923,7 +1040,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 10.0
     },
@@ -936,7 +1053,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 15.0
     },
@@ -949,7 +1066,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 20.0
     },
@@ -962,7 +1079,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 25.0
     },
@@ -975,7 +1092,7 @@
       "hue_green_band": 145.0,
       "hue_water": 255.0,
       "hue_dark": 327.0,
-      "gold_light_b_min": 55.0,
+      "gold_light_b_min": 72.0,
       "gold_light_sat_max": 0.65,
       "rgb_diff": 30.0
     }

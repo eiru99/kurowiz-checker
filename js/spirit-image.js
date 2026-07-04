@@ -669,7 +669,7 @@ function classifyElementColor(rgb) {
     }
     if (hue < 75) {
         // 光アイコンの金枠内は黄味が強いが B チャンネルが残る（雷は B が低い）
-        if (b >= 55 && sat < 0.65) return '光';
+        if (b >= 72 && sat < 0.65) return '光';
         return '雷';
     }
     if (hue < 155) {
