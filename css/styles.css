@@ -490,6 +490,64 @@ button:hover {
     box-sizing: border-box;
 }
 
+.admin-ocr-region-overlays {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.admin-ocr-region {
+    position: absolute;
+    box-sizing: border-box;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.admin-ocr-region-label {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.admin-ocr-region-header {
+    border-color: rgba(96, 125, 139, 0.85);
+    background: rgba(96, 125, 139, 0.14);
+}
+
+.admin-ocr-region-header .admin-ocr-region-label {
+    background: rgba(55, 71, 79, 0.88);
+}
+
+.admin-ocr-region-abbr {
+    border-color: rgba(25, 118, 210, 0.9);
+    background: rgba(33, 150, 243, 0.3);
+}
+
+.admin-ocr-region-abbr .admin-ocr-region-label {
+    background: rgba(21, 101, 192, 0.92);
+}
+
+.admin-ocr-region-title {
+    border-color: rgba(56, 142, 60, 0.9);
+    background: rgba(76, 175, 80, 0.3);
+}
+
+.admin-ocr-region-title .admin-ocr-region-label {
+    background: rgba(46, 125, 50, 0.92);
+}
+
+.admin-ocr-region-separator {
+    border: none;
+    background: rgba(211, 47, 47, 0.55);
+}
+
 .spirit-queue-block {
     margin-bottom: 14px;
 }

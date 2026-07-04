@@ -456,6 +456,40 @@ function finalizeEventHeaderResult(result) {
 }
 
 /**
+ * 自動 OCR が参照する領域（デバッグ表示用）
+ * @param {HTMLImageElement} image
+ */
+export function getEventNameOcrRegions(image) {
+    const imageWidth = image.naturalWidth || image.width;
+    const imageHeight = image.naturalHeight || image.height;
+    const { canvas, offsetX, offsetY } = cropImageBand(image, HEADER_SCAN_BAND);
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const { width, height } = canvas;
+    const imageData = context.getImageData(0, 0, width, height);
+    const separatorLocalY = findHorizontalSeparatorY(imageData.data, width, height);
+    const lineRects = detectHeaderTextLineRects(image);
+
+    return {
+        headerScan: {
+            x: 0,
+            y: 0,
+            w: imageWidth,
+            h: Math.max(1, Math.floor(imageHeight * HEADER_SCAN_BAND.height)),
+            label: '走査範囲'
+        },
+        separator: separatorLocalY === null ? null : {
+            x: offsetX,
+            y: offsetY + separatorLocalY,
+            w: width,
+            h: Math.max(2, Math.floor(imageHeight * 0.004)),
+            label: '区切り線'
+        },
+        abbr: lineRects[0] ? { ...lineRects[0], label: '略称' } : null,
+        title: lineRects[1] ? { ...lineRects[1], label: '正式名' } : null
+    };
+}
+
+/**
  * 画像上の任意矩形から文字を OCR する。
  * @param {HTMLImageElement} image
  * @param {{ x: number, y: number, w: number, h: number }} rect

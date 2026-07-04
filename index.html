@@ -96,10 +96,11 @@
                         <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>新規イベント時はイベント名も自動取得。スクショは精霊をクリックで切り抜き（複数可）</small></p>
                         <div class="admin-image-preview-stage" id="admin-image-preview-stage" hidden>
                             <img id="admin-image-preview" class="admin-image-preview" alt="">
+                            <div id="admin-ocr-region-overlays" class="admin-ocr-region-overlays" hidden></div>
                             <div id="admin-ocr-selection" class="admin-ocr-selection" hidden></div>
                         </div>
                     </div>
-                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。新規イベントは自動取得または「自動認識」で範囲指定。保存時は 128×128 に統一</p>
+                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。新規イベントの貼り付け後、青=略称・緑=正式名の半透明枠が OCR 範囲</p>
                 </div>
 
                 <div id="spirit-queue-block" class="spirit-queue-block" hidden>

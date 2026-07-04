@@ -7,7 +7,7 @@ import {
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
-import { extractEventNamesFromImage, recognizeTextFromImageRect } from './event-ocr.js';
+import { extractEventNamesFromImage, getEventNameOcrRegions, recognizeTextFromImageRect } from './event-ocr.js';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -49,6 +49,7 @@ const imageInput = document.getElementById('admin-spirit-image');
 const imagePreviewStage = document.getElementById('admin-image-preview-stage');
 const imagePreview = document.getElementById('admin-image-preview');
 const ocrSelection = document.getElementById('admin-ocr-selection');
+const ocrRegionOverlays = document.getElementById('admin-ocr-region-overlays');
 const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
 const spiritQueueBlock = document.getElementById('spirit-queue-block');
@@ -388,6 +389,71 @@ function getImageFitMetrics() {
     };
 }
 
+function imageRectToDisplayRect(imageRect) {
+    const metrics = getImageFitMetrics();
+    if (!metrics || !imageRect) return null;
+
+    return {
+        x: metrics.offsetLeft + imageRect.x * metrics.scale,
+        y: metrics.offsetTop + imageRect.y * metrics.scale,
+        w: imageRect.w * metrics.scale,
+        h: imageRect.h * metrics.scale
+    };
+}
+
+function clearOcrRegionOverlays() {
+    ocrRegionOverlays.innerHTML = '';
+    ocrRegionOverlays.hidden = true;
+}
+
+function appendOcrRegionOverlay(className, imageRect, label) {
+    const displayRect = imageRectToDisplayRect(imageRect);
+    if (!displayRect || displayRect.w < 1 || displayRect.h < 1) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = `admin-ocr-region ${className}`;
+    overlay.style.left = `${displayRect.x}px`;
+    overlay.style.top = `${displayRect.y}px`;
+    overlay.style.width = `${displayRect.w}px`;
+    overlay.style.height = `${displayRect.h}px`;
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'admin-ocr-region-label';
+    labelEl.textContent = label;
+    overlay.appendChild(labelEl);
+
+    ocrRegionOverlays.appendChild(overlay);
+}
+
+function showOcrRegionOverlays(image) {
+    if (!eventModeNew.checked || editingEventId || !image) {
+        clearOcrRegionOverlays();
+        return;
+    }
+
+    const regions = getEventNameOcrRegions(image);
+    ocrRegionOverlays.innerHTML = '';
+
+    appendOcrRegionOverlay('admin-ocr-region-header', regions.headerScan, regions.headerScan.label);
+    if (regions.separator) {
+        appendOcrRegionOverlay('admin-ocr-region-separator', regions.separator, regions.separator.label);
+    }
+    if (regions.abbr) {
+        appendOcrRegionOverlay('admin-ocr-region-abbr', regions.abbr, regions.abbr.label);
+    }
+    if (regions.title) {
+        appendOcrRegionOverlay('admin-ocr-region-title', regions.title, regions.title.label);
+    }
+
+    ocrRegionOverlays.hidden = ocrRegionOverlays.childElementCount === 0;
+}
+
+function refreshOcrRegionOverlays() {
+    const sourceImage = getOcrSourceImage();
+    if (!sourceImage || ocrRegionOverlays.hidden) return;
+    showOcrRegionOverlays(sourceImage);
+}
+
 function clientToDisplayPoint(clientX, clientY) {
     const metrics = getImageFitMetrics();
     if (!metrics) return null;
@@ -632,6 +698,7 @@ function clientToImagePoint(clientX, clientY) {
 
 function clearImageDropzone() {
     clearPendingCrop();
+    clearOcrRegionOverlays();
     if (previewObjectUrl) {
         URL.revokeObjectURL(previewObjectUrl);
         previewObjectUrl = null;
@@ -660,6 +727,9 @@ function showImagePreview(file) {
     imageDropzone.classList.add('has-image');
     imageDropzone.classList.remove('crop-mode');
     updateOcrSelectButtons();
+    requestAnimationFrame(() => {
+        showOcrRegionOverlays(imagePreview);
+    });
 }
 
 function assignSpiritImageFile(file) {
@@ -690,6 +760,9 @@ function enterCropMode(image, objectUrl) {
     updateCropHint();
     updateOcrSelectButtons();
     syncSpiritCropClickListener();
+    requestAnimationFrame(() => {
+        showOcrRegionOverlays(image);
+    });
 }
 
 async function handleCropClick(event) {
@@ -926,6 +999,7 @@ function setEventMode(mode) {
     eventTitleInput.required = isNew;
     if (!isNew) {
         clearOcrSelectMode();
+        clearOcrRegionOverlays();
         restoreImageHintAfterOcr();
     }
     updateImageRequired();
@@ -1235,6 +1309,8 @@ export function initAdmin(db, onReloadCatalog) {
     imagePreviewStage.addEventListener('pointermove', handleOcrPointerMove);
     imagePreviewStage.addEventListener('pointerup', handleOcrPointerUp);
     imagePreviewStage.addEventListener('pointercancel', handleOcrPointerUp);
+    imagePreview.addEventListener('load', refreshOcrRegionOverlays);
+    window.addEventListener('resize', refreshOcrRegionOverlays);
 
     dialog.addEventListener('keydown', event => {
         if (event.key === 'Escape' && ocrSelectTarget) {
