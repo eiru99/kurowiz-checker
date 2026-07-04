@@ -3,6 +3,7 @@ import {
     createEventId,
     createSpiritId,
     fetchCatalogRows,
+    getSpiritImageUrl,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
 } from './catalog.js';
@@ -25,7 +26,6 @@ const ADMIN_SESSION_KEY = 'wiz_admin_unlocked';
 let database = null;
 let reloadCatalog = null;
 let catalogRows = { sections: [], events: [], spirits: [] };
-let editingSpiritId = null;
 
 const dialog = document.getElementById('admin-dialog');
 const form = document.getElementById('admin-form');
@@ -51,13 +51,18 @@ const imageHint = document.getElementById('admin-image-hint');
 const submitButton = document.getElementById('admin-submit-btn');
 const spiritQueueBlock = document.getElementById('spirit-queue-block');
 const spiritQueueList = document.getElementById('spirit-queue-list');
-const spiritQueueCount = document.getElementById('spirit-queue-count');
+const spiritQueueHeading = document.getElementById('spirit-queue-heading');
+const adminImageGroup = document.getElementById('admin-image-group');
 
 let previewObjectUrl = null;
 let pendingCropImage = null;
 let pendingCropObjectUrl = null;
-/** @type {{ id: string, file: File, objectUrl: string, name: string, main: string, sub: string, hideSub: boolean }[]} */
+/** @type {{ id: string, spiritId?: string, file: File | null, objectUrl: string, isExternalUrl?: boolean, name: string, main: string, sub: string, hideSub: boolean, imagePath?: string, sortOrder?: number }[]} */
 let spiritQueue = [];
+let editingEventId = null;
+let imageReplaceTargetId = null;
+/** @type {string[]} */
+let spiritsToDelete = [];
 
 const IMAGE_MIME_EXTENSIONS = {
     'image/png': 'png',
@@ -68,17 +73,24 @@ const IMAGE_MIME_EXTENSIONS = {
 
 function clearSpiritQueue() {
     for (const item of spiritQueue) {
-        URL.revokeObjectURL(item.objectUrl);
+        if (item.objectUrl && !item.isExternalUrl) {
+            URL.revokeObjectURL(item.objectUrl);
+        }
     }
     spiritQueue = [];
     spiritQueueList.innerHTML = '';
     spiritQueueBlock.hidden = true;
-    spiritQueueCount.textContent = '0';
+    updateQueueHeading();
     updateSubmitButtonLabel();
 }
 
+function updateQueueHeading() {
+    const prefix = editingEventId ? '編集する精霊' : '追加する精霊';
+    spiritQueueHeading.textContent = `${prefix} ${spiritQueue.length}体`;
+}
+
 function updateSubmitButtonLabel() {
-    if (editingSpiritId) {
+    if (editingEventId) {
         submitButton.textContent = '更新する';
         return;
     }
@@ -136,16 +148,24 @@ function onQueueAttributeChange(item) {
 
 function renderSpiritQueue() {
     spiritQueueList.innerHTML = '';
-    spiritQueueCount.textContent = String(spiritQueue.length);
+    updateQueueHeading();
     spiritQueueBlock.hidden = spiritQueue.length === 0;
 
     for (const item of spiritQueue) {
         const li = document.createElement('li');
         li.className = 'spirit-queue-item';
+        if (editingEventId && item.id === imageReplaceTargetId) {
+            li.classList.add('thumb-selected');
+        }
         li.dataset.queueId = item.id;
 
         const thumb = document.createElement('img');
         thumb.className = 'spirit-queue-thumb';
+        if (editingEventId) {
+            thumb.classList.add('clickable');
+            thumb.title = 'クリックして画像を差し替え';
+            thumb.addEventListener('click', () => selectImageReplaceTarget(item.id));
+        }
         thumb.src = item.objectUrl;
         thumb.alt = '';
 
@@ -212,10 +232,47 @@ function removeFromSpiritQueue(queueId) {
     const index = spiritQueue.findIndex(item => item.id === queueId);
     if (index === -1) return;
 
-    URL.revokeObjectURL(spiritQueue[index].objectUrl);
+    const item = spiritQueue[index];
+    if (item.spiritId) {
+        spiritsToDelete.push(item.spiritId);
+    }
+    if (item.objectUrl && !item.isExternalUrl) {
+        URL.revokeObjectURL(item.objectUrl);
+    }
+    if (imageReplaceTargetId === queueId) {
+        imageReplaceTargetId = null;
+        adminImageGroup.hidden = true;
+        clearImageDropzone();
+    }
     spiritQueue.splice(index, 1);
     renderSpiritQueue();
     updateCropHint();
+}
+
+function selectImageReplaceTarget(queueId) {
+    imageReplaceTargetId = queueId;
+    adminImageGroup.hidden = false;
+    clearImageDropzone();
+    imageHint.textContent = '画像を貼り付けまたは選択して差し替え（スクショは精霊をクリックで切り抜き）';
+    renderSpiritQueue();
+}
+
+function updateQueueItemImage(queueId, file, attributes = null) {
+    const item = spiritQueue.find(entry => entry.id === queueId);
+    if (!item) return;
+
+    if (item.objectUrl && !item.isExternalUrl) {
+        URL.revokeObjectURL(item.objectUrl);
+    }
+    item.file = file;
+    item.objectUrl = URL.createObjectURL(file);
+    item.isExternalUrl = false;
+    if (attributes) {
+        item.main = toQueueAttribute(attributes.main);
+        item.sub = toQueueAttribute(attributes.sub);
+        item.hideSub = shouldHideSub(item.main, item.sub);
+    }
+    renderSpiritQueue();
 }
 
 function addToSpiritQueue(file, attributes = null) {
@@ -226,6 +283,7 @@ function addToSpiritQueue(file, attributes = null) {
         id: crypto.randomUUID(),
         file,
         objectUrl,
+        isExternalUrl: false,
         name: '',
         main,
         sub,
@@ -241,6 +299,11 @@ function addToSpiritQueue(file, attributes = null) {
 function updateCropHint() {
     if (!pendingCropImage) return;
 
+    if (editingEventId && imageReplaceTargetId) {
+        imageHint.textContent = '切り抜きたい精霊をクリックしてください';
+        return;
+    }
+
     const count = spiritQueue.length;
     if (count === 0) {
         imageHint.textContent = '切り抜きたい精霊をクリックしてください（複数選択可）';
@@ -250,16 +313,16 @@ function updateCropHint() {
 }
 
 function updateImageRequired() {
-    if (editingSpiritId) {
+    if (editingEventId) {
         imageInput.required = false;
-        spiritNameInput.required = true;
+        spiritNameInput.required = false;
         return;
     }
 
     const showDetails = eventModeExisting.checked || eventModeNew.checked;
     const hasQueue = spiritQueue.length > 0;
     imageInput.required = showDetails && !hasQueue;
-    spiritNameInput.required = Boolean(editingSpiritId);
+    spiritNameInput.required = false;
 }
 
 function extensionFromMime(mime) {
@@ -323,9 +386,8 @@ function clientToImagePoint(clientX, clientY) {
     };
 }
 
-function clearImagePreview() {
+function clearImageDropzone() {
     clearPendingCrop();
-    clearSpiritQueue();
     if (previewObjectUrl) {
         URL.revokeObjectURL(previewObjectUrl);
         previewObjectUrl = null;
@@ -334,6 +396,13 @@ function clearImagePreview() {
     imagePreview.removeAttribute('src');
     imagePreviewStage.hidden = true;
     imageDropzone.classList.remove('has-image');
+}
+
+function clearImagePreview() {
+    clearImageDropzone();
+    if (!editingEventId) {
+        clearSpiritQueue();
+    }
 }
 
 function showImagePreview(file) {
@@ -358,7 +427,9 @@ function assignSpiritImageFile(file) {
 }
 
 function enterCropMode(image, objectUrl) {
-    clearSpiritQueue();
+    if (!editingEventId) {
+        clearSpiritQueue();
+    }
     clearPendingCrop();
     if (previewObjectUrl) {
         URL.revokeObjectURL(previewObjectUrl);
@@ -393,10 +464,16 @@ async function handleCropClick(event) {
     try {
         const attributes = detectSpiritAttributes(imageData, width, height, cropRect);
         const blob = await cropAndNormalizeSpiritImage(pendingCropImage, cropRect);
-        addToSpiritQueue(
-            blobToSpiritFile(blob, `spirit-crop-${spiritQueue.length + 1}`),
-            attributes
-        );
+        const file = blobToSpiritFile(blob, `spirit-crop-${spiritQueue.length + 1}`);
+
+        if (editingEventId && imageReplaceTargetId) {
+            updateQueueItemImage(imageReplaceTargetId, file, attributes);
+            clearImageDropzone();
+            imageHint.textContent = '画像を差し替えました。続けて他の精霊も選択できます';
+            return;
+        }
+
+        addToSpiritQueue(file, attributes);
     } catch (error) {
         console.error(error);
         alert(error.message || '切り抜きに失敗しました。');
@@ -404,13 +481,32 @@ async function handleCropClick(event) {
 }
 
 async function processIncomingImage(file) {
+    if (editingEventId && !imageReplaceTargetId) {
+        alert('画像を差し替える精霊を左のサムネイルから選んでください。');
+        return;
+    }
+
     const normalizedFile = normalizePastedImageFile(file);
     const { image, objectUrl } = await loadImageFromFile(normalizedFile);
 
-    if (editingSpiritId) {
+    if (editingEventId && imageReplaceTargetId) {
         try {
+            if (imageNeedsCropMode(image)) {
+                enterCropMode(image, objectUrl);
+                return;
+            }
+
+            const { imageData, width, height } = readImageDataFromElement(image);
+            const cropRect = squareCropRectForImage(width, height);
+            const attributes = detectSpiritAttributes(imageData, width, height, cropRect);
             const blob = await normalizeImageElement(image);
-            assignSpiritImageFile(blobToSpiritFile(blob, 'spirit'));
+            updateQueueItemImage(
+                imageReplaceTargetId,
+                blobToSpiritFile(blob, 'spirit'),
+                attributes
+            );
+            clearImageDropzone();
+            imageHint.textContent = '画像を差し替えました。続けて他の精霊も選択できます';
         } finally {
             URL.revokeObjectURL(objectUrl);
         }
@@ -555,11 +651,14 @@ function setEventMode(mode) {
 }
 
 function resetForm() {
-    editingSpiritId = null;
+    editingEventId = null;
+    imageReplaceTargetId = null;
+    spiritsToDelete = [];
     dialogTitle.textContent = '精霊を追加';
     submitButton.textContent = '追加する';
     form.reset();
     clearImagePreview();
+    adminImageGroup.hidden = false;
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
@@ -577,7 +676,11 @@ async function refreshCatalogRows() {
 }
 
 async function resolveEventId() {
-    if (editingSpiritId || eventModeExisting.checked) {
+    if (editingEventId) {
+        return editingEventId;
+    }
+
+    if (eventModeExisting.checked) {
         const eventId = existingEventSelect.value;
         if (!eventId) throw new Error('イベントを選択してください。');
         return eventId;
@@ -654,10 +757,71 @@ async function submitSpiritQueue() {
     alert(`${count}体の精霊を追加しました。`);
 }
 
+async function submitEventEdit() {
+    if (spiritQueue.length === 0 && spiritsToDelete.length === 0) {
+        throw new Error('編集する精霊がありません。');
+    }
+
+    const unnamed = spiritQueue.find(item => !item.name.trim());
+    if (unnamed) {
+        throw new Error('すべての精霊に名前を入力してください。');
+    }
+
+    const unsetAttrs = spiritQueue.find(item => {
+        if (item.main === UNDETECTED_ELEMENT) return true;
+        if (item.hideSub) return false;
+        return item.sub === UNDETECTED_ELEMENT;
+    });
+    if (unsetAttrs) {
+        throw new Error('属性が未検出の精霊があります。属性を選択してください。');
+    }
+
+    for (const spiritId of spiritsToDelete) {
+        const { error } = await database.from('catalog_spirits').delete().eq('id', spiritId);
+        if (error) throw error;
+    }
+
+    for (let i = 0; i < spiritQueue.length; i++) {
+        const item = spiritQueue[i];
+        let imagePath = item.imagePath ?? null;
+
+        if (item.file) {
+            imagePath = await uploadSpiritImage(database, item.file);
+        }
+
+        const { error } = await database.from('catalog_spirits').update({
+            name: item.name.trim(),
+            main: item.main,
+            sub: item.hideSub ? item.main : item.sub,
+            image_path: imagePath,
+            sort_order: i + 1
+        }).eq('id', item.spiritId);
+
+        if (error) throw error;
+    }
+
+    dialog.close();
+    await reloadCatalog();
+    alert('イベント内の精霊を更新しました。');
+}
+
 async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!editingSpiritId && !eventModeExisting.checked && !eventModeNew.checked) {
+    if (editingEventId) {
+        submitButton.disabled = true;
+        try {
+            await submitEventEdit();
+        } catch (error) {
+            console.error(error);
+            alert(error.message || '保存に失敗しました。');
+        } finally {
+            submitButton.disabled = false;
+        }
+        return;
+    }
+
+    if (!eventModeExisting.checked && !eventModeNew.checked) {
         alert('イベントを既存か新規か選んでください。');
         return;
     }
@@ -665,47 +829,10 @@ async function handleSubmit(event) {
     submitButton.disabled = true;
 
     try {
-        if (!editingSpiritId) {
-            if (pendingCropImage && spiritQueue.length === 0) {
-                throw new Error('切り抜きたい精霊をクリックしてください。');
-            }
-            await submitSpiritQueue();
-            return;
+        if (pendingCropImage && spiritQueue.length === 0) {
+            throw new Error('切り抜きたい精霊をクリックしてください。');
         }
-
-        const spiritName = spiritNameInput.value.trim();
-        if (!spiritName) {
-            throw new Error('精霊名を入力してください。');
-        }
-
-        const eventId = await resolveEventId();
-        const spiritId = editingSpiritId;
-        let imagePath = null;
-
-        if (imageInput.files?.[0]) {
-            imagePath = await uploadSpiritImage(database, imageInput.files[0]);
-        } else {
-            const current = catalogRows.spirits.find(spirit => spirit.id === editingSpiritId);
-            imagePath = current?.image_path ?? null;
-        }
-
-        const payload = {
-            id: spiritId,
-            event_id: eventId,
-            name: spiritName,
-            main: spiritMainSelect.value,
-            sub: spiritSubSelect.value,
-            image_path: imagePath,
-            sort_order: catalogRows.spirits.find(spirit => spirit.id === editingSpiritId)?.sort_order ?? 1
-        };
-
-        const { error } = await database.from('catalog_spirits').update(payload).eq('id', editingSpiritId);
-
-        if (error) throw error;
-
-        dialog.close();
-        await reloadCatalog();
-        alert('精霊を更新しました。');
+        await submitSpiritQueue();
     } catch (error) {
         console.error(error);
         alert(error.message || '保存に失敗しました。');
@@ -742,44 +869,57 @@ export async function openAddDialog() {
     }
 }
 
-export async function openEditDialog(spiritId) {
+export async function openEventEditDialog(eventId) {
     if (!ensureAdminAccess()) return;
 
     try {
         await refreshCatalogRows();
-        const spirit = catalogRows.spirits.find(item => item.id === spiritId);
-        if (!spirit) {
-            alert('精霊が見つかりません。');
+        const event = catalogRows.events.find(item => item.id === eventId);
+        if (!event) {
+            alert('イベントが見つかりません。');
             return;
         }
 
-        editingSpiritId = spirit.id;
-        dialogTitle.textContent = '精霊を編集';
+        const eventSpirits = catalogRows.spirits
+            .filter(spirit => spirit.event_id === eventId)
+            .sort((a, b) => a.sort_order - b.sort_order);
+
+        if (eventSpirits.length === 0) {
+            alert('このイベントに精霊がありません。');
+            return;
+        }
+
+        resetForm();
+        editingEventId = eventId;
+        dialogTitle.textContent = `${event.abbr} の精霊を編集`;
         submitButton.textContent = '更新する';
-        populateExistingEventSelect();
-        fillSelectOptions(spiritMainSelect, ELEMENTS);
-        fillSelectOptions(spiritSubSelect, ELEMENTS);
-        editNameBlock.hidden = false;
-        editAttrsBlock.hidden = false;
 
         document.getElementById('event-mode-fieldset').hidden = true;
+        existingEventBlock.hidden = true;
         newEventBlock.hidden = true;
-        existingEventBlock.hidden = false;
         spiritDetailsBlock.hidden = false;
-        existingEventSelect.required = true;
-        eventAbbrInput.required = false;
-        eventTitleInput.required = false;
+        editNameBlock.hidden = true;
+        editAttrsBlock.hidden = true;
+        adminImageGroup.hidden = true;
 
-        existingEventSelect.value = spirit.event_id;
-        spiritNameInput.value = spirit.name;
-        spiritNameInput.required = true;
-        spiritMainSelect.value = spirit.main;
-        spiritSubSelect.value = spirit.sub;
-        imageInput.required = false;
-        clearImagePreview();
-        clearSpiritQueue();
-        imageHint.textContent = '変更しない場合は空のままで OK（貼り付けで差し替え可）';
+        for (const spirit of eventSpirits) {
+            const imageUrl = getSpiritImageUrl(database, { image_path: spirit.image_path }) ?? '';
+            spiritQueue.push({
+                id: crypto.randomUUID(),
+                spiritId: spirit.id,
+                file: null,
+                objectUrl: imageUrl,
+                isExternalUrl: true,
+                name: spirit.name,
+                main: spirit.main,
+                sub: spirit.sub,
+                hideSub: shouldHideSub(spirit.main, spirit.sub),
+                imagePath: spirit.image_path,
+                sortOrder: spirit.sort_order
+            });
+        }
 
+        renderSpiritQueue();
         dialog.showModal();
     } catch (error) {
         console.error(error);

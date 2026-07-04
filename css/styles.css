@@ -140,9 +140,34 @@ button:hover {
 }
 
 .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 10px;
     border-bottom: 1px solid #eceff1;
     padding-bottom: 8px;
+}
+
+.event-header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-edit-btn {
+    display: none;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    background: #546e7a;
+}
+
+.admin-mode .event-edit-btn {
+    display: block;
+}
+
+.event-edit-btn:hover {
+    background: #37474f;
 }
 
 .event-abbr {
@@ -253,23 +278,6 @@ button:hover {
 
 .error-message {
     color: #c62828;
-}
-
-.admin-mode .spirit-edit-btn {
-    display: block;
-}
-
-.spirit-edit-btn {
-    display: none;
-    width: 100%;
-    margin-top: 4px;
-    padding: 4px 6px;
-    font-size: 0.68rem;
-    background: #546e7a;
-}
-
-.spirit-edit-btn:hover {
-    background: #37474f;
 }
 
 .admin-dialog {
@@ -450,6 +458,15 @@ button:hover {
     border-radius: 4px;
     object-fit: contain;
     background: #fff;
+}
+
+.spirit-queue-thumb.clickable {
+    cursor: pointer;
+}
+
+.spirit-queue-item.thumb-selected .spirit-queue-thumb {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
 }
 
 .spirit-queue-fields {

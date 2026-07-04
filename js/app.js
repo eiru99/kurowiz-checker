@@ -5,7 +5,7 @@ import {
     loadCatalog,
     SECTIONS_WITHOUT_DISPLAY_TITLE
 } from './catalog.js';
-import { initAdmin, openEditDialog } from './admin.js';
+import { initAdmin, openEventEditDialog } from './admin.js';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -147,16 +147,6 @@ function createSpiritTile(spirit) {
 
     tile.appendChild(button);
 
-    const editButton = document.createElement('button');
-    editButton.type = 'button';
-    editButton.className = 'spirit-edit-btn';
-    editButton.textContent = '編集';
-    editButton.addEventListener('click', event => {
-        event.stopPropagation();
-        openEditDialog(spirit.id);
-    });
-    tile.appendChild(editButton);
-
     return tile;
 }
 
@@ -202,10 +192,21 @@ function renderCatalog() {
 
             const header = document.createElement('div');
             header.className = 'event-header';
-            header.innerHTML = `
+
+            const headerText = document.createElement('div');
+            headerText.className = 'event-header-text';
+            headerText.innerHTML = `
                 <h3 class="event-abbr">${event.abbr}</h3>
                 <p class="event-title">${event.title}${event.subtitle ? ` / ${event.subtitle}` : ''}</p>
             `;
+
+            const editButton = document.createElement('button');
+            editButton.type = 'button';
+            editButton.className = 'event-edit-btn';
+            editButton.textContent = '編集';
+            editButton.addEventListener('click', () => openEventEditDialog(event.id));
+
+            header.append(headerText, editButton);
 
             const row = document.createElement('div');
             row.className = 'spirit-row';
