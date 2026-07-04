@@ -668,8 +668,8 @@ function classifyElementColor(rgb) {
         return '火';
     }
     if (hue < 75) {
-        // 光アイコンの金枠内は黄味が強いが B チャンネルが残る（雷は B が低い）
-        if (b >= 72 && sat < 0.65) return '光';
+        // 光アイコンは黄味のクリーム色で G≈B。雷は純黄で G-B が大きい
+        if (b >= 72 && g - b < 70 && sat < 0.65) return '光';
         return '雷';
     }
     if (hue < 155) {

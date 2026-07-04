@@ -23,6 +23,8 @@ CASES = [
     ("sample-fire-dark.png", "火", "闇"),
     ("sample-fire-light.png", "火", "光"),
     ("sample-thunder-water.png", "雷", "水"),
+    ("user-spirit-thunder-water.png", "雷", "水"),
+    ("user-thunder-water-cropped.png", "雷", "水"),
 ]
 
 
@@ -104,7 +106,7 @@ def classify_element_color(rgb: dict | None, t: ClassifyThresholds = ClassifyThr
             return "光"
         return "火"
     if hue < 75:
-        if b >= t.gold_light_b_min and sat < t.gold_light_sat_max:
+        if b >= t.gold_light_b_min and (g - b) < 70 and sat < t.gold_light_sat_max:
             return "光"
         return "雷"
     if hue < 155:
@@ -137,7 +139,7 @@ def classify_element_color_param(rgb: dict | None, t: ClassifyThresholds) -> str
             return "光"
         return "火"
     if hue < t.hue_thunder:
-        if b >= t.gold_light_b_min and sat < t.gold_light_sat_max:
+        if b >= t.gold_light_b_min and (g - b) < 70 and sat < t.gold_light_sat_max:
             return "光"
         return "雷"
     if hue < t.hue_green_band:

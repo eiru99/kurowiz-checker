@@ -533,6 +533,184 @@
         "actual": "水",
         "match": true
       }
+    },
+    {
+      "file": "user-spirit-thunder-water.png",
+      "imageSize": [
+        122,
+        120
+      ],
+      "cropRect": {
+        "x": 1,
+        "y": 0,
+        "size": 120
+      },
+      "regions": {
+        "emblem": {
+          "x": 5,
+          "y": 4,
+          "w": 22,
+          "h": 22
+        },
+        "main": {
+          "x": 5,
+          "y": 4,
+          "w": 11,
+          "h": 22
+        },
+        "sub": {
+          "x": 19,
+          "y": 4,
+          "w": 8,
+          "h": 22
+        },
+        "offset": 4,
+        "emblemSize": 22,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "雷",
+        "sub": "水"
+      },
+      "main": {
+        "rect": {
+          "x": 5,
+          "y": 4,
+          "w": 11,
+          "h": 22
+        },
+        "stats": {
+          "count": 199,
+          "frame": 43,
+          "min_samples": 29
+        },
+        "color": {
+          "rgb": [
+            157.13,
+            144.98,
+            70.43
+          ],
+          "hue": 51.6,
+          "saturation": 0.5518,
+          "luminance": 140.12
+        },
+        "actual": "雷",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 19,
+          "y": 4,
+          "w": 8,
+          "h": 22
+        },
+        "stats": {
+          "count": 175,
+          "frame": 1,
+          "min_samples": 21
+        },
+        "color": {
+          "rgb": [
+            118.73,
+            174.61,
+            204.96
+          ],
+          "hue": 201.12,
+          "saturation": 0.4207,
+          "luminance": 161.36
+        },
+        "actual": "水",
+        "match": true
+      }
+    },
+    {
+      "file": "user-thunder-water-cropped.png",
+      "imageSize": [
+        122,
+        122
+      ],
+      "cropRect": {
+        "x": 0,
+        "y": 0,
+        "size": 122
+      },
+      "regions": {
+        "emblem": {
+          "x": 4,
+          "y": 4,
+          "w": 22,
+          "h": 22
+        },
+        "main": {
+          "x": 4,
+          "y": 4,
+          "w": 11,
+          "h": 22
+        },
+        "sub": {
+          "x": 18,
+          "y": 4,
+          "w": 8,
+          "h": 22
+        },
+        "offset": 4,
+        "emblemSize": 22,
+        "subShift": 3
+      },
+      "expected": {
+        "main": "雷",
+        "sub": "水"
+      },
+      "main": {
+        "rect": {
+          "x": 4,
+          "y": 4,
+          "w": 11,
+          "h": 22
+        },
+        "stats": {
+          "count": 200,
+          "frame": 42,
+          "min_samples": 29
+        },
+        "color": {
+          "rgb": [
+            161.48,
+            149.03,
+            72.11
+          ],
+          "hue": 51.64,
+          "saturation": 0.5534,
+          "luminance": 143.98
+        },
+        "actual": "雷",
+        "match": true
+      },
+      "sub": {
+        "rect": {
+          "x": 18,
+          "y": 4,
+          "w": 8,
+          "h": 22
+        },
+        "stats": {
+          "count": 175,
+          "frame": 1,
+          "min_samples": 21
+        },
+        "color": {
+          "rgb": [
+            121.37,
+            179.14,
+            210.14
+          ],
+          "hue": 200.95,
+          "saturation": 0.4224,
+          "luminance": 165.4
+        },
+        "actual": "水",
+        "match": true
+      }
     }
   ],
   "dataset": [
@@ -703,6 +881,62 @@
       "hue": 199.58,
       "saturation": 0.4133,
       "luminance": 158.15
+    },
+    {
+      "file": "user-spirit-thunder-water.png",
+      "region": "main",
+      "expected": "雷",
+      "actual": "雷",
+      "rgb": [
+        157.13,
+        144.98,
+        70.43
+      ],
+      "hue": 51.6,
+      "saturation": 0.5518,
+      "luminance": 140.12
+    },
+    {
+      "file": "user-spirit-thunder-water.png",
+      "region": "sub",
+      "expected": "水",
+      "actual": "水",
+      "rgb": [
+        118.73,
+        174.61,
+        204.96
+      ],
+      "hue": 201.12,
+      "saturation": 0.4207,
+      "luminance": 161.36
+    },
+    {
+      "file": "user-thunder-water-cropped.png",
+      "region": "main",
+      "expected": "雷",
+      "actual": "雷",
+      "rgb": [
+        161.48,
+        149.03,
+        72.11
+      ],
+      "hue": 51.64,
+      "saturation": 0.5534,
+      "luminance": 143.98
+    },
+    {
+      "file": "user-thunder-water-cropped.png",
+      "region": "sub",
+      "expected": "水",
+      "actual": "水",
+      "rgb": [
+        121.37,
+        179.14,
+        210.14
+      ],
+      "hue": 200.95,
+      "saturation": 0.4224,
+      "luminance": 165.4
     }
   ],
   "matchingThresholds": [
