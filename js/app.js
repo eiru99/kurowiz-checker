@@ -96,7 +96,6 @@ function matchesFilters(spirit) {
         spirit.name,
         spirit.event.abbr,
         spirit.event.title,
-        spirit.event.subtitle,
         spirit.section.title
     ].some(text => (text ?? '').toLowerCase().includes(searchText));
 
@@ -237,7 +236,7 @@ function renderCatalog() {
             headerText.className = 'event-header-text';
             headerText.innerHTML = `
                 <h3 class="event-abbr">${event.abbr}</h3>
-                <p class="event-title">${event.title}${event.subtitle ? ` / ${event.subtitle}` : ''}</p>
+                <p class="event-title">${event.title}</p>
             `;
 
             const editButton = document.createElement('button');

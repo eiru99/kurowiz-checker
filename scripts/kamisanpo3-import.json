@@ -1,0 +1,51 @@
+{
+  "event": {
+    "id": "kamisanpo3",
+    "section_id": "latest",
+    "abbr": "かみさんぽっ3",
+    "title": "かみさんぽっ!人と妖精の国アイリー",
+    "sort_order": 1
+  },
+  "spirits": [
+    {
+      "id": "kamisanpo3-カヌエ",
+      "event_id": "kamisanpo3",
+      "name": "カヌエ",
+      "main": "火",
+      "sub": "光",
+      "image_path": "48fd8179-d971-4f3a-b936-92ecb4feb0a9.webp",
+      "local_path": "images/spirits/kamisanpo3-カヌエ.png",
+      "sort_order": 1
+    },
+    {
+      "id": "kamisanpo3-ソラ",
+      "event_id": "kamisanpo3",
+      "name": "ソラ",
+      "main": "水",
+      "sub": "闇",
+      "image_path": "51f09def-b154-47dd-a26f-f7f154c3e0d8.webp",
+      "local_path": "images/spirits/kamisanpo3-ソラ.png",
+      "sort_order": 2
+    },
+    {
+      "id": "kamisanpo3-シーヴル",
+      "event_id": "kamisanpo3",
+      "name": "シーヴル",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "82419483-5d0a-480d-ad41-8fc4e1ca4559.webp",
+      "local_path": "images/spirits/kamisanpo3-シーヴル.png",
+      "sort_order": 3
+    },
+    {
+      "id": "kamisanpo3-ホリー",
+      "event_id": "kamisanpo3",
+      "name": "ホリー",
+      "main": "水",
+      "sub": "火",
+      "image_path": "9b733513-0ac2-4f17-b6c2-6330011228e6.webp",
+      "local_path": "images/spirits/kamisanpo3-ホリー.png",
+      "sort_order": 4
+    }
+  ]
+}

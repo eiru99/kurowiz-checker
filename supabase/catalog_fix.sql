@@ -20,9 +20,6 @@ ALTER TABLE public.catalog_sections
 ALTER TABLE public.catalog_events
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 
-ALTER TABLE public.catalog_events
-    ADD COLUMN IF NOT EXISTS subtitle text NOT NULL DEFAULT '';
-
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 
@@ -116,21 +113,23 @@ INSERT INTO public.catalog_sections (id, title, sort_order) VALUES
     ('charapre', 'キャラプレ対象のイベントガチャ', 3)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.catalog_events (id, section_id, abbr, title, subtitle, sort_order) VALUES
-    ('kamisanpo3', 'latest', 'かみさんぽっ3', '神域をさんぽする至高の神々 3', 'かみさんぽっ!人と妖精の国アイリー', 1),
-    ('anniversary13', 'recent', '13周年記念', '魔法使いと黒猫のウィズ 13th Anniversary', '13th ANIVERSARY', 1),
-    ('anniversary12', 'recent', '12周年記念', '魔法使いと黒猫のウィズ 12th Anniversary', 'THE LEGENDS of WIZ Ⅳ', 2),
-    ('anniversary10', 'recent', '10周年記念', '魔法使いと黒猫のウィズ 10th Anniversary', '10th Anniversary', 3),
-    ('chrom-magna-1', 'charapre', 'クロム・マグナI', '学園魔道杯 クロム・マグナ', 'クロム・マグナ', 1),
-    ('dorukimas-1', 'charapre', 'ドルキマス1', '空戦のドルキマス 漆黒の翼', '空戦のドルキマス', 2),
-    ('suzaku-1', 'charapre', '幻魔特区スザク1', '幻魔特区スザク', '幻魔特区スザク', 3),
-    ('haigan-1', 'charapre', '覇眼戦線1', '覇眼戦線', '覇眼戦線', 4),
-    ('twilight-mares-1', 'charapre', '黄昏メアレス1', '黄昏メアレス I', '黄昏メアレス I', 5)
+INSERT INTO public.catalog_events (id, section_id, abbr, title, sort_order) VALUES
+    ('kamisanpo3', 'latest', 'かみさんぽっ3', 'かみさんぽっ!人と妖精の国アイリー', 1),
+    ('anniversary13', 'recent', '13周年記念', '魔法使いと黒猫のウィズ 13th Anniversary', 1),
+    ('anniversary12', 'recent', '12周年記念', '魔法使いと黒猫のウィズ 12th Anniversary', 2),
+    ('anniversary10', 'recent', '10周年記念', '魔法使いと黒猫のウィズ 10th Anniversary', 3),
+    ('chrom-magna-1', 'charapre', 'クロム・マグナI', '学園魔道杯 クロム・マグナ', 1),
+    ('dorukimas-1', 'charapre', 'ドルキマス1', '空戦のドルキマス 漆黒の翼', 2),
+    ('suzaku-1', 'charapre', '幻魔特区スザク1', '幻魔特区スザク', 3),
+    ('haigan-1', 'charapre', '覇眼戦線1', '覇眼戦線', 4),
+    ('twilight-mares-1', 'charapre', '黄昏メアレス1', '黄昏メアレス I', 5)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.catalog_spirits (id, event_id, name, main, sub, image_path, sort_order) VALUES
-    ('kamisanpo3-kanue', 'kamisanpo3', '神と和解せよ カヌエ・デ・ヤシロ', '火', '光', 'images/spirits/kamisanpo3-kanue.png', 1),
-    ('kamisanpo3-sora', 'kamisanpo3', '神さま爆誕！ ソラ・ヒカル', '水', '闇', 'images/spirits/kamisanpo3-sora.png', 2),
+    ('kamisanpo3-kanue', 'kamisanpo3', 'カヌエ', '火', '光', 'images/spirits/kamisanpo3-カヌエ.png', 1),
+    ('kamisanpo3-sora', 'kamisanpo3', 'ソラ', '水', '闇', 'images/spirits/kamisanpo3-ソラ.png', 2),
+    ('kamisanpo3-shivuru', 'kamisanpo3', 'シーヴル', '雷', '雷', 'images/spirits/kamisanpo3-シーヴル.png', 3),
+    ('kamisanpo3-holly', 'kamisanpo3', 'ホリー', '水', '火', 'images/spirits/kamisanpo3-ホリー.png', 4),
     ('anniversary13-gatlin', 'anniversary13', '未来を照らす歌姫 ガトリン・Ｇ・Ｕ', '火', '光', 'images/spirits/anniversary13-gatlin.png', 1),
     ('anniversary12-aldverik', 'anniversary12', '漆黒 of 魔王 アルドベリク', '闇', '火', 'images/spirits/anniversary12-aldverik.png', 1),
     ('anniversary10-eny', 'anniversary10', '世界の中心の少女 エニィ', '水', '火', 'images/spirits/anniversary10-eny.png', 1),

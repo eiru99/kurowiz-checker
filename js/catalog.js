@@ -62,7 +62,6 @@ function buildCatalogFromRows(sections, events, spirits) {
                 id: event.id,
                 abbr: event.abbr,
                 title: event.title,
-                subtitle: event.subtitle ?? '',
                 spirits: spiritsByEvent.get(event.id) ?? []
             }))
         }))

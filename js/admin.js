@@ -1121,7 +1121,6 @@ async function resolveEventId() {
         section_id: sectionId,
         abbr,
         title,
-        subtitle: '',
         sort_order: sortOrder
     });
 

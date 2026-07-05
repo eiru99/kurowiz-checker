@@ -8,22 +8,35 @@
         {
           "id": "kamisanpo3",
           "abbr": "かみさんぽっ3",
-          "title": "神域をさんぽする至高の神々 3",
-          "subtitle": "かみさんぽっ!人と妖精の国アイリー",
+            "title": "かみさんぽっ!人と妖精の国アイリー",
           "spirits": [
             {
               "id": "kamisanpo3-kanue",
-              "name": "神と和解せよ カヌエ・デ・ヤシロ",
+              "name": "カヌエ",
               "main": "火",
               "sub": "光",
-              "image": "images/spirits/kamisanpo3-kanue.png"
+              "image": "images/spirits/kamisanpo3-カヌエ.png"
             },
             {
               "id": "kamisanpo3-sora",
-              "name": "神さま爆誕！ ソラ・ヒカル",
+              "name": "ソラ",
               "main": "水",
               "sub": "闇",
-              "image": "images/spirits/kamisanpo3-sora.png"
+              "image": "images/spirits/kamisanpo3-ソラ.png"
+            },
+            {
+              "id": "kamisanpo3-shivuru",
+              "name": "シーヴル",
+              "main": "雷",
+              "sub": "雷",
+              "image": "images/spirits/kamisanpo3-シーヴル.png"
+            },
+            {
+              "id": "kamisanpo3-holly",
+              "name": "ホリー",
+              "main": "水",
+              "sub": "火",
+              "image": "images/spirits/kamisanpo3-ホリー.png"
             }
           ]
         }
@@ -37,7 +50,6 @@
           "id": "anniversary13",
           "abbr": "13周年記念",
           "title": "魔法使いと黒猫のウィズ 13th Anniversary",
-          "subtitle": "13th ANIVERSARY",
           "spirits": [
             {
               "id": "anniversary13-gatlin",
@@ -52,7 +64,6 @@
           "id": "anniversary12",
           "abbr": "12周年記念",
           "title": "魔法使いと黒猫のウィズ 12th Anniversary",
-          "subtitle": "THE LEGENDS of WIZ Ⅳ",
           "spirits": [
             {
               "id": "anniversary12-aldverik",
@@ -67,7 +78,6 @@
           "id": "anniversary10",
           "abbr": "10周年記念",
           "title": "魔法使いと黒猫のウィズ 10th Anniversary",
-          "subtitle": "10th Anniversary",
           "spirits": [
             {
               "id": "anniversary10-eny",
@@ -88,7 +98,6 @@
           "id": "chrom-magna-1",
           "abbr": "クロム・マグナI",
           "title": "学園魔道杯 クロム・マグナ",
-          "subtitle": "クロム・マグナ",
           "spirits": [
             {
               "id": "chrom-magna-1-linka",
@@ -103,7 +112,6 @@
           "id": "dorukimas-1",
           "abbr": "ドルキマス1",
           "title": "空戦のドルキマス 漆黒の翼",
-          "subtitle": "空戦のドルキマス",
           "spirits": [
             {
               "id": "dorukimas-1-dietrich",
@@ -118,7 +126,6 @@
           "id": "suzaku-1",
           "abbr": "幻魔特区スザク1",
           "title": "幻魔特区スザク",
-          "subtitle": "幻魔特区スザク",
           "spirits": [
             {
               "id": "suzaku-1-kivam",
@@ -133,7 +140,6 @@
           "id": "haigan-1",
           "abbr": "覇眼戦線1",
           "title": "覇眼戦線",
-          "subtitle": "覇眼戦線",
           "spirits": [
             {
               "id": "haigan-1-riveta",
@@ -148,7 +154,6 @@
           "id": "twilight-mares-1",
           "abbr": "黄昏メアレス1",
           "title": "黄昏メアレス I",
-          "subtitle": "黄昏メアレス I",
           "spirits": [
             {
               "id": "twilight-mares-1-refill",
