@@ -88,16 +88,24 @@ async function saveCloudData() {
     }
 }
 
-function matchesFilters(spirit) {
-    const searchText = searchInput.value.trim().toLowerCase();
+function normalizeForSearch(text) {
+    const value = String(text ?? '').trim().toLowerCase();
+    if (!value) return '';
+    if (typeof globalThis.wanakana !== 'undefined') {
+        return globalThis.wanakana.toHiragana(value, { passRomaji: true });
+    }
+    return value;
+}
+
+function matchesFilters(spirit, normalizedSearch) {
     const selectedElement = elementFilter.value;
 
-    const matchesSearch = !searchText || [
+    const matchesSearch = !normalizedSearch || [
         spirit.name,
         spirit.event.abbr,
         spirit.event.title,
         spirit.section.title
-    ].some(text => (text ?? '').toLowerCase().includes(searchText));
+    ].some(text => normalizeForSearch(text).includes(normalizedSearch));
 
     const matchesElement = !selectedElement
         || spirit.main === selectedElement
@@ -193,7 +201,8 @@ function renderCatalog() {
 
     const scrollY = window.scrollY;
     catalogEl.innerHTML = '';
-    const searchText = searchInput.value.trim().toLowerCase();
+    const searchText = searchInput.value.trim();
+    const normalizedSearch = normalizeForSearch(searchText);
     let visibleCount = 0;
 
     for (const section of catalog.sections) {
@@ -202,7 +211,7 @@ function renderCatalog() {
         for (const event of section.events) {
             const visibleSpirits = event.spirits
                 .map(spirit => spiritById.get(spirit.id))
-                .filter(spirit => spirit && matchesFilters(spirit));
+                .filter(spirit => spirit && matchesFilters(spirit, normalizedSearch));
 
             if (visibleSpirits.length > 0) {
                 visibleEvents.push({ event, visibleSpirits });
