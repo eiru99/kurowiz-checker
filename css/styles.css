@@ -363,6 +363,71 @@ button:hover {
     min-width: 0;
 }
 
+.admin-toggle-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.admin-toggle-label {
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.admin-toggle {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 44px;
+    height: 24px;
+}
+
+.admin-toggle input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.admin-toggle-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: #b0bec5;
+    transition: background 0.2s;
+}
+
+.admin-toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+.admin-toggle input:checked + .admin-toggle-slider {
+    background: #3949ab;
+}
+
+.admin-toggle input:checked + .admin-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.admin-toggle input:focus-visible + .admin-toggle-slider {
+    outline: 2px solid #7986cb;
+    outline-offset: 2px;
+}
+
 .btn-ocr-select {
     flex-shrink: 0;
     padding: 6px 10px;

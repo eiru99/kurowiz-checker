@@ -49,6 +49,7 @@ const spiritDetailsBlock = document.getElementById('spirit-details-block');
 const existingEventSelect = document.getElementById('admin-existing-event');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
+const eventNameAutoOcrToggle = document.getElementById('admin-event-name-auto-ocr');
 const spiritNameInput = document.getElementById('admin-spirit-name');
 const editNameBlock = document.getElementById('edit-name-block');
 const editAttrsBlock = document.getElementById('edit-attrs-block');
@@ -91,6 +92,16 @@ const IMAGE_MIME_EXTENSIONS = {
     'image/webp': 'webp',
     'image/gif': 'gif'
 };
+
+const DEFAULT_IMAGE_HINT = 'PNG / JPG など（必須）。「自動読み取り」をオンにするとイベント名を取得。スクショは精霊をクリックで切り抜き（複数可）';
+
+function isEventNameAutoOcrEnabled() {
+    return Boolean(eventNameAutoOcrToggle?.checked);
+}
+
+function canAutoReadEventNames() {
+    return !editingEventId && !eventModeExisting.checked;
+}
 
 function clearSpiritQueue() {
     for (const item of spiritQueue) {
@@ -512,7 +523,7 @@ function restoreImageHintAfterOcr() {
         updateCropHint();
         return;
     }
-    imageHint.textContent = 'PNG / JPG など。新規イベントは自動取得または「自動認識」で範囲指定。精霊はクリックで切り抜き（複数可）';
+    imageHint.textContent = DEFAULT_IMAGE_HINT;
 }
 
 function ensureNewEventModeForScreenshot() {
@@ -842,7 +853,7 @@ async function handleCropClick(event) {
 }
 
 async function tryExtractEventNamesFromScreenshot(image) {
-    if (editingEventId || eventModeExisting.checked) return;
+    if (!isEventNameAutoOcrEnabled() || !canAutoReadEventNames()) return;
 
     const previousHint = imageHint.textContent;
     imageHint.textContent = 'イベント名を読み取り中...（初回のみ数十秒かかることがあります）';
@@ -893,7 +904,9 @@ async function processIncomingImage(file) {
         scheduleOcrRegionOverlayRefresh(image);
     }
 
-    await tryExtractEventNamesFromScreenshot(image);
+    if (isEventNameAutoOcrEnabled()) {
+        await tryExtractEventNamesFromScreenshot(image);
+    }
 
     if (editingEventId && imageReplaceTargetId) {
         try {
@@ -921,9 +934,6 @@ async function processIncomingImage(file) {
 
     if (imageNeedsCropMode(image)) {
         enterCropMode(image, objectUrl);
-        fillEventNamesFromImage(image).catch(error => {
-            console.warn('Event name OCR after crop mode failed:', error);
-        });
         return;
     }
 
@@ -964,6 +974,17 @@ function handleImagePaste(event) {
         });
         return;
     }
+}
+
+function handleEventNameAutoOcrToggle() {
+    if (!isEventNameAutoOcrEnabled() || !canAutoReadEventNames()) return;
+
+    const sourceImage = getOcrSourceImage();
+    if (!sourceImage) return;
+
+    tryExtractEventNamesFromScreenshot(sourceImage).catch(error => {
+        console.warn('Event name OCR on toggle failed:', error);
+    });
 }
 
 function handleImageInputChange() {
@@ -1077,7 +1098,8 @@ function resetForm() {
     eventModeExisting.checked = false;
     eventModeNew.checked = false;
     setEventMode(null);
-    imageHint.textContent = 'PNG / JPG など。新規イベントは自動取得または「自動認識」で範囲指定。精霊はクリックで切り抜き（複数可）';
+    eventNameAutoOcrToggle.checked = false;
+    imageHint.textContent = DEFAULT_IMAGE_HINT;
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
@@ -1375,6 +1397,8 @@ export function initAdmin(db, onReloadCatalog) {
             runAutoOcrForTarget(button.dataset.ocrTarget, button);
         });
     });
+
+    eventNameAutoOcrToggle.addEventListener('change', handleEventNameAutoOcrToggle);
 
     imagePreviewStage.addEventListener('pointerdown', handleOcrPointerDown);
     imagePreviewStage.addEventListener('pointermove', handleOcrPointerMove);

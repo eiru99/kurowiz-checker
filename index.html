@@ -60,6 +60,14 @@
             </div>
 
             <div id="new-event-block" class="form-group" hidden>
+                <label class="admin-toggle-line" for="admin-event-name-auto-ocr">
+                    <span class="admin-toggle-label">画像からイベント名を自動読み取り</span>
+                    <span class="admin-toggle">
+                        <input type="checkbox" id="admin-event-name-auto-ocr">
+                        <span class="admin-toggle-slider" aria-hidden="true"></span>
+                    </span>
+                </label>
+
                 <label for="admin-event-abbr">イベント略称</label>
                 <div class="admin-input-row">
                     <input type="text" id="admin-event-abbr" placeholder="例: かみさんぽっ3">
@@ -94,14 +102,14 @@
                     <label for="admin-spirit-image">精霊画像</label>
                     <div class="admin-image-dropzone" id="admin-image-dropzone">
                         <input type="file" id="admin-spirit-image" class="admin-spirit-image-input" accept="image/png,image/jpeg,image/webp,image/gif">
-                        <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>新規イベント時はイベント名も自動取得。スクショは精霊をクリックで切り抜き（複数可）</small></p>
+                        <p class="admin-image-dropzone-label" id="admin-image-dropzone-label">クリックしてファイルを選択<br>または Ctrl+V で貼り付け<br><small>「自動読み取り」オン時はイベント名も取得。スクショは精霊をクリックで切り抜き（複数可）</small></p>
                         <div class="admin-image-preview-stage" id="admin-image-preview-stage" hidden>
                             <img id="admin-image-preview" class="admin-image-preview" alt="">
                             <div id="admin-ocr-region-overlays" class="admin-ocr-region-overlays" hidden></div>
                             <div id="admin-ocr-selection" class="admin-ocr-selection" hidden></div>
                         </div>
                     </div>
-                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。新規イベントの貼り付け後、イベント名も自動取得。スクショは精霊をクリックで切り抜き（複数可）</p>
+                    <p id="admin-image-hint" class="field-hint">PNG / JPG など（必須）。「自動読み取り」をオンにするとイベント名を取得。スクショは精霊をクリックで切り抜き（複数可）</p>
                 </div>
 
                 <div id="spirit-queue-block" class="spirit-queue-block" hidden>
