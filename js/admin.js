@@ -4,9 +4,11 @@ import {
     createSpiritId,
     fetchCatalogRows,
     getSpiritImageUrl,
+    abbrToStorageFolder,
+    resolveStorageFolder,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250705p';
+} from './catalog.js?v=20250705r';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
@@ -1112,17 +1114,25 @@ async function resolveEventId() {
 
     const sectionId = DEFAULT_SECTION_ID;
     const eventId = createEventId(abbr);
+    const storageFolder = abbrToStorageFolder(abbr, eventId);
     const sortOrder = catalogRows.events.filter(event => event.section_id === sectionId).length + 1;
     const { error } = await database.from('catalog_events').insert({
         id: eventId,
         section_id: sectionId,
         abbr,
         title,
+        storage_folder: storageFolder,
         sort_order: sortOrder
     });
 
     if (error) throw error;
     return eventId;
+}
+
+async function resolveUploadStorageFolder(eventId) {
+    const event = catalogRows.events.find(item => item.id === eventId);
+    if (event) return resolveStorageFolder(event);
+    return abbrToStorageFolder(eventAbbrInput.value.trim(), eventId);
 }
 
 async function submitSpiritQueue() {
@@ -1145,6 +1155,7 @@ async function submitSpiritQueue() {
     }
 
     const eventId = await resolveEventId();
+    const storageFolder = await resolveUploadStorageFolder(eventId);
     const baseSort = catalogRows.spirits.filter(spirit => spirit.event_id === eventId).length;
     const count = spiritQueue.length;
 
@@ -1153,7 +1164,7 @@ async function submitSpiritQueue() {
         const spiritName = item.name.trim();
         const idSuffix = count > 1 ? `-${i + 1}` : '';
         const spiritId = `${createSpiritId(eventId, spiritName)}${idSuffix}`;
-        const imagePath = await uploadSpiritImage(database, item.file, eventId);
+        const imagePath = await uploadSpiritImage(database, item.file, storageFolder);
 
         const { error } = await database.from('catalog_spirits').insert({
             id: spiritId,
@@ -1197,12 +1208,14 @@ async function submitEventEdit() {
         if (error) throw error;
     }
 
+    const storageFolder = await resolveUploadStorageFolder(editingEventId);
+
     for (let i = 0; i < spiritQueue.length; i++) {
         const item = spiritQueue[i];
         let imagePath = item.imagePath ?? null;
 
         if (item.file) {
-            imagePath = await uploadSpiritImage(database, item.file, editingEventId);
+            imagePath = await uploadSpiritImage(database, item.file, storageFolder);
         }
 
         const { error } = await database.from('catalog_spirits').update({

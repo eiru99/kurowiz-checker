@@ -1,0 +1,140 @@
+{
+  "events": 310,
+  "folder_map_sample": {
+    "charapre-e250": "hametsunoitakara",
+    "download-e97": "dlgentei",
+    "kamisanpo3": "kamisanpo3",
+    "kollabo-e281": "majirumiekorabo",
+    "other-e93": "shinjinou2016",
+    "recent-e312": "shieora",
+    "charapre-e249": "ga2023kouhanzauinaazu",
+    "kollabo-e264": "sutoriitofaitaa6-korabo",
+    "other-e91": "4shuunenkinen",
+    "recent-e311": "kuromaguzero2"
+  },
+  "spirit_moves": 1619,
+  "event_storage_folder_updates": 310,
+  "changes": [
+    {
+      "spirit_id": "charapre-e10-バス",
+      "event_id": "charapre-e10",
+      "from": "charapre-e10/be1b4acb-b79c-455c-a5d2-02acd251f2c7.webp",
+      "to": "jinryuukourin2/be1b4acb-b79c-455c-a5d2-02acd251f2c7.webp"
+    },
+    {
+      "spirit_id": "charapre-e100-レッジ",
+      "event_id": "charapre-e100",
+      "from": "charapre-e100/4199cdd3-8785-478b-b0ae-5ddd7743665b.webp",
+      "to": "tasogaremearesu3/4199cdd3-8785-478b-b0ae-5ddd7743665b.webp"
+    },
+    {
+      "spirit_id": "charapre-e101-ステイシー",
+      "event_id": "charapre-e101",
+      "from": "charapre-e101/f33fc30d-2e0f-4647-bdf5-5e70acf8eb23.webp",
+      "to": "etaanarukuronosu3/f33fc30d-2e0f-4647-bdf5-5e70acf8eb23.webp"
+    },
+    {
+      "spirit_id": "charapre-e102-グリット",
+      "event_id": "charapre-e102",
+      "from": "charapre-e102/c8045fa1-c65a-41e1-8d09-c8dc3913f8a3.webp",
+      "to": "kurosudiraibuact2/c8045fa1-c65a-41e1-8d09-c8dc3913f8a3.webp"
+    },
+    {
+      "spirit_id": "charapre-e103-早瀬りん",
+      "event_id": "charapre-e103",
+      "from": "charapre-e103/2ae848d4-4309-4c1f-be7b-ce8e53fd26cf.webp",
+      "to": "natsunisakukunhe/2ae848d4-4309-4c1f-be7b-ce8e53fd26cf.webp"
+    },
+    {
+      "spirit_id": "charapre-e104-クルス",
+      "event_id": "charapre-e104",
+      "from": "charapre-e104/ad63a00d-0d61-4773-8e2a-6bb59b7bd4df.webp",
+      "to": "hijirisatanikkujogakuin2/ad63a00d-0d61-4773-8e2a-6bb59b7bd4df.webp"
+    },
+    {
+      "spirit_id": "charapre-e105-リフィル",
+      "event_id": "charapre-e105",
+      "from": "charapre-e105/acba47ea-d469-4ab6-80f9-854620ec186e.webp",
+      "to": "ga2017/acba47ea-d469-4ab6-80f9-854620ec186e.webp"
+    },
+    {
+      "spirit_id": "charapre-e106-ユウェル",
+      "event_id": "charapre-e106",
+      "from": "charapre-e106/23519bc2-8241-4338-bfee-329915453965.webp",
+      "to": "shokukibarize2/23519bc2-8241-4338-bfee-329915453965.webp"
+    },
+    {
+      "spirit_id": "charapre-e107-ジーク",
+      "event_id": "charapre-e107",
+      "from": "charapre-e107/5d1223de-f226-4138-a3ce-ece4af88a80d.webp",
+      "to": "kuusennodorukimasu3/5d1223de-f226-4138-a3ce-ece4af88a80d.webp"
+    },
+    {
+      "spirit_id": "charapre-e108-テーラ",
+      "event_id": "charapre-e108",
+      "from": "charapre-e108/328deebc-2146-44e5-8a99-bef75bb40d92.webp",
+      "to": "genmatokkureloaded1/328deebc-2146-44e5-8a99-bef75bb40d92.webp"
+    },
+    {
+      "spirit_id": "charapre-e109-ソフィ",
+      "event_id": "charapre-e109",
+      "from": "charapre-e109/8801fbb2-abc2-4a45-b63d-5af27a6f33e0.webp",
+      "to": "uhg/8801fbb2-abc2-4a45-b63d-5af27a6f33e0.webp"
+    },
+    {
+      "spirit_id": "charapre-e110-ヴェレフキナ-シミラル",
+      "event_id": "charapre-e110",
+      "from": "charapre-e110/d8b6c4cc-1547-4467-8868-40f12b3f75b4.webp",
+      "to": "souyokunorosutoeden3/d8b6c4cc-1547-4467-8868-40f12b3f75b4.webp"
+    },
+    {
+      "spirit_id": "charapre-e111-ノイン",
+      "event_id": "charapre-e111",
+      "from": "charapre-e111/59085b89-f598-4475-be6e-150e13f4e104.webp",
+      "to": "hijirinarusoranoesuterera2/59085b89-f598-4475-be6e-150e13f4e104.webp"
+    },
+    {
+      "spirit_id": "charapre-e112-シャロン-テオドール",
+      "event_id": "charapre-e112",
+      "from": "charapre-e112/6ff904f6-6d24-49fc-896c-4b3fa35bea0d.webp",
+      "to": "sonohikarihatankuhekikusaishuushou/6ff904f6-6d24-49fc-896c-4b3fa35bea0d.webp"
+    },
+    {
+      "spirit_id": "charapre-e113-ツバキ-ハヅキ",
+      "event_id": "charapre-e113",
+      "from": "charapre-e113/83f87e4e-519d-4fca-a4aa-5fe5f2d9d868.webp",
+      "to": "shougatsu2018/83f87e4e-519d-4fca-a4aa-5fe5f2d9d868.webp"
+    },
+    {
+      "spirit_id": "charapre-e114-ラガッツ",
+      "event_id": "charapre-e114",
+      "from": "charapre-e114/140ce414-ca60-4bf8-879a-3da026e9b817.webp",
+      "to": "shugaaresubanbiina1/140ce414-ca60-4bf8-879a-3da026e9b817.webp"
+    },
+    {
+      "spirit_id": "charapre-e115-ヤエ",
+      "event_id": "charapre-e115",
+      "from": "charapre-e115/aa9e60d3-c411-4df8-9264-2e8f2c9259ed.webp",
+      "to": "shinsetsumomomusumeden2/aa9e60d3-c411-4df8-9264-2e8f2c9259ed.webp"
+    },
+    {
+      "spirit_id": "charapre-e116-メーベル",
+      "event_id": "charapre-e116",
+      "from": "charapre-e116/9cca8e3b-f2de-46ce-8274-5dca2d3a53bf.webp",
+      "to": "autorandaa1/9cca8e3b-f2de-46ce-8274-5dca2d3a53bf.webp"
+    },
+    {
+      "spirit_id": "charapre-e117-ファム-フェルチ",
+      "event_id": "charapre-e117",
+      "from": "charapre-e117/08cf8388-d72b-4d48-9cdd-777f508dc417.webp",
+      "to": "5shuunenkinen/08cf8388-d72b-4d48-9cdd-777f508dc417.webp"
+    },
+    {
+      "spirit_id": "charapre-e118-ラーシャ",
+      "event_id": "charapre-e118",
+      "from": "charapre-e118/ac2bc51a-1175-45b7-98c8-ab4959c7d591.webp",
+      "to": "birth-of-new-order1/ac2bc51a-1175-45b7-98c8-ab4959c7d591.webp"
+    }
+  ],
+  "dry_run": true
+}

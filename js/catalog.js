@@ -97,6 +97,7 @@ function buildCatalogFromRows(sections, events, spirits) {
                 id: event.id,
                 abbr: event.abbr,
                 title: event.title,
+                storageFolder: event.storage_folder ?? null,
                 spirits: spiritsByEvent.get(event.id) ?? []
             }))
         }))
@@ -144,6 +145,37 @@ export async function fetchCatalogRows(database) {
     return { sections, events, spirits };
 }
 
+const STORAGE_FOLDER_OVERRIDES = {
+    kamisanpo3: 'kamisanpo3'
+};
+
+export function abbrToStorageFolder(abbr, eventId = null) {
+    const trimmed = String(abbr ?? '').trim();
+    if (!trimmed) throw new Error('略称が未設定です');
+    if (eventId && STORAGE_FOLDER_OVERRIDES[eventId]) {
+        return STORAGE_FOLDER_OVERRIDES[eventId];
+    }
+
+    let romaji = trimmed;
+    if (typeof globalThis.wanakana !== 'undefined') {
+        romaji = globalThis.wanakana.toRomaji(trimmed);
+    }
+
+    return String(romaji)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 48) || 'event';
+}
+
+export function resolveStorageFolder(event) {
+    if (event?.storage_folder) return event.storage_folder;
+    if (event?.storageFolder) return event.storageFolder;
+    return abbrToStorageFolder(event?.abbr, event?.id);
+}
+
 export function slugify(value) {
     return String(value)
         .trim()
@@ -162,16 +194,16 @@ export function createSpiritId(eventId, name) {
     return `${slugify(eventId)}-${slugify(name)}-${Date.now().toString(36)}`;
 }
 
-export function createSpiritImagePath(eventId, file) {
-    const folder = String(eventId ?? '').trim();
-    if (!folder) throw new Error('イベント ID が未設定です');
+export function createSpiritImagePath(storageFolder, file) {
+    const folder = String(storageFolder ?? '').trim();
+    if (!folder) throw new Error('Storage フォルダが未設定です');
     const extension = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
     return `${folder}/${crypto.randomUUID()}.${extension}`;
 }
 
-export async function uploadSpiritImage(database, file, eventId) {
+export async function uploadSpiritImage(database, file, storageFolder) {
     const prepared = await prepareSpiritImageFile(file);
-    const path = createSpiritImagePath(eventId, prepared);
+    const path = createSpiritImagePath(storageFolder, prepared);
 
     const { error } = await database.storage
         .from(STORAGE_BUCKET)

@@ -1,0 +1,158 @@
+{
+  "events": 310,
+  "folder_renames": 309,
+  "file_renames": 1619,
+  "folder_rename_preview": [
+    {
+      "from": "charapre-e10",
+      "to": "jinryuukourin2",
+      "files": 9
+    },
+    {
+      "from": "charapre-e100",
+      "to": "tasogaremearesu3",
+      "files": 7
+    },
+    {
+      "from": "charapre-e101",
+      "to": "etaanarukuronosu3",
+      "files": 7
+    },
+    {
+      "from": "charapre-e102",
+      "to": "kurosudiraibuact2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e103",
+      "to": "natsunisakukunhe",
+      "files": 1
+    },
+    {
+      "from": "charapre-e104",
+      "to": "hijirisatanikkujogakuin2",
+      "files": 7
+    },
+    {
+      "from": "charapre-e105",
+      "to": "ga2017",
+      "files": 8
+    },
+    {
+      "from": "charapre-e106",
+      "to": "shokukibarize2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e107",
+      "to": "kuusennodorukimasu3",
+      "files": 7
+    },
+    {
+      "from": "charapre-e108",
+      "to": "genmatokkureloaded1",
+      "files": 6
+    },
+    {
+      "from": "charapre-e109",
+      "to": "uhg",
+      "files": 6
+    },
+    {
+      "from": "charapre-e110",
+      "to": "souyokunorosutoeden3",
+      "files": 6
+    },
+    {
+      "from": "charapre-e111",
+      "to": "hijirinarusoranoesuterera2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e112",
+      "to": "sonohikarihatankuhekikusaishuushou",
+      "files": 1
+    },
+    {
+      "from": "charapre-e113",
+      "to": "shougatsu2018",
+      "files": 6
+    },
+    {
+      "from": "charapre-e114",
+      "to": "shugaaresubanbiina1",
+      "files": 6
+    },
+    {
+      "from": "charapre-e115",
+      "to": "shinsetsumomomusumeden2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e116",
+      "to": "autorandaa1",
+      "files": 6
+    },
+    {
+      "from": "charapre-e117",
+      "to": "5shuunenkinen",
+      "files": 6
+    },
+    {
+      "from": "charapre-e118",
+      "to": "birth-of-new-order1",
+      "files": 6
+    },
+    {
+      "from": "charapre-e119",
+      "to": "aidorukyattsu2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e120",
+      "to": "tasogaremearesu4",
+      "files": 6
+    },
+    {
+      "from": "charapre-e121",
+      "to": "gooruden2018",
+      "files": 6
+    },
+    {
+      "from": "charapre-e122",
+      "to": "kuusennoshuvarutsu1",
+      "files": 6
+    },
+    {
+      "from": "charapre-e123",
+      "to": "genmatokkureloaded2",
+      "files": 6
+    },
+    {
+      "from": "charapre-e125",
+      "to": "hijirinarusoranoesuterera3",
+      "files": 6
+    },
+    {
+      "from": "charapre-e127",
+      "to": "hamesensen4",
+      "files": 6
+    },
+    {
+      "from": "charapre-e128",
+      "to": "mearesu2mugennohazama",
+      "files": 6
+    },
+    {
+      "from": "charapre-e129",
+      "to": "ga2018",
+      "files": 7
+    },
+    {
+      "from": "charapre-e130",
+      "to": "birth-of-new-order2",
+      "files": 6
+    }
+  ],
+  "dry_run": false
+}

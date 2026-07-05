@@ -18,6 +18,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 import requests
 from PIL import Image
 
+from romaji_slug import abbr_to_storage_folder
 from parse_gamewith_events import normalize_event_names
 from spirit_attribute_detect import detect_spirit_attributes_from_bytes, normalize_attributes
 
@@ -66,10 +67,10 @@ def normalize_spirit_image(png_bytes: bytes) -> bytes:
         return out.getvalue()
 
 
-def upload_spirit_image(webp_bytes: bytes, event_id: str) -> str:
-    folder = event_id.strip()
+def upload_spirit_image(webp_bytes: bytes, storage_folder: str) -> str:
+    folder = storage_folder.strip()
     if not folder:
-        raise ValueError("event_id が未設定です")
+        raise ValueError("storage_folder が未設定です")
     path = f"{folder}/{uuid.uuid4()}.webp"
     url = f"{SUPABASE_URL}/storage/v1/object/{STORAGE_BUCKET}/{path}"
     response = requests.post(
@@ -142,6 +143,7 @@ def sync_catalog_to_supabase(result: dict) -> None:
             "section_id": event["section_id"],
             "abbr": event["abbr"],
             "title": event["title"],
+            "storage_folder": event["storage_folder"],
             "sort_order": event["sort_order"],
         },
         timeout=60,
@@ -206,6 +208,7 @@ def main() -> None:
             "section_id": args.section_id,
             "abbr": abbr,
             "title": title,
+            "storage_folder": abbr_to_storage_folder(abbr, event_id=args.event_id),
             "sort_order": 1,
         },
         "spirits": [],
@@ -224,7 +227,7 @@ def main() -> None:
 
         if args.upload:
             webp_bytes = normalize_spirit_image(png_bytes)
-            image_path = upload_spirit_image(webp_bytes, args.event_id)
+            image_path = upload_spirit_image(webp_bytes, result["event"]["storage_folder"])
 
         result["spirits"].append(
             {

@@ -19,6 +19,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 import requests
 from PIL import Image
 from parse_gamewith_events import DEFAULT_SOURCE, SECTION_MAP, normalize_event_names, parse_events, slugify
+from romaji_slug import abbr_to_storage_folder
 from spirit_attribute_detect import detect_spirit_attributes_from_bytes, normalize_attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,8 +84,8 @@ def normalize_spirit_image(png_bytes: bytes) -> bytes:
         return out.getvalue()
 
 
-def upload_spirit_image(webp_bytes: bytes, event_id: str) -> str:
-    path = f"{event_id.strip()}/{uuid.uuid4()}.webp"
+def upload_spirit_image(webp_bytes: bytes, storage_folder: str) -> str:
+    path = f"{storage_folder.strip()}/{uuid.uuid4()}.webp"
     response = requests.post(
         f"{SUPABASE_URL}/storage/v1/object/{STORAGE_BUCKET}/{path}",
         headers={
@@ -139,6 +140,7 @@ def sync_event(result: dict) -> None:
             "section_id": event["section_id"],
             "abbr": event["abbr"],
             "title": event["title"],
+            "storage_folder": event["storage_folder"],
             "sort_order": event["sort_order"],
         },
         timeout=60,
@@ -179,12 +181,14 @@ def build_spirit_ids(event_id: str, spirits: list[dict]) -> list[str]:
 def import_event(event: dict, *, save_local: bool, local_dir: Path) -> dict:
     event_id = KNOWN_EVENT_IDS.get(event["id"], KNOWN_EVENT_IDS.get(event["abbr"], event["id"]))
     abbr, title = normalize_event_names(event["abbr"], event["title"])
+    storage_folder = abbr_to_storage_folder(abbr, event_id=event_id)
     result = {
         "event": {
             "id": event_id,
             "section_id": event["section_id"],
             "abbr": abbr,
             "title": title,
+            "storage_folder": storage_folder,
             "sort_order": event["sort_order"],
         },
         "spirits": [],
@@ -206,7 +210,7 @@ def import_event(event: dict, *, save_local: bool, local_dir: Path) -> dict:
             (local_dir / f"{spirit_id}.png").write_bytes(png_bytes)
 
         webp_bytes = normalize_spirit_image(png_bytes)
-        image_path = upload_spirit_image(webp_bytes, event_id)
+        image_path = upload_spirit_image(webp_bytes, storage_folder)
         result["spirits"].append(
             {
                 "id": spirit_id,
@@ -253,7 +257,7 @@ def export_catalog_json(out_path: Path) -> None:
     sections = fetch_all_rows("catalog_sections", select="id,title,sort_order", order="sort_order")
     events = fetch_all_rows(
         "catalog_events",
-        select="id,section_id,abbr,title,sort_order",
+        select="id,section_id,abbr,title,storage_folder,sort_order",
         order="sort_order",
     )
     spirits = fetch_all_rows(
@@ -281,6 +285,7 @@ def export_catalog_json(out_path: Path) -> None:
                 "id": event["id"],
                 "abbr": event["abbr"],
                 "title": event["title"],
+                "storageFolder": event.get("storage_folder"),
                 "spirits": spirits_by_event.get(event["id"], []),
             }
         )
