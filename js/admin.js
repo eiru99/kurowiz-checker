@@ -8,7 +8,7 @@ import {
     resolveStorageFolder,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250705u';
+} from './catalog.js?v=20250705w';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,

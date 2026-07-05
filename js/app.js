@@ -3,8 +3,9 @@ import {
     flattenCatalog,
     getSpiritImageUrl,
     loadCatalog,
+    matchesJapaneseSearch,
     SECTIONS_WITHOUT_DISPLAY_TITLE
-} from './catalog.js?v=20250705u';
+} from './catalog.js?v=20250705w';
 import { initAdmin, openEventEditDialog } from './admin.js?v=20250704ae';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -88,24 +89,15 @@ async function saveCloudData() {
     }
 }
 
-function normalizeForSearch(text) {
-    const value = String(text ?? '').trim().toLowerCase();
-    if (!value) return '';
-    if (typeof globalThis.wanakana !== 'undefined') {
-        return globalThis.wanakana.toHiragana(value, { passRomaji: true });
-    }
-    return value;
-}
-
-function matchesFilters(spirit, normalizedSearch) {
+function matchesFilters(spirit, searchText) {
     const selectedElement = elementFilter.value;
 
-    const matchesSearch = !normalizedSearch || [
+    const matchesSearch = !searchText || [
         spirit.name,
         spirit.event.abbr,
         spirit.event.title,
         spirit.section.title
-    ].some(text => normalizeForSearch(text).includes(normalizedSearch));
+    ].some(text => matchesJapaneseSearch(searchText, text));
 
     const matchesElement = !selectedElement
         || spirit.main === selectedElement
@@ -202,7 +194,6 @@ function renderCatalog() {
     const scrollY = window.scrollY;
     catalogEl.innerHTML = '';
     const searchText = searchInput.value.trim();
-    const normalizedSearch = normalizeForSearch(searchText);
     let visibleCount = 0;
 
     for (const section of catalog.sections) {
@@ -211,7 +202,7 @@ function renderCatalog() {
         for (const event of section.events) {
             const visibleSpirits = event.spirits
                 .map(spirit => spiritById.get(spirit.id))
-                .filter(spirit => spirit && matchesFilters(spirit, normalizedSearch));
+                .filter(spirit => spirit && matchesFilters(spirit, searchText));
 
             if (visibleSpirits.length > 0) {
                 visibleEvents.push({ event, visibleSpirits });

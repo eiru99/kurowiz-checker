@@ -4,6 +4,33 @@ import { prepareSpiritImageFile } from './spirit-image.js';
 /** 画面上にセクション見出しを出さないカテゴリ */
 export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre', 'other']);
 
+const KATAKANA_TO_HIRAGANA = 0x3041 - 0x30a1;
+
+function getWanakana() {
+    return globalThis.wanakana ?? globalThis.Wanakana ?? null;
+}
+
+/** 検索用に文字列をひらがな・小文字に正規化（ひらがな/カタカナを区別しない） */
+export function normalizeJapaneseForSearch(text) {
+    const value = String(text ?? '').normalize('NFKC').trim().toLowerCase();
+    if (!value) return '';
+
+    const wk = getWanakana();
+    const converted = wk?.toHiragana
+        ? wk.toHiragana(value, { passRomaji: true })
+        : value;
+
+    return converted
+        .replace(/\u30f4/g, '\u3094')
+        .replace(/[\u30a1-\u30f6]/g, ch => String.fromCharCode(ch.charCodeAt(0) + KATAKANA_TO_HIRAGANA));
+}
+
+export function matchesJapaneseSearch(query, target) {
+    const normalizedQuery = normalizeJapaneseForSearch(query);
+    if (!normalizedQuery) return true;
+    return normalizeJapaneseForSearch(target).includes(normalizedQuery);
+}
+
 const DOWNLOAD_DL_CHARAPRE_EVENT_ID = 'charapre-e97';
 const WIZSELECTION_EVENT_ID = 'charapre-wizsele';
 const WIZSELECTION_SECTION = {
