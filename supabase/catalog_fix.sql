@@ -89,6 +89,7 @@ ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 DROP POLICY IF EXISTS "public read spirit images" ON storage.objects;
 DROP POLICY IF EXISTS "anon upload spirit images" ON storage.objects;
 DROP POLICY IF EXISTS "anon update spirit images" ON storage.objects;
+DROP POLICY IF EXISTS "anon delete spirit images" ON storage.objects;
 
 CREATE POLICY "public read spirit images"
     ON storage.objects FOR SELECT
@@ -105,6 +106,11 @@ CREATE POLICY "anon update spirit images"
     TO anon
     USING (bucket_id = 'spirit-images')
     WITH CHECK (bucket_id = 'spirit-images');
+
+CREATE POLICY "anon delete spirit images"
+    ON storage.objects FOR DELETE
+    TO anon
+    USING (bucket_id = 'spirit-images');
 
 -- 初期データ（空のときだけ入る）
 INSERT INTO public.catalog_sections (id, title, sort_order) VALUES

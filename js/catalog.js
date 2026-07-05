@@ -144,14 +144,16 @@ export function createSpiritId(eventId, name) {
     return `${slugify(eventId)}-${slugify(name)}-${Date.now().toString(36)}`;
 }
 
-export function createSpiritImagePath(file) {
+export function createSpiritImagePath(eventId, file) {
+    const folder = String(eventId ?? '').trim();
+    if (!folder) throw new Error('イベント ID が未設定です');
     const extension = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
-    return `${crypto.randomUUID()}.${extension}`;
+    return `${folder}/${crypto.randomUUID()}.${extension}`;
 }
 
-export async function uploadSpiritImage(database, file) {
+export async function uploadSpiritImage(database, file, eventId) {
     const prepared = await prepareSpiritImageFile(file);
-    const path = createSpiritImagePath(prepared);
+    const path = createSpiritImagePath(eventId, prepared);
 
     const { error } = await database.storage
         .from(STORAGE_BUCKET)

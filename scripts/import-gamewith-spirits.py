@@ -65,8 +65,11 @@ def normalize_spirit_image(png_bytes: bytes) -> bytes:
         return out.getvalue()
 
 
-def upload_spirit_image(webp_bytes: bytes) -> str:
-    path = f"{uuid.uuid4()}.webp"
+def upload_spirit_image(webp_bytes: bytes, event_id: str) -> str:
+    folder = event_id.strip()
+    if not folder:
+        raise ValueError("event_id が未設定です")
+    path = f"{folder}/{uuid.uuid4()}.webp"
     url = f"{SUPABASE_URL}/storage/v1/object/{STORAGE_BUCKET}/{path}"
     response = requests.post(
         url,
@@ -220,7 +223,7 @@ def main() -> None:
 
         if args.upload:
             webp_bytes = normalize_spirit_image(png_bytes)
-            image_path = upload_spirit_image(webp_bytes)
+            image_path = upload_spirit_image(webp_bytes, args.event_id)
 
         result["spirits"].append(
             {

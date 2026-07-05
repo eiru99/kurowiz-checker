@@ -1156,7 +1156,7 @@ async function submitSpiritQueue() {
         const spiritName = item.name.trim();
         const idSuffix = count > 1 ? `-${i + 1}` : '';
         const spiritId = `${createSpiritId(eventId, spiritName)}${idSuffix}`;
-        const imagePath = await uploadSpiritImage(database, item.file);
+        const imagePath = await uploadSpiritImage(database, item.file, eventId);
 
         const { error } = await database.from('catalog_spirits').insert({
             id: spiritId,
@@ -1205,7 +1205,7 @@ async function submitEventEdit() {
         let imagePath = item.imagePath ?? null;
 
         if (item.file) {
-            imagePath = await uploadSpiritImage(database, item.file);
+            imagePath = await uploadSpiritImage(database, item.file, editingEventId);
         }
 
         const { error } = await database.from('catalog_spirits').update({
