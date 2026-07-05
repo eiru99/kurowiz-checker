@@ -1,4 +1,4 @@
-import { SPIRITS_CATALOG_URL, STORAGE_BUCKET } from './config.js';
+import { SPIRITS_CATALOG_URL, STORAGE_BUCKET, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
 import { prepareSpiritImageFile } from './spirit-image.js';
 
 /** 画面上にセクション見出しを出さないカテゴリ */
@@ -6,23 +6,33 @@ export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'char
 
 const SUPABASE_PAGE_SIZE = 1000;
 
-async function fetchAllTableRows(database, tableName, orderColumn = 'sort_order') {
+async function fetchAllTableRows(_database, tableName, orderColumn = 'sort_order') {
     const rows = [];
     let from = 0;
 
     while (true) {
         const to = from + SUPABASE_PAGE_SIZE - 1;
-        const { data, error } = await database
-            .from(tableName)
-            .select('*')
-            .order(orderColumn)
-            .range(from, to);
+        const url = new URL(`${SUPABASE_URL}/rest/v1/${tableName}`);
+        url.searchParams.set('select', '*');
+        url.searchParams.set('order', `${orderColumn},id`);
 
-        if (error) throw error;
-        if (!data?.length) break;
+        const response = await fetch(url, {
+            headers: {
+                apikey: SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+                Range: `${from}-${to}`
+            }
+        });
 
-        rows.push(...data);
-        if (data.length < SUPABASE_PAGE_SIZE) break;
+        if (!response.ok) {
+            throw new Error(`${tableName} の取得に失敗しました (${response.status})`);
+        }
+
+        const batch = await response.json();
+        if (!Array.isArray(batch) || batch.length === 0) break;
+
+        rows.push(...batch);
+        if (batch.length < SUPABASE_PAGE_SIZE) break;
         from += SUPABASE_PAGE_SIZE;
     }
 

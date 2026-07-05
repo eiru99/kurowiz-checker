@@ -6,7 +6,7 @@ import {
     getSpiritImageUrl,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js';
+} from './catalog.js?v=20250705p';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
