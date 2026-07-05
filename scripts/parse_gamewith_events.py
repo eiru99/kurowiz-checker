@@ -19,6 +19,10 @@ SECTION_MAP = {
     "kollabo": ("kollabo", "コラボガチャ"),
 }
 
+EVENT_SECTION_OVERRIDES = {
+    "DL限定(キャラプレ対象)": "download",
+}
+
 EVENT_BLOCK_RE = re.compile(
     r'<h3 class="event-title (?P<gw_id>e\d+)"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
     r'(?:<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*)?'
@@ -84,6 +88,9 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
             abbr = match.group("abbr").strip()
             title = (match.group("title") or "").strip()
             abbr, title = normalize_event_names(abbr, title)
+            target_section_id = EVENT_SECTION_OVERRIDES.get(abbr, section_id)
+            if gw_id == "wizsele":
+                target_section_id = "wizselection"
             spirits = [
                 {
                     "name": spirit.group("name").strip(),
@@ -96,7 +103,7 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
                 issues.append(
                     {
                         "type": "missing_event_name",
-                        "section_id": section_id,
+                        "section_id": target_section_id,
                         "spirit_count": len(spirits),
                     }
                 )
@@ -104,7 +111,7 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
                 issues.append(
                     {
                         "type": "missing_spirits",
-                        "section_id": section_id,
+                        "section_id": target_section_id,
                         "abbr": abbr,
                         "title": title,
                     }
@@ -115,11 +122,11 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
                         "type": "duplicate_abbr",
                         "abbr": abbr,
                         "first_section": seen_abbr[abbr],
-                        "again_section": section_id,
+                        "again_section": target_section_id,
                     }
                 )
             else:
-                seen_abbr[abbr] = section_id
+                seen_abbr[abbr] = target_section_id
 
             event_id = f"{section_id}-{gw_id}"
 
@@ -127,7 +134,7 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
                 {
                     "id": event_id,
                     "gw_id": gw_id,
-                    "section_id": section_id,
+                    "section_id": target_section_id,
                     "section_h2": sec_title,
                     "sort_order": sort_order,
                     "abbr": abbr,

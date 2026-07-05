@@ -4,6 +4,85 @@ import { prepareSpiritImageFile } from './spirit-image.js';
 /** 画面上にセクション見出しを出さないカテゴリ */
 export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre']);
 
+const DOWNLOAD_DL_CHARAPRE_EVENT_ID = 'charapre-e97';
+const WIZSELECTION_EVENT_ID = 'charapre-wizsele';
+const WIZSELECTION_SECTION = {
+    id: 'wizselection',
+    title: 'プラチナ/ウィズセレクション'
+};
+const CATALOG_SECTION_ORDER = [
+    'latest',
+    'recent',
+    'charapre',
+    'other',
+    'kollabo',
+    'download',
+    'wizselection'
+];
+
+function reorderSections(sections) {
+    const byId = new Map(sections.map(section => [section.id, section]));
+    const ordered = [];
+    const used = new Set();
+
+    for (const id of CATALOG_SECTION_ORDER) {
+        const section = byId.get(id);
+        if (section) {
+            ordered.push(section);
+            used.add(id);
+        }
+    }
+
+    for (const section of sections) {
+        if (!used.has(section.id)) {
+            ordered.push(section);
+        }
+    }
+
+    return ordered;
+}
+
+function popEventFromSections(sections, eventId) {
+    for (const section of sections) {
+        const index = (section.events ?? []).findIndex(event => event.id === eventId);
+        if (index >= 0) {
+            return section.events.splice(index, 1)[0];
+        }
+    }
+    return null;
+}
+
+/** カタログのセクション・イベント配置を画面表示用に正規化 */
+export function normalizeCatalogLayout(catalog) {
+    if (!catalog?.sections) return catalog;
+
+    const sections = catalog.sections.map(section => ({
+        ...section,
+        events: [...(section.events ?? [])]
+    }));
+
+    const dlCharapreEvent = popEventFromSections(sections, DOWNLOAD_DL_CHARAPRE_EVENT_ID);
+    const wizseleEvent = popEventFromSections(sections, WIZSELECTION_EVENT_ID);
+
+    if (dlCharapreEvent) {
+        const downloadSection = sections.find(section => section.id === 'download');
+        if (downloadSection) {
+            downloadSection.events.unshift(dlCharapreEvent);
+        }
+    }
+
+    if (wizseleEvent) {
+        let wizSection = sections.find(section => section.id === WIZSELECTION_SECTION.id);
+        if (!wizSection) {
+            wizSection = { ...WIZSELECTION_SECTION, events: [] };
+            sections.push(wizSection);
+        }
+        wizSection.events.push(wizseleEvent);
+    }
+
+    return { ...catalog, sections: reorderSections(sections) };
+}
+
 const SUPABASE_PAGE_SIZE = 1000;
 
 async function fetchAllTableRows(_database, tableName, orderColumn = 'sort_order') {
@@ -125,14 +204,18 @@ async function loadCatalogFromJson() {
 }
 
 export async function loadCatalog(database) {
+    let catalog;
     try {
-        const fromSupabase = await loadCatalogFromSupabase(database);
-        if (fromSupabase) return fromSupabase;
+        catalog = await loadCatalogFromSupabase(database);
     } catch (error) {
         console.warn('Supabase カタログ読み込み失敗、JSON にフォールバック:', error);
     }
 
-    return loadCatalogFromJson();
+    if (!catalog) {
+        catalog = await loadCatalogFromJson();
+    }
+
+    return normalizeCatalogLayout(catalog);
 }
 
 export async function fetchCatalogRows(database) {

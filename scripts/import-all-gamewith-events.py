@@ -121,6 +121,7 @@ def ensure_sections() -> None:
         {"id": section_id, "title": title, "sort_order": index + 1}
         for index, (_, (section_id, title)) in enumerate(SECTION_MAP.items())
     ]
+    rows.append({"id": "wizselection", "title": "プラチナ/ウィズセレクション", "sort_order": len(rows) + 1})
     response = requests.post(
         f"{SUPABASE_URL}/rest/v1/catalog_sections",
         headers=supabase_headers(prefer="resolution=merge-duplicates"),
