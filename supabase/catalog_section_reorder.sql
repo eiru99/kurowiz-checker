@@ -30,3 +30,8 @@ UPDATE public.catalog_events AS target
 SET sort_order = target.sort_order + 1
 WHERE target.section_id = 'download'
   AND target.id <> 'charapre-e97';
+
+UPDATE public.catalog_events
+SET sort_order = 1
+WHERE id = 'download-e97'
+  AND section_id = 'download';

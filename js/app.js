@@ -4,7 +4,7 @@ import {
     getSpiritImageUrl,
     loadCatalog,
     SECTIONS_WITHOUT_DISPLAY_TITLE
-} from './catalog.js?v=20250705t';
+} from './catalog.js?v=20250705u';
 import { initAdmin, openEventEditDialog } from './admin.js?v=20250704ae';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

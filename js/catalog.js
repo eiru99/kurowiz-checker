@@ -2,7 +2,7 @@ import { SPIRITS_CATALOG_URL, STORAGE_BUCKET, SUPABASE_ANON_KEY, SUPABASE_URL } 
 import { prepareSpiritImageFile } from './spirit-image.js';
 
 /** 画面上にセクション見出しを出さないカテゴリ */
-export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre']);
+export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre', 'other']);
 
 const DOWNLOAD_DL_CHARAPRE_EVENT_ID = 'charapre-e97';
 const WIZSELECTION_EVENT_ID = 'charapre-wizsele';
