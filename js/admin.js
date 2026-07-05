@@ -15,7 +15,7 @@ import {
     prepareEventOcrLayout,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250705o';
+} from './event-ocr.js?v=20250705q';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,

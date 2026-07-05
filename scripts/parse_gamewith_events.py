@@ -42,6 +42,8 @@ def slugify(value: str) -> str:
 def normalize_event_names(abbr: str, title: str) -> tuple[str, str]:
     abbr = (abbr or "").strip()
     title = (title or "").strip()
+    if abbr and title:
+        return abbr, title
     value = abbr or title
     return value, value
 

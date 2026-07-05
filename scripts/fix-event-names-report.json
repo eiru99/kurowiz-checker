@@ -1,5 +1,3121 @@
 {
-  "event_count": 319,
-  "fixed_count": 0,
-  "fixed": []
+  "source_events": 310,
+  "db_events": 319,
+  "fixed_count": 282,
+  "missing_source_count": 9,
+  "missing_source_ids": [
+    "recent-uwwg",
+    "charapre-birth-of-new-order3",
+    "recent-ashura2",
+    "recent-ung",
+    "recent-ashura1",
+    "charapre-ugg",
+    "charapre-uslg",
+    "charapre-uug",
+    "charapre-upg"
+  ],
+  "fixed": [
+    {
+      "id": "recent-e311",
+      "before": {
+        "abbr": "クロマグゼロ2",
+        "title": "クロマグゼロ2"
+      },
+      "after": {
+        "abbr": "クロマグゼロ2",
+        "title": "クロム・マグナゼロEPISODEⅡ Vanishing Blood"
+      }
+    },
+    {
+      "id": "kamisanpo3",
+      "before": {
+        "abbr": "かみさんぽっ3",
+        "title": "かみさんぽっ3"
+      },
+      "after": {
+        "abbr": "かみさんぽっ3",
+        "title": "かみさんぽっ!人と妖精の国アイリー"
+      }
+    },
+    {
+      "id": "recent-e312",
+      "before": {
+        "abbr": "シエオラ",
+        "title": "シエオラ"
+      },
+      "after": {
+        "abbr": "シエオラ",
+        "title": "幻創の主上 シエオラ"
+      }
+    },
+    {
+      "id": "recent-e310",
+      "before": {
+        "abbr": "オボロ・ダスト1",
+        "title": "オボロ・ダスト1"
+      },
+      "after": {
+        "abbr": "オボロ・ダスト1",
+        "title": "オボロ・ダスト"
+      }
+    },
+    {
+      "id": "recent-e309",
+      "before": {
+        "abbr": "グロリアスメモリアル3",
+        "title": "グロリアスメモリアル3"
+      },
+      "after": {
+        "abbr": "グロリアスメモリアル3",
+        "title": "Glorious MemorialⅢ"
+      }
+    },
+    {
+      "id": "recent-e308",
+      "before": {
+        "abbr": "13周年記念",
+        "title": "13周年記念"
+      },
+      "after": {
+        "abbr": "13周年記念",
+        "title": "13th ANIVERSARY"
+      }
+    },
+    {
+      "id": "recent-e307",
+      "before": {
+        "abbr": "バレンタイン2026",
+        "title": "バレンタイン2026"
+      },
+      "after": {
+        "abbr": "バレンタイン2026",
+        "title": "Valentine2026"
+      }
+    },
+    {
+      "id": "recent-e306",
+      "before": {
+        "abbr": "レディアント2",
+        "title": "レディアント2"
+      },
+      "after": {
+        "abbr": "レディアント2",
+        "title": "追憶のレディアント 銀の慟哭、金の祝福"
+      }
+    },
+    {
+      "id": "recent-e305",
+      "before": {
+        "abbr": "リレコード3",
+        "title": "リレコード3"
+      },
+      "after": {
+        "abbr": "リレコード3",
+        "title": "FairyChord ReRechord3"
+      }
+    },
+    {
+      "id": "recent-e304",
+      "before": {
+        "abbr": "正月2026",
+        "title": "正月2026"
+      },
+      "after": {
+        "abbr": "正月2026",
+        "title": "謹賀新年2026"
+      }
+    },
+    {
+      "id": "recent-e303",
+      "before": {
+        "abbr": "クリスマス2025",
+        "title": "クリスマス2025"
+      },
+      "after": {
+        "abbr": "クリスマス2025",
+        "title": "Christmas2025"
+      }
+    },
+    {
+      "id": "recent-e302",
+      "before": {
+        "abbr": "ディアブロクリニック3",
+        "title": "ディアブロクリニック3"
+      },
+      "after": {
+        "abbr": "ディアブロクリニック3",
+        "title": "Diablo Clinic3 Vice of Virus"
+      }
+    },
+    {
+      "id": "recent-e298",
+      "before": {
+        "abbr": "アレヴァン6",
+        "title": "アレヴァン6"
+      },
+      "after": {
+        "abbr": "アレヴァン6",
+        "title": "ARES THE VANGUARD Blazing relic ignition"
+      }
+    },
+    {
+      "id": "recent-e297",
+      "before": {
+        "abbr": "GA2025後半ザウィナーズ",
+        "title": "GA2025後半ザウィナーズ"
+      },
+      "after": {
+        "abbr": "GA2025後半ザウィナーズ",
+        "title": "黒ウィズゴールデンアワード2025 THE WINNERS"
+      }
+    },
+    {
+      "id": "recent-e296",
+      "before": {
+        "abbr": "GA2025前半ザジェネレーションズ",
+        "title": "GA2025前半ザジェネレーションズ"
+      },
+      "after": {
+        "abbr": "GA2025前半ザジェネレーションズ",
+        "title": "黒ウィズゴールデンアワード2025 THE GENERATIONS"
+      }
+    },
+    {
+      "id": "recent-e295",
+      "before": {
+        "abbr": "黒猫ハルヒコラボ",
+        "title": "黒猫ハルヒコラボ"
+      },
+      "after": {
+        "abbr": "黒猫ハルヒコラボ",
+        "title": "涼宮ハルヒの響命"
+      }
+    },
+    {
+      "id": "recent-e294",
+      "before": {
+        "abbr": "黄昏メアレスRe後編",
+        "title": "黄昏メアレスRe後編"
+      },
+      "after": {
+        "abbr": "黄昏メアレスRe後編",
+        "title": "黄昏メアレス Rethread 想影pureness -後編-"
+      }
+    },
+    {
+      "id": "recent-e293",
+      "before": {
+        "abbr": "黄昏メアレスRe前編",
+        "title": "黄昏メアレスRe前編"
+      },
+      "after": {
+        "abbr": "黄昏メアレスRe前編",
+        "title": "黄昏メアレス Rethread 想影pureness -前編-"
+      }
+    },
+    {
+      "id": "recent-e292",
+      "before": {
+        "abbr": "サマーコレクション2025",
+        "title": "サマーコレクション2025"
+      },
+      "after": {
+        "abbr": "サマーコレクション2025",
+        "title": "Summer Collection 2025"
+      }
+    },
+    {
+      "id": "recent-e290",
+      "before": {
+        "abbr": "ディアブロエンブレム3",
+        "title": "ディアブロエンブレム3"
+      },
+      "after": {
+        "abbr": "ディアブロエンブレム3",
+        "title": "Diablo Emblem3 End of Eden"
+      }
+    },
+    {
+      "id": "recent-e289",
+      "before": {
+        "abbr": "UWWG",
+        "title": "UWWG"
+      },
+      "after": {
+        "abbr": "UWWG",
+        "title": "爆・超魔道列伝 アルティメットワイルドウエスタンガールズ！"
+      }
+    },
+    {
+      "id": "recent-e288",
+      "before": {
+        "abbr": "八百万神秘譚6",
+        "title": "八百万神秘譚6"
+      },
+      "after": {
+        "abbr": "八百万神秘譚6",
+        "title": "八百万神秘譚6 百歌繚乱！ 謳取り合戦"
+      }
+    },
+    {
+      "id": "recent-e287",
+      "before": {
+        "abbr": "轟立鉄傑学園",
+        "title": "轟立鉄傑学園"
+      },
+      "after": {
+        "abbr": "轟立鉄傑学園",
+        "title": "轟立！ 鉄傑学園"
+      }
+    },
+    {
+      "id": "recent-e286",
+      "before": {
+        "abbr": "グロリアスメモリアル2",
+        "title": "グロリアスメモリアル2"
+      },
+      "after": {
+        "abbr": "グロリアスメモリアル2",
+        "title": "Glorious Memorial Ⅱ"
+      }
+    },
+    {
+      "id": "recent-e285",
+      "before": {
+        "abbr": "嗚呼ヒューマニゼーション",
+        "title": "嗚呼ヒューマニゼーション"
+      },
+      "after": {
+        "abbr": "嗚呼ヒューマニゼーション",
+        "title": "嗚呼、Humanization"
+      }
+    },
+    {
+      "id": "recent-e284",
+      "before": {
+        "abbr": "12周年記念",
+        "title": "12周年記念"
+      },
+      "after": {
+        "abbr": "12周年記念",
+        "title": "THE LEGENDS of WIZ Ⅳ"
+      }
+    },
+    {
+      "id": "recent-e283",
+      "before": {
+        "abbr": "バレンタイン2025",
+        "title": "バレンタイン2025"
+      },
+      "after": {
+        "abbr": "バレンタイン2025",
+        "title": "St.Valentine 2025"
+      }
+    },
+    {
+      "id": "recent-e282",
+      "before": {
+        "abbr": "零の英雄",
+        "title": "零の英雄"
+      },
+      "after": {
+        "abbr": "零の英雄",
+        "title": "想刻ノ魔道士Ⅲ ～零の英雄～"
+      }
+    },
+    {
+      "id": "recent-e280",
+      "before": {
+        "abbr": "正月2025",
+        "title": "正月2025"
+      },
+      "after": {
+        "abbr": "正月2025",
+        "title": "謹賀新年2025"
+      }
+    },
+    {
+      "id": "recent-e279",
+      "before": {
+        "abbr": "クリスマス2024",
+        "title": "クリスマス2024"
+      },
+      "after": {
+        "abbr": "クリスマス2024",
+        "title": "Christmas2024"
+      }
+    },
+    {
+      "id": "recent-e278",
+      "before": {
+        "abbr": "ASHURA2",
+        "title": "ASHURA2"
+      },
+      "after": {
+        "abbr": "ASHURA2",
+        "title": "ASHURA:VERMILION EDGEⅡ"
+      }
+    },
+    {
+      "id": "recent-e277",
+      "before": {
+        "abbr": "かみさんぽっ2",
+        "title": "かみさんぽっ2"
+      },
+      "after": {
+        "abbr": "かみさんぽっ2",
+        "title": "かみさんぽっ！ 人魚伝説の島コクア"
+      }
+    },
+    {
+      "id": "recent-e276",
+      "before": {
+        "abbr": "ハロウィン2024",
+        "title": "ハロウィン2024"
+      },
+      "after": {
+        "abbr": "ハロウィン2024",
+        "title": "Heartful Nightmare"
+      }
+    },
+    {
+      "id": "recent-e275",
+      "before": {
+        "abbr": "アウトランダー3",
+        "title": "アウトランダー3"
+      },
+      "after": {
+        "abbr": "アウトランダー3",
+        "title": "眠れる遺跡のアウトランダー ～おかしなダンジョン運営と古代兵器～"
+      }
+    },
+    {
+      "id": "recent-e274",
+      "before": {
+        "abbr": "アイドルキャッツ5",
+        "title": "アイドルキャッツ5"
+      },
+      "after": {
+        "abbr": "アイドルキャッツ5",
+        "title": "アイドルωキャッツファイン！！！！！ ～元気を届けるピュアフェスタ～"
+      }
+    },
+    {
+      "id": "recent-e272",
+      "before": {
+        "abbr": "GA2024前半ザジェネレーションズ",
+        "title": "GA2024前半ザジェネレーションズ"
+      },
+      "after": {
+        "abbr": "GA2024前半ザジェネレーションズ",
+        "title": "ゴールデンアワード2024 THE GENERATIONS"
+      }
+    },
+    {
+      "id": "recent-e271",
+      "before": {
+        "abbr": "クロディラEX",
+        "title": "クロディラEX"
+      },
+      "after": {
+        "abbr": "クロディラEX",
+        "title": "響命クロスディライブ EXTRA ACT"
+      }
+    },
+    {
+      "id": "recent-e270",
+      "before": {
+        "abbr": "聖サタニック女学院5",
+        "title": "聖サタニック女学院5"
+      },
+      "after": {
+        "abbr": "聖サタニック女学院5",
+        "title": "聖サタニック女学院 おかえりなさいませ、ご主人様"
+      }
+    },
+    {
+      "id": "recent-e269",
+      "before": {
+        "abbr": "ソウルバンカー5",
+        "title": "ソウルバンカー5"
+      },
+      "after": {
+        "abbr": "ソウルバンカー5",
+        "title": "SOUL BANKER Burn the Soul"
+      }
+    },
+    {
+      "id": "recent-e268",
+      "before": {
+        "abbr": "サマーコレクション2024",
+        "title": "サマーコレクション2024"
+      },
+      "after": {
+        "abbr": "サマーコレクション2024",
+        "title": "Summer Collection 2024"
+      }
+    },
+    {
+      "id": "recent-e267",
+      "before": {
+        "abbr": "UNG",
+        "title": "UNG"
+      },
+      "after": {
+        "abbr": "UNG",
+        "title": "業・超魔道列伝 アルティメットニルヴァーナガールズ！"
+      }
+    },
+    {
+      "id": "recent-e266",
+      "before": {
+        "abbr": "ポポラの里のものがたり",
+        "title": "ポポラの里のものがたり"
+      },
+      "after": {
+        "abbr": "ポポラの里のものがたり",
+        "title": "ポポラの里のものがたり ようこそ！氷華祭"
+      }
+    },
+    {
+      "id": "recent-e265",
+      "before": {
+        "abbr": "アテナ・ザ・シャドウガーディアン",
+        "title": "アテナ・ザ・シャドウガーディアン"
+      },
+      "after": {
+        "abbr": "アテナ・ザ・シャドウガーディアン",
+        "title": "ATHENA THE SHADOW GUARDIAN"
+      }
+    },
+    {
+      "id": "recent-e263",
+      "before": {
+        "abbr": "エターナルクロノス4",
+        "title": "エターナルクロノス4"
+      },
+      "after": {
+        "abbr": "エターナルクロノス4",
+        "title": "時詠みのエターナル・クロノスⅣ Clockwork Workers"
+      }
+    },
+    {
+      "id": "recent-e262",
+      "before": {
+        "abbr": "11周年記念",
+        "title": "11周年記念"
+      },
+      "after": {
+        "abbr": "11周年記念",
+        "title": "THE LEGENDS of WIZ III"
+      }
+    },
+    {
+      "id": "recent-e259",
+      "before": {
+        "abbr": "バレンタイン2024",
+        "title": "バレンタイン2024"
+      },
+      "after": {
+        "abbr": "バレンタイン2024",
+        "title": "St.Valentine 2024"
+      }
+    },
+    {
+      "id": "recent-e258",
+      "before": {
+        "abbr": "神都ピカレスク5",
+        "title": "神都ピカレスク5"
+      },
+      "after": {
+        "abbr": "神都ピカレスク5",
+        "title": "神都ピカレスク 無窮の賭博遊戯"
+      }
+    },
+    {
+      "id": "recent-e257",
+      "before": {
+        "abbr": "ビューティー12天女",
+        "title": "ビューティー12天女"
+      },
+      "after": {
+        "abbr": "ビューティー12天女",
+        "title": "冠番組争奪！ ビューティー12天女 登竜門"
+      }
+    },
+    {
+      "id": "recent-e256",
+      "before": {
+        "abbr": "正月2024",
+        "title": "正月2024"
+      },
+      "after": {
+        "abbr": "正月2024",
+        "title": "謹賀新年2024"
+      }
+    },
+    {
+      "id": "recent-e261",
+      "before": {
+        "abbr": "グロリアスメモリアル",
+        "title": "グロリアスメモリアル"
+      },
+      "after": {
+        "abbr": "グロリアスメモリアル",
+        "title": "Glorious Memorial"
+      }
+    },
+    {
+      "id": "recent-e260",
+      "before": {
+        "abbr": "ASHURA1",
+        "title": "ASHURA1"
+      },
+      "after": {
+        "abbr": "ASHURA1",
+        "title": "ASHURA:VERMILION EDGE"
+      }
+    },
+    {
+      "id": "recent-e255",
+      "before": {
+        "abbr": "ホーリーナイトテイル",
+        "title": "ホーリーナイトテイル"
+      },
+      "after": {
+        "abbr": "ホーリーナイトテイル",
+        "title": "ホーリーナイトテイル -ホワイトナイトテイル 第2章-"
+      }
+    },
+    {
+      "id": "recent-e254",
+      "before": {
+        "abbr": "ソウルバンカー4",
+        "title": "ソウルバンカー4"
+      },
+      "after": {
+        "abbr": "ソウルバンカー4",
+        "title": "SOUL BANKER Frozen Inferno"
+      }
+    },
+    {
+      "id": "recent-e253",
+      "before": {
+        "abbr": "ステラダッシュ2",
+        "title": "ステラダッシュ2"
+      },
+      "after": {
+        "abbr": "ステラダッシュ2",
+        "title": "STELLA☆DASH！2nd RACE -無限の連携 サザンクロス"
+      }
+    },
+    {
+      "id": "recent-e252",
+      "before": {
+        "abbr": "ハロウィン2023",
+        "title": "ハロウィン2023"
+      },
+      "after": {
+        "abbr": "ハロウィン2023",
+        "title": "The Darkness Halloween"
+      }
+    },
+    {
+      "id": "charapre-e250",
+      "before": {
+        "abbr": "破滅の異宝",
+        "title": "破滅の異宝"
+      },
+      "after": {
+        "abbr": "破滅の異宝",
+        "title": "想刻ノ魔道士Ⅱ ～破滅の異宝～"
+      }
+    },
+    {
+      "id": "charapre-e249",
+      "before": {
+        "abbr": "GA2023後半ザウィナーズ",
+        "title": "GA2023後半ザウィナーズ"
+      },
+      "after": {
+        "abbr": "GA2023後半ザウィナーズ",
+        "title": "黒ウィズゴールデンアワード2023 THE WINNERS"
+      }
+    },
+    {
+      "id": "charapre-e248",
+      "before": {
+        "abbr": "GA2023前半ザジェネレーションズ",
+        "title": "GA2023前半ザジェネレーションズ"
+      },
+      "after": {
+        "abbr": "GA2023前半ザジェネレーションズ",
+        "title": "黒ウィズゴールデンアワード2023 THE GENERATIONS"
+      }
+    },
+    {
+      "id": "charapre-e247",
+      "before": {
+        "abbr": "フェアリーコード リレコード2",
+        "title": "フェアリーコード リレコード2"
+      },
+      "after": {
+        "abbr": "フェアリーコード リレコード2",
+        "title": "FairyChord ReReChord2"
+      }
+    },
+    {
+      "id": "charapre-e246",
+      "before": {
+        "abbr": "覇剣戦記",
+        "title": "覇剣戦記"
+      },
+      "after": {
+        "abbr": "覇剣戦記",
+        "title": "覇剣戦記 Liberation of Gladiator"
+      }
+    },
+    {
+      "id": "charapre-e245",
+      "before": {
+        "abbr": "かみさんぽっ",
+        "title": "かみさんぽっ"
+      },
+      "after": {
+        "abbr": "かみさんぽっ",
+        "title": "かみさんぽっ！ 千夜一夜の国アリビーヤ"
+      }
+    },
+    {
+      "id": "charapre-e244",
+      "before": {
+        "abbr": "サマーコレクション2023",
+        "title": "サマーコレクション2023"
+      },
+      "after": {
+        "abbr": "サマーコレクション2023",
+        "title": "Summer Collection 2023"
+      }
+    },
+    {
+      "id": "charapre-e243",
+      "before": {
+        "abbr": "ディアブロクリニック2",
+        "title": "ディアブロクリニック2"
+      },
+      "after": {
+        "abbr": "ディアブロクリニック2",
+        "title": "Diablo Clinic2 Rain of Refrain"
+      }
+    },
+    {
+      "id": "charapre-e242",
+      "before": {
+        "abbr": "UGG",
+        "title": "UGG"
+      },
+      "after": {
+        "abbr": "UGG",
+        "title": "色・超魔道列伝 アルティメットグラフィティガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e238",
+      "before": {
+        "abbr": "10周年記念後半",
+        "title": "10周年記念後半"
+      },
+      "after": {
+        "abbr": "10周年記念後半",
+        "title": "THE LEGENDS of WIZ II"
+      }
+    },
+    {
+      "id": "charapre-e237",
+      "before": {
+        "abbr": "アルタリア",
+        "title": "アルタリア"
+      },
+      "after": {
+        "abbr": "アルタリア",
+        "title": "想刻ノ魔道士 ～幻の大地 アルタリア～"
+      }
+    },
+    {
+      "id": "charapre-e236",
+      "before": {
+        "abbr": "10周年記念前半",
+        "title": "10周年記念前半"
+      },
+      "after": {
+        "abbr": "10周年記念前半",
+        "title": "THE LEGENDS of WIZ Ⅰ"
+      }
+    },
+    {
+      "id": "charapre-e241",
+      "before": {
+        "abbr": "新説桃娘伝3",
+        "title": "新説桃娘伝3"
+      },
+      "after": {
+        "abbr": "新説桃娘伝3",
+        "title": "新説 桃娘伝Ⅲ 堕月宇宙鬼譚"
+      }
+    },
+    {
+      "id": "charapre-e240",
+      "before": {
+        "abbr": "プロフェッショナルズ",
+        "title": "プロフェッショナルズ"
+      },
+      "after": {
+        "abbr": "プロフェッショナルズ",
+        "title": "THE PROFESSIONALS"
+      }
+    },
+    {
+      "id": "charapre-e239",
+      "before": {
+        "abbr": "聖なる空のエステレラ5",
+        "title": "聖なる空のエステレラ5"
+      },
+      "after": {
+        "abbr": "聖なる空のエステレラ5",
+        "title": "聖なる空のエステレラ5 星が見守る街の物語"
+      }
+    },
+    {
+      "id": "charapre-e235",
+      "before": {
+        "abbr": "バレンタイン2023",
+        "title": "バレンタイン2023"
+      },
+      "after": {
+        "abbr": "バレンタイン2023",
+        "title": "St.Valentine 2023"
+      }
+    },
+    {
+      "id": "charapre-e233",
+      "before": {
+        "abbr": "サタ女4",
+        "title": "サタ女4"
+      },
+      "after": {
+        "abbr": "サタ女4",
+        "title": "聖サタニック女学院 四露死苦・天界"
+      }
+    },
+    {
+      "id": "charapre-e232",
+      "before": {
+        "abbr": "正月2023",
+        "title": "正月2023"
+      },
+      "after": {
+        "abbr": "正月2023",
+        "title": "謹賀新年 2023"
+      }
+    },
+    {
+      "id": "charapre-e231",
+      "before": {
+        "abbr": "クリスマス2022",
+        "title": "クリスマス2022"
+      },
+      "after": {
+        "abbr": "クリスマス2022",
+        "title": "Christmas stories2022"
+      }
+    },
+    {
+      "id": "charapre-e229",
+      "before": {
+        "abbr": "ディアブロエンブレム2",
+        "title": "ディアブロエンブレム2"
+      },
+      "after": {
+        "abbr": "ディアブロエンブレム2",
+        "title": "Diablo Emblem2 Jail of Jewel"
+      }
+    },
+    {
+      "id": "charapre-e228",
+      "before": {
+        "abbr": "ソウルバンカー3",
+        "title": "ソウルバンカー3"
+      },
+      "after": {
+        "abbr": "ソウルバンカー3",
+        "title": "SOUL BANKER The Missing Crisis"
+      }
+    },
+    {
+      "id": "charapre-e227",
+      "before": {
+        "abbr": "八百八町3",
+        "title": "八百八町3"
+      },
+      "after": {
+        "abbr": "八百八町3",
+        "title": "八百八町あやかし捕物帳3 超夜長！徹夜の百鬼夜行すぺしゃる"
+      }
+    },
+    {
+      "id": "charapre-e226",
+      "before": {
+        "abbr": "ステラダッシュ1",
+        "title": "ステラダッシュ1"
+      },
+      "after": {
+        "abbr": "ステラダッシュ1",
+        "title": "STELLA☆DASH！"
+      }
+    },
+    {
+      "id": "charapre-e225",
+      "before": {
+        "abbr": "GA2022後半",
+        "title": "GA2022後半"
+      },
+      "after": {
+        "abbr": "GA2022後半",
+        "title": "ゴールデンアワード2022後半"
+      }
+    },
+    {
+      "id": "charapre-e224",
+      "before": {
+        "abbr": "GA2022前半",
+        "title": "GA2022前半"
+      },
+      "after": {
+        "abbr": "GA2022前半",
+        "title": "ゴールデンアワード2022前半"
+      }
+    },
+    {
+      "id": "charapre-e223",
+      "before": {
+        "abbr": "八百万神秘譚5",
+        "title": "八百万神秘譚5"
+      },
+      "after": {
+        "abbr": "八百万神秘譚5",
+        "title": "八百万神秘譚５ 神代に響く愛慕の和歌"
+      }
+    },
+    {
+      "id": "charapre-e222",
+      "before": {
+        "abbr": "天上岬4",
+        "title": "天上岬4"
+      },
+      "after": {
+        "abbr": "天上岬4",
+        "title": "天上岬の調香師 絆のオリジナルノート"
+      }
+    },
+    {
+      "id": "charapre-e221",
+      "before": {
+        "abbr": "アレス・ザ・ヴァンガード5",
+        "title": "アレス・ザ・ヴァンガード5"
+      },
+      "after": {
+        "abbr": "アレス・ザ・ヴァンガード5",
+        "title": "ARES THE VANGUARD オペレーション・ホリデー"
+      }
+    },
+    {
+      "id": "charapre-e220",
+      "before": {
+        "abbr": "サマーコレクション2022",
+        "title": "サマーコレクション2022"
+      },
+      "after": {
+        "abbr": "サマーコレクション2022",
+        "title": "Summer Collection 2022"
+      }
+    },
+    {
+      "id": "charapre-e219",
+      "before": {
+        "abbr": "神都ピカレスク4",
+        "title": "神都ピカレスク4"
+      },
+      "after": {
+        "abbr": "神都ピカレスク4",
+        "title": "神都ピカレスク 桃花絢爛"
+      }
+    },
+    {
+      "id": "charapre-e218",
+      "before": {
+        "abbr": "クロムマグナ魔道戦線",
+        "title": "クロムマグナ魔道戦線"
+      },
+      "after": {
+        "abbr": "クロムマグナ魔道戦線",
+        "title": "クロム・マグナ魔道戦線 盤上の転入生"
+      }
+    },
+    {
+      "id": "charapre-e217",
+      "before": {
+        "abbr": "フェアリーコード リレコード1",
+        "title": "フェアリーコード リレコード1"
+      },
+      "after": {
+        "abbr": "フェアリーコード リレコード1",
+        "title": "FairyChord ReReChord"
+      }
+    },
+    {
+      "id": "charapre-e216",
+      "before": {
+        "abbr": "ゴールデン2022",
+        "title": "ゴールデン2022"
+      },
+      "after": {
+        "abbr": "ゴールデン2022",
+        "title": "ザ・ゴールデン2022"
+      }
+    },
+    {
+      "id": "charapre-e215",
+      "before": {
+        "abbr": "USLG",
+        "title": "USLG"
+      },
+      "after": {
+        "abbr": "USLG",
+        "title": "超魔首領列伝 アルティメットシュガーレスガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e214",
+      "before": {
+        "abbr": "ディアブロクリニック1",
+        "title": "ディアブロクリニック1"
+      },
+      "after": {
+        "abbr": "ディアブロクリニック1",
+        "title": "Diablo Clinic"
+      }
+    },
+    {
+      "id": "charapre-e213",
+      "before": {
+        "abbr": "ディアブロエンブレム1",
+        "title": "ディアブロエンブレム1"
+      },
+      "after": {
+        "abbr": "ディアブロエンブレム1",
+        "title": "Diablo Emblem"
+      }
+    },
+    {
+      "id": "charapre-e212",
+      "before": {
+        "abbr": "9周年記念",
+        "title": "9周年記念"
+      },
+      "after": {
+        "abbr": "9周年記念",
+        "title": "9th Anniversary"
+      }
+    },
+    {
+      "id": "charapre-e211",
+      "before": {
+        "abbr": "アイドルキャッツ4",
+        "title": "アイドルキャッツ4"
+      },
+      "after": {
+        "abbr": "アイドルキャッツ4",
+        "title": "アイドルωキャッツカルテット！！！！ 〜あなたに届けるピュアチョコレート〜"
+      }
+    },
+    {
+      "id": "charapre-e210",
+      "before": {
+        "abbr": "GA2021後半PART2",
+        "title": "GA2021後半PART2"
+      },
+      "after": {
+        "abbr": "GA2021後半PART2",
+        "title": "ゴールデンアワード2021後半PART2"
+      }
+    },
+    {
+      "id": "charapre-e209",
+      "before": {
+        "abbr": "GA2021後半PART1",
+        "title": "GA2021後半PART1"
+      },
+      "after": {
+        "abbr": "GA2021後半PART1",
+        "title": "ゴールデンアワード2021後半 PART1"
+      }
+    },
+    {
+      "id": "charapre-e208",
+      "before": {
+        "abbr": "正月2022",
+        "title": "正月2022"
+      },
+      "after": {
+        "abbr": "正月2022",
+        "title": "謹賀新年 2022"
+      }
+    },
+    {
+      "id": "charapre-e206",
+      "before": {
+        "abbr": "星と氷の銀河鉄道",
+        "title": "星と氷の銀河鉄道"
+      },
+      "after": {
+        "abbr": "星と氷の銀河鉄道",
+        "title": "星と氷の銀河鉄道 〜エステレラ発、ポポラの里経由、クエス＝アリアスゆき〜"
+      }
+    },
+    {
+      "id": "charapre-e204",
+      "before": {
+        "abbr": "アウトランダー2",
+        "title": "アウトランダー2"
+      },
+      "after": {
+        "abbr": "アウトランダー2",
+        "title": "眠れる遺跡のアウトランダー ～おかしなオバケと伝説の騎士～"
+      }
+    },
+    {
+      "id": "charapre-e203",
+      "before": {
+        "abbr": "怪盗アヤツグ",
+        "title": "怪盗アヤツグ"
+      },
+      "after": {
+        "abbr": "怪盗アヤツグ",
+        "title": "怪盗アヤツグ 僵尸捕縛帳"
+      }
+    },
+    {
+      "id": "charapre-e202",
+      "before": {
+        "abbr": "サタニックコード",
+        "title": "サタニックコード"
+      },
+      "after": {
+        "abbr": "サタニックコード",
+        "title": "SatanicChord"
+      }
+    },
+    {
+      "id": "charapre-e201",
+      "before": {
+        "abbr": "響命クロスバンカー",
+        "title": "響命クロスバンカー"
+      },
+      "after": {
+        "abbr": "響命クロスバンカー",
+        "title": "響命 X BANKER"
+      }
+    },
+    {
+      "id": "charapre-e200",
+      "before": {
+        "abbr": "GA2021前半",
+        "title": "GA2021前半"
+      },
+      "after": {
+        "abbr": "GA2021前半",
+        "title": "ゴールデンアワード2021前半"
+      }
+    },
+    {
+      "id": "charapre-e199",
+      "before": {
+        "abbr": "アレス・ザ・ヴァンガード4",
+        "title": "アレス・ザ・ヴァンガード4"
+      },
+      "after": {
+        "abbr": "アレス・ザ・ヴァンガード4",
+        "title": "ARES THE VANGUARD RAGNAROK -終焉-"
+      }
+    },
+    {
+      "id": "charapre-e198",
+      "before": {
+        "abbr": "サマーコレクション2021",
+        "title": "サマーコレクション2021"
+      },
+      "after": {
+        "abbr": "サマーコレクション2021",
+        "title": "Summer Collection 2021 Night festival"
+      }
+    },
+    {
+      "id": "charapre-e197",
+      "before": {
+        "abbr": "UUG",
+        "title": "UUG"
+      },
+      "after": {
+        "abbr": "UUG",
+        "title": "超・超魔道列伝 アルティメットアルティメットガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e196",
+      "before": {
+        "abbr": "魔轟三鉄傑8",
+        "title": "魔轟三鉄傑8"
+      },
+      "after": {
+        "abbr": "魔轟三鉄傑8",
+        "title": "魔轟三鉄傑8 魔轟三鉄傑 対 シャレオツ一〇八星"
+      }
+    },
+    {
+      "id": "charapre-e195",
+      "before": {
+        "abbr": "ゴールデン2021",
+        "title": "ゴールデン2021"
+      },
+      "after": {
+        "abbr": "ゴールデン2021",
+        "title": "ザ・ゴールデン2021"
+      }
+    },
+    {
+      "id": "charapre-e194",
+      "before": {
+        "abbr": "神都ピカレスク3",
+        "title": "神都ピカレスク3"
+      },
+      "after": {
+        "abbr": "神都ピカレスク3",
+        "title": "神都ピカレスク 銀幕の裏切者"
+      }
+    },
+    {
+      "id": "charapre-e193",
+      "before": {
+        "abbr": "アンダーナイトテイル2",
+        "title": "アンダーナイトテイル2"
+      },
+      "after": {
+        "abbr": "アンダーナイトテイル2",
+        "title": "アンダーナイトテイル2 希望の標"
+      }
+    },
+    {
+      "id": "charapre-e192",
+      "before": {
+        "abbr": "ソウルバンカー2",
+        "title": "ソウルバンカー2"
+      },
+      "after": {
+        "abbr": "ソウルバンカー2",
+        "title": "SOUL BANKER Out of Control"
+      }
+    },
+    {
+      "id": "charapre-e191",
+      "before": {
+        "abbr": "8周年記念",
+        "title": "8周年記念"
+      },
+      "after": {
+        "abbr": "8周年記念",
+        "title": "8th Anniversary"
+      }
+    },
+    {
+      "id": "charapre-e190",
+      "before": {
+        "abbr": "バレンタイン2021",
+        "title": "バレンタイン2021"
+      },
+      "after": {
+        "abbr": "バレンタイン2021",
+        "title": "St.Valentine 2021"
+      }
+    },
+    {
+      "id": "charapre-e189",
+      "before": {
+        "abbr": "フェアリーコード4",
+        "title": "フェアリーコード4"
+      },
+      "after": {
+        "abbr": "フェアリーコード4",
+        "title": "FairyChord4 Finish Chord"
+      }
+    },
+    {
+      "id": "charapre-e188",
+      "before": {
+        "abbr": "聖なる空のエステレラ4",
+        "title": "聖なる空のエステレラ4"
+      },
+      "after": {
+        "abbr": "聖なる空のエステレラ4",
+        "title": "聖なる空のエステレラ4 希望の星の物語"
+      }
+    },
+    {
+      "id": "charapre-e187",
+      "before": {
+        "abbr": "正月2021",
+        "title": "正月2021"
+      },
+      "after": {
+        "abbr": "正月2021",
+        "title": "謹賀新年 2021"
+      }
+    },
+    {
+      "id": "charapre-e186",
+      "before": {
+        "abbr": "クリスマス2020",
+        "title": "クリスマス2020"
+      },
+      "after": {
+        "abbr": "クリスマス2020",
+        "title": "Christmas2020"
+      }
+    },
+    {
+      "id": "charapre-e184",
+      "before": {
+        "abbr": "アレス・ザ・ヴァンガード3",
+        "title": "アレス・ザ・ヴァンガード3"
+      },
+      "after": {
+        "abbr": "アレス・ザ・ヴァンガード3",
+        "title": "ARES THE VANGUARD ジャスティスカーニバル"
+      }
+    },
+    {
+      "id": "charapre-e182",
+      "before": {
+        "abbr": "ソウルバンカー1",
+        "title": "ソウルバンカー1"
+      },
+      "after": {
+        "abbr": "ソウルバンカー1",
+        "title": "SOUL BANKER"
+      }
+    },
+    {
+      "id": "charapre-e180",
+      "before": {
+        "abbr": "エニグマフラワーズ2",
+        "title": "エニグマフラワーズ2"
+      },
+      "after": {
+        "abbr": "エニグマフラワーズ2",
+        "title": "いとからふる！エニグマフラワーズ 〜とんち姫と七人のエニグマ〜"
+      }
+    },
+    {
+      "id": "charapre-e179",
+      "before": {
+        "abbr": "GA2020後半",
+        "title": "GA2020後半"
+      },
+      "after": {
+        "abbr": "GA2020後半",
+        "title": "ゴールデンアワード2020後半"
+      }
+    },
+    {
+      "id": "charapre-e178",
+      "before": {
+        "abbr": "GA2020前半",
+        "title": "GA2020前半"
+      },
+      "after": {
+        "abbr": "GA2020前半",
+        "title": "ゴールデンアワード2020前半"
+      }
+    },
+    {
+      "id": "charapre-e177",
+      "before": {
+        "abbr": "覇眼戦線6",
+        "title": "覇眼戦線6"
+      },
+      "after": {
+        "abbr": "覇眼戦線6",
+        "title": "覇眼戦線 終戦の凛煌眼 -後編-"
+      }
+    },
+    {
+      "id": "charapre-e176",
+      "before": {
+        "abbr": "クロスディライブACT4",
+        "title": "クロスディライブACT4"
+      },
+      "after": {
+        "abbr": "クロスディライブACT4",
+        "title": "響命クロスディライブ ACT4"
+      }
+    },
+    {
+      "id": "charapre-e175",
+      "before": {
+        "abbr": "フェアリーコード3",
+        "title": "フェアリーコード3"
+      },
+      "after": {
+        "abbr": "フェアリーコード3",
+        "title": "FairyChord3 KnightSider"
+      }
+    },
+    {
+      "id": "charapre-e174",
+      "before": {
+        "abbr": "サマーコレクション2020",
+        "title": "サマーコレクション2020"
+      },
+      "after": {
+        "abbr": "サマーコレクション2020",
+        "title": "Summer Collection 2020"
+      }
+    },
+    {
+      "id": "charapre-e173",
+      "before": {
+        "abbr": "UPG",
+        "title": "UPG"
+      },
+      "after": {
+        "abbr": "UPG",
+        "title": "神・超魔道列伝 アルティメットプラネットガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e172",
+      "before": {
+        "abbr": "シュガーレスバンビーナ3",
+        "title": "シュガーレスバンビーナ3"
+      },
+      "after": {
+        "abbr": "シュガーレスバンビーナ3",
+        "title": "SUGARLESS BAMBINAⅢ ～THE WORST BEAST～"
+      }
+    },
+    {
+      "id": "charapre-e171",
+      "before": {
+        "abbr": "ぽっ！かみさま3",
+        "title": "ぽっ！かみさま3"
+      },
+      "after": {
+        "abbr": "ぽっ！かみさま3",
+        "title": "ぽっっっ！かみさま 〜人の神とエルフの神〜"
+      }
+    },
+    {
+      "id": "charapre-e170",
+      "before": {
+        "abbr": "ゴールデン2020",
+        "title": "ゴールデン2020"
+      },
+      "after": {
+        "abbr": "ゴールデン2020",
+        "title": "ザ・ゴールデン2020"
+      }
+    },
+    {
+      "id": "charapre-e169",
+      "before": {
+        "abbr": "ドルキマス4",
+        "title": "ドルキマス4"
+      },
+      "after": {
+        "abbr": "ドルキマス4",
+        "title": "決戦のドルキマス 宿命の血族"
+      }
+    },
+    {
+      "id": "charapre-e168",
+      "before": {
+        "abbr": "メアレス4夢現の黄昏",
+        "title": "メアレス4夢現の黄昏"
+      },
+      "after": {
+        "abbr": "メアレス4夢現の黄昏",
+        "title": "MARELESSⅣ 夢現の黄昏"
+      }
+    },
+    {
+      "id": "charapre-e167",
+      "before": {
+        "abbr": "アレス・ザ・ヴァンガード2",
+        "title": "アレス・ザ・ヴァンガード2"
+      },
+      "after": {
+        "abbr": "アレス・ザ・ヴァンガード2",
+        "title": "ARES THE VANGUARD 英雄大戦"
+      }
+    },
+    {
+      "id": "charapre-e166",
+      "before": {
+        "abbr": "7周年記念",
+        "title": "7周年記念"
+      },
+      "after": {
+        "abbr": "7周年記念",
+        "title": "7th Anniversary ~エリア13プロローグ~"
+      }
+    },
+    {
+      "id": "charapre-e165",
+      "before": {
+        "abbr": "聖サタニック女学院3",
+        "title": "聖サタニック女学院3"
+      },
+      "after": {
+        "abbr": "聖サタニック女学院3",
+        "title": "聖サタニック女学院3 Darkness Memories"
+      }
+    },
+    {
+      "id": "charapre-e163",
+      "before": {
+        "abbr": "八百八町2",
+        "title": "八百八町2"
+      },
+      "after": {
+        "abbr": "八百八町2",
+        "title": "八百八町あやかし捕物帳2 新春！超豪華三本立すぺしゃる祭"
+      }
+    },
+    {
+      "id": "charapre-e162",
+      "before": {
+        "abbr": "正月2020",
+        "title": "正月2020"
+      },
+      "after": {
+        "abbr": "正月2020",
+        "title": "謹賀新年 2020"
+      }
+    },
+    {
+      "id": "charapre-e161",
+      "before": {
+        "abbr": "クリスマス2019",
+        "title": "クリスマス2019"
+      },
+      "after": {
+        "abbr": "クリスマス2019",
+        "title": "Christmas2019"
+      }
+    },
+    {
+      "id": "charapre-e160",
+      "before": {
+        "abbr": "フェアリーコード2",
+        "title": "フェアリーコード2"
+      },
+      "after": {
+        "abbr": "フェアリーコード2",
+        "title": "FairyChord2 Chord Sharing"
+      }
+    },
+    {
+      "id": "charapre-e159",
+      "before": {
+        "abbr": "エニグマフラワーズ1",
+        "title": "エニグマフラワーズ1"
+      },
+      "after": {
+        "abbr": "エニグマフラワーズ1",
+        "title": "からふる！エニグマフラワーズ 〜光と闇のプリンセス〜"
+      }
+    },
+    {
+      "id": "charapre-e158",
+      "before": {
+        "abbr": "メアレス3夢現の決別",
+        "title": "メアレス3夢現の決別"
+      },
+      "after": {
+        "abbr": "メアレス3夢現の決別",
+        "title": "MARELESSⅢ 夢現の決別"
+      }
+    },
+    {
+      "id": "charapre-e157",
+      "before": {
+        "abbr": "女神のイタズラばとるっ！",
+        "title": "女神のイタズラばとるっ！"
+      },
+      "after": {
+        "abbr": "女神のイタズラばとるっ！",
+        "title": "女神のイタズラばとるっ！光と闇のはちゃめちゃハロウィン"
+      }
+    },
+    {
+      "id": "charapre-e156",
+      "before": {
+        "abbr": "アレス・ザ・ヴァンガード1",
+        "title": "アレス・ザ・ヴァンガード1"
+      },
+      "after": {
+        "abbr": "アレス・ザ・ヴァンガード1",
+        "title": "ARES THE VANGUARD"
+      }
+    },
+    {
+      "id": "charapre-e155",
+      "before": {
+        "abbr": "アンダーナイトテイル1",
+        "title": "アンダーナイトテイル1"
+      },
+      "after": {
+        "abbr": "アンダーナイトテイル1",
+        "title": "アンダーナイトテイル -童話戦争-"
+      }
+    },
+    {
+      "id": "charapre-e154",
+      "before": {
+        "abbr": "GA2019後半",
+        "title": "GA2019後半"
+      },
+      "after": {
+        "abbr": "GA2019後半",
+        "title": "黒ウィズゴールデンアワード2019後半"
+      }
+    },
+    {
+      "id": "charapre-e153",
+      "before": {
+        "abbr": "GA2019前半",
+        "title": "GA2019前半"
+      },
+      "after": {
+        "abbr": "GA2019前半",
+        "title": "黒ウィズゴールデンアワード2019前半"
+      }
+    },
+    {
+      "id": "charapre-e152",
+      "before": {
+        "abbr": "神都ピカレスク2",
+        "title": "神都ピカレスク2"
+      },
+      "after": {
+        "abbr": "神都ピカレスク2",
+        "title": "神都ピカレスク 黒猫の魔術師"
+      }
+    },
+    {
+      "id": "charapre-e151",
+      "before": {
+        "abbr": "サマーコレクション2019",
+        "title": "サマーコレクション2019"
+      },
+      "after": {
+        "abbr": "サマーコレクション2019",
+        "title": "Summer Collection 2019"
+      }
+    },
+    {
+      "id": "charapre-e149",
+      "before": {
+        "abbr": "幻魔特区RELOADED3",
+        "title": "幻魔特区RELOADED3"
+      },
+      "after": {
+        "abbr": "幻魔特区RELOADED3",
+        "title": "幻魔特区RELOADEDⅢ Final Assemble"
+      }
+    },
+    {
+      "id": "charapre-e147",
+      "before": {
+        "abbr": "覇眼戦線5",
+        "title": "覇眼戦線5"
+      },
+      "after": {
+        "abbr": "覇眼戦線5",
+        "title": "覇眼戦線 終戦の凛煌眼 -前編-"
+      }
+    },
+    {
+      "id": "charapre-e146",
+      "before": {
+        "abbr": "ぽっ！かみさま2",
+        "title": "ぽっ！かみさま2"
+      },
+      "after": {
+        "abbr": "ぽっ！かみさま2",
+        "title": "ぽっっ！かみさま 〜土のエルフと黒猫の人〜"
+      }
+    },
+    {
+      "id": "charapre-e145",
+      "before": {
+        "abbr": "ゴールデン2019",
+        "title": "ゴールデン2019"
+      },
+      "after": {
+        "abbr": "ゴールデン2019",
+        "title": "ザ・ゴールデン2019"
+      }
+    },
+    {
+      "id": "charapre-e144",
+      "before": {
+        "abbr": "クロスディライブACT3",
+        "title": "クロスディライブACT3"
+      },
+      "after": {
+        "abbr": "クロスディライブACT3",
+        "title": "響命クロスディライブACT3"
+      }
+    },
+    {
+      "id": "charapre-e143",
+      "before": {
+        "abbr": "UWG",
+        "title": "UWG"
+      },
+      "after": {
+        "abbr": "UWG",
+        "title": "職・超魔道列伝 アルティメットワーキングガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e142",
+      "before": {
+        "abbr": "フェアリーコード1",
+        "title": "フェアリーコード1"
+      },
+      "after": {
+        "abbr": "フェアリーコード1",
+        "title": "FairyChord"
+      }
+    },
+    {
+      "id": "charapre-e141",
+      "before": {
+        "abbr": "6周年記念",
+        "title": "6周年記念"
+      },
+      "after": {
+        "abbr": "6周年記念",
+        "title": "6th Anniversary"
+      }
+    },
+    {
+      "id": "charapre-e140",
+      "before": {
+        "abbr": "天上岬3",
+        "title": "天上岬3"
+      },
+      "after": {
+        "abbr": "天上岬3",
+        "title": "天上岬 ふもとのカフェへようこそ！"
+      }
+    },
+    {
+      "id": "charapre-e139",
+      "before": {
+        "abbr": "シュガーレスバンビーナ2",
+        "title": "シュガーレスバンビーナ2"
+      },
+      "after": {
+        "abbr": "シュガーレスバンビーナ2",
+        "title": "SUGARLESS BAMBINA Ⅱ Slaughter Prison"
+      }
+    },
+    {
+      "id": "charapre-e138",
+      "before": {
+        "abbr": "ぽっ！かみさま1",
+        "title": "ぽっ！かみさま1"
+      },
+      "after": {
+        "abbr": "ぽっ！かみさま1",
+        "title": "ぽっ！かみさま 〜北風エルフと炎の鳥〜"
+      }
+    },
+    {
+      "id": "charapre-e137",
+      "before": {
+        "abbr": "フェアリーコードプレリュード",
+        "title": "フェアリーコードプレリュード"
+      },
+      "after": {
+        "abbr": "フェアリーコードプレリュード",
+        "title": "FairyChord Prelude"
+      }
+    },
+    {
+      "id": "charapre-e136",
+      "before": {
+        "abbr": "正月2019",
+        "title": "正月2019"
+      },
+      "after": {
+        "abbr": "正月2019",
+        "title": "謹賀新年2019"
+      }
+    },
+    {
+      "id": "charapre-e135",
+      "before": {
+        "abbr": "クリスマス2018",
+        "title": "クリスマス2018"
+      },
+      "after": {
+        "abbr": "クリスマス2018",
+        "title": "Christmas2018"
+      }
+    },
+    {
+      "id": "charapre-e133",
+      "before": {
+        "abbr": "カムシーナ",
+        "title": "カムシーナ"
+      },
+      "after": {
+        "abbr": "カムシーナ",
+        "title": "太陽と月の国 カムシーナ"
+      }
+    },
+    {
+      "id": "charapre-e132",
+      "before": {
+        "abbr": "喰牙RIZE3",
+        "title": "喰牙RIZE3"
+      },
+      "after": {
+        "abbr": "喰牙RIZE3",
+        "title": "喰牙RIZE3 -Fang-O'-Blazer-"
+      }
+    },
+    {
+      "id": "charapre-e131",
+      "before": {
+        "abbr": "八百八町1",
+        "title": "八百八町1"
+      },
+      "after": {
+        "abbr": "八百八町1",
+        "title": "八百八町あやかし捕物帳 秋の超豪華三本立すぺしゃる"
+      }
+    },
+    {
+      "id": "charapre-e130",
+      "before": {
+        "abbr": "Birth Of New Order2",
+        "title": "Birth Of New Order2"
+      },
+      "after": {
+        "abbr": "Birth Of New Order2",
+        "title": "Birth Of New Order2 大罪"
+      }
+    },
+    {
+      "id": "charapre-e129",
+      "before": {
+        "abbr": "GA2018",
+        "title": "GA2018"
+      },
+      "after": {
+        "abbr": "GA2018",
+        "title": "黒ウィズゴールデンアワード2018"
+      }
+    },
+    {
+      "id": "charapre-e128",
+      "before": {
+        "abbr": "メアレス2夢現の狭間",
+        "title": "メアレス2夢現の狭間"
+      },
+      "after": {
+        "abbr": "メアレス2夢現の狭間",
+        "title": "MARELESSⅡ 夢現の狭間"
+      }
+    },
+    {
+      "id": "charapre-e127",
+      "before": {
+        "abbr": "覇眼戦線4",
+        "title": "覇眼戦線4"
+      },
+      "after": {
+        "abbr": "覇眼戦線4",
+        "title": "覇眼戦線4 覚醒の王"
+      }
+    },
+    {
+      "id": "charapre-e125",
+      "before": {
+        "abbr": "聖なる空のエステレラ3",
+        "title": "聖なる空のエステレラ3"
+      },
+      "after": {
+        "abbr": "聖なる空のエステレラ3",
+        "title": "聖なる空のエステレラ3 きらめく星と想いの物語"
+      }
+    },
+    {
+      "id": "charapre-e123",
+      "before": {
+        "abbr": "幻魔特区RELOADED2",
+        "title": "幻魔特区RELOADED2"
+      },
+      "after": {
+        "abbr": "幻魔特区RELOADED2",
+        "title": "幻魔特区RELOADEDⅡ -RE:unite-"
+      }
+    },
+    {
+      "id": "charapre-e122",
+      "before": {
+        "abbr": "空戦のシュヴァルツ1",
+        "title": "空戦のシュヴァルツ1"
+      },
+      "after": {
+        "abbr": "空戦のシュヴァルツ1",
+        "title": "空戦のシュヴァルツ"
+      }
+    },
+    {
+      "id": "charapre-e121",
+      "before": {
+        "abbr": "ゴールデン2018",
+        "title": "ゴールデン2018"
+      },
+      "after": {
+        "abbr": "ゴールデン2018",
+        "title": "ザ・ゴールデン2018"
+      }
+    },
+    {
+      "id": "charapre-e120",
+      "before": {
+        "abbr": "黄昏メアレス4",
+        "title": "黄昏メアレス4"
+      },
+      "after": {
+        "abbr": "黄昏メアレス4",
+        "title": "黄昏メアレスⅣ 黄昏mareless"
+      }
+    },
+    {
+      "id": "charapre-e119",
+      "before": {
+        "abbr": "アイドルキャッツ2",
+        "title": "アイドルキャッツ2"
+      },
+      "after": {
+        "abbr": "アイドルキャッツ2",
+        "title": "アイドルωキャッツ！！ きゃぴきゃぴ♡キャピタリズム"
+      }
+    },
+    {
+      "id": "charapre-e118",
+      "before": {
+        "abbr": "Birth Of New Order1",
+        "title": "Birth Of New Order1"
+      },
+      "after": {
+        "abbr": "Birth Of New Order1",
+        "title": "Birth Of New Order"
+      }
+    },
+    {
+      "id": "charapre-e117",
+      "before": {
+        "abbr": "5周年記念",
+        "title": "5周年記念"
+      },
+      "after": {
+        "abbr": "5周年記念",
+        "title": "5th Anniversary"
+      }
+    },
+    {
+      "id": "charapre-e116",
+      "before": {
+        "abbr": "アウトランダー1",
+        "title": "アウトランダー1"
+      },
+      "after": {
+        "abbr": "アウトランダー1",
+        "title": "眠れる遺跡のアウトランダー 〜おかしの女神と古の記憶〜"
+      }
+    },
+    {
+      "id": "charapre-e115",
+      "before": {
+        "abbr": "新説桃娘伝2",
+        "title": "新説桃娘伝2"
+      },
+      "after": {
+        "abbr": "新説桃娘伝2",
+        "title": "新説 桃娘伝Ⅱ 絡繰桃源虹絵巻"
+      }
+    },
+    {
+      "id": "charapre-e114",
+      "before": {
+        "abbr": "シュガーレスバンビーナ1",
+        "title": "シュガーレスバンビーナ1"
+      },
+      "after": {
+        "abbr": "シュガーレスバンビーナ1",
+        "title": "SUGARLESS BAMBINA"
+      }
+    },
+    {
+      "id": "charapre-e113",
+      "before": {
+        "abbr": "正月2018",
+        "title": "正月2018"
+      },
+      "after": {
+        "abbr": "正月2018",
+        "title": "謹賀新年2018"
+      }
+    },
+    {
+      "id": "charapre-e95",
+      "before": {
+        "abbr": "ゴールデン2017",
+        "title": "ゴールデン2017"
+      },
+      "after": {
+        "abbr": "ゴールデン2017",
+        "title": "ザ・ゴールデン2017"
+      }
+    },
+    {
+      "id": "charapre-e112",
+      "before": {
+        "abbr": "その光は淡く碧く最終章",
+        "title": "その光は淡く碧く最終章"
+      },
+      "after": {
+        "abbr": "その光は淡く碧く最終章",
+        "title": "その光は淡く碧く 最終章 終極の聖祈"
+      }
+    },
+    {
+      "id": "charapre-e111",
+      "before": {
+        "abbr": "聖なる空のエステレラ2",
+        "title": "聖なる空のエステレラ2"
+      },
+      "after": {
+        "abbr": "聖なる空のエステレラ2",
+        "title": "聖なる空のエステレラ2 星に捧げる聖夜の物語"
+      }
+    },
+    {
+      "id": "charapre-e110",
+      "before": {
+        "abbr": "双翼のロストエデン3",
+        "title": "双翼のロストエデン3"
+      },
+      "after": {
+        "abbr": "双翼のロストエデン3",
+        "title": "双翼のロストエデンⅢ Lord of Evil −魔王−"
+      }
+    },
+    {
+      "id": "charapre-e109",
+      "before": {
+        "abbr": "UHG",
+        "title": "UHG"
+      },
+      "after": {
+        "abbr": "UHG",
+        "title": "続々・超魔道列伝 アルティメットハロウィンガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e108",
+      "before": {
+        "abbr": "幻魔特区RELOADED1",
+        "title": "幻魔特区RELOADED1"
+      },
+      "after": {
+        "abbr": "幻魔特区RELOADED1",
+        "title": "幻魔特区RELOADED -GardeniA dist.-"
+      }
+    },
+    {
+      "id": "charapre-e107",
+      "before": {
+        "abbr": "空戦のドルキマス3",
+        "title": "空戦のドルキマス3"
+      },
+      "after": {
+        "abbr": "空戦のドルキマス3",
+        "title": "空戦のドルキマスⅢ 〜翻る軍旗〜"
+      }
+    },
+    {
+      "id": "charapre-e106",
+      "before": {
+        "abbr": "喰牙RIZE2",
+        "title": "喰牙RIZE2"
+      },
+      "after": {
+        "abbr": "喰牙RIZE2",
+        "title": "喰牙RIZE2 -Tearing Eyes-"
+      }
+    },
+    {
+      "id": "charapre-e105",
+      "before": {
+        "abbr": "GA2017",
+        "title": "GA2017"
+      },
+      "after": {
+        "abbr": "GA2017",
+        "title": "黒ウィズゴールデンアワード2017"
+      }
+    },
+    {
+      "id": "charapre-e104",
+      "before": {
+        "abbr": "聖サタニック女学院2",
+        "title": "聖サタニック女学院2"
+      },
+      "after": {
+        "abbr": "聖サタニック女学院2",
+        "title": "聖サタニック女学院2～アルトーパークの惨劇～"
+      }
+    },
+    {
+      "id": "charapre-e102",
+      "before": {
+        "abbr": "クロスディライブACT2",
+        "title": "クロスディライブACT2"
+      },
+      "after": {
+        "abbr": "クロスディライブACT2",
+        "title": "響命クロスディライブACT2"
+      }
+    },
+    {
+      "id": "charapre-e101",
+      "before": {
+        "abbr": "エターナルクロノス3",
+        "title": "エターナルクロノス3"
+      },
+      "after": {
+        "abbr": "エターナルクロノス3",
+        "title": "時詠みのエターナル・クロノスⅢ 〜さよなら、サマー〜"
+      }
+    },
+    {
+      "id": "charapre-e100",
+      "before": {
+        "abbr": "黄昏メアレス3",
+        "title": "黄昏メアレス3"
+      },
+      "after": {
+        "abbr": "黄昏メアレス3",
+        "title": "黄昏メアレスⅢ 絡園loreless"
+      }
+    },
+    {
+      "id": "charapre-e99",
+      "before": {
+        "abbr": "八百万神秘譚4",
+        "title": "八百万神秘譚4"
+      },
+      "after": {
+        "abbr": "八百万神秘譚4",
+        "title": "八百万神秘譚4 都に眠る悠久の歌"
+      }
+    },
+    {
+      "id": "charapre-e98",
+      "before": {
+        "abbr": "アイドルキャッツ1",
+        "title": "アイドルキャッツ1"
+      },
+      "after": {
+        "abbr": "アイドルキャッツ1",
+        "title": "アイドルωキャッツ！"
+      }
+    },
+    {
+      "id": "charapre-e96",
+      "before": {
+        "abbr": "喰牙RIZE1",
+        "title": "喰牙RIZE1"
+      },
+      "after": {
+        "abbr": "喰牙RIZE1",
+        "title": "喰牙RIZE"
+      }
+    },
+    {
+      "id": "charapre-e92",
+      "before": {
+        "abbr": "クロスディライブ1",
+        "title": "クロスディライブ1"
+      },
+      "after": {
+        "abbr": "クロスディライブ1",
+        "title": "響命クロスディライブ"
+      }
+    },
+    {
+      "id": "charapre-e89",
+      "before": {
+        "abbr": "新説桃娘伝1",
+        "title": "新説桃娘伝1"
+      },
+      "after": {
+        "abbr": "新説桃娘伝1",
+        "title": "新説 桃娘伝 妖爺合戦誓助剣"
+      }
+    },
+    {
+      "id": "charapre-e88",
+      "before": {
+        "abbr": "魔轟三鉄傑1",
+        "title": "魔轟三鉄傑1"
+      },
+      "after": {
+        "abbr": "魔轟三鉄傑1",
+        "title": "魔轟三鉄傑 対 地獄三十六歌仙"
+      }
+    },
+    {
+      "id": "charapre-e84",
+      "before": {
+        "abbr": "聖なる空のエステレラ1",
+        "title": "聖なる空のエステレラ1"
+      },
+      "after": {
+        "abbr": "聖なる空のエステレラ1",
+        "title": "聖なる空のエステレラ 星めぐりの物語"
+      }
+    },
+    {
+      "id": "charapre-e83",
+      "before": {
+        "abbr": "心竜天翔",
+        "title": "心竜天翔"
+      },
+      "after": {
+        "abbr": "心竜天翔",
+        "title": "心竜天翔 Rising Dragon"
+      }
+    },
+    {
+      "id": "charapre-e82",
+      "before": {
+        "abbr": "黄昏メアレス2",
+        "title": "黄昏メアレス2"
+      },
+      "after": {
+        "abbr": "黄昏メアレス2",
+        "title": "黄昏メアレスⅡ 残響dearless"
+      }
+    },
+    {
+      "id": "charapre-e80",
+      "before": {
+        "abbr": "双翼のロストエデン2",
+        "title": "双翼のロストエデン2"
+      },
+      "after": {
+        "abbr": "双翼のロストエデン2",
+        "title": "双翼のロストエデンⅡ　WWMF"
+      }
+    },
+    {
+      "id": "charapre-e79",
+      "before": {
+        "abbr": "空戦のドルキマス2",
+        "title": "空戦のドルキマス2"
+      },
+      "after": {
+        "abbr": "空戦のドルキマス2",
+        "title": "空戦のドルキマスⅡ 昏き英雄"
+      }
+    },
+    {
+      "id": "charapre-e78",
+      "before": {
+        "abbr": "クロムマグナゼロ",
+        "title": "クロムマグナゼロ"
+      },
+      "after": {
+        "abbr": "クロムマグナゼロ",
+        "title": "クロム・マグナ ゼロ"
+      }
+    },
+    {
+      "id": "charapre-e77",
+      "before": {
+        "abbr": "八百万神秘譚3",
+        "title": "八百万神秘譚3"
+      },
+      "after": {
+        "abbr": "八百万神秘譚3",
+        "title": "YAOYORO Z"
+      }
+    },
+    {
+      "id": "charapre-e74",
+      "before": {
+        "abbr": "USG",
+        "title": "USG"
+      },
+      "after": {
+        "abbr": "USG",
+        "title": "続・超魔道列伝 アルティメットサマーガールズ！"
+      }
+    },
+    {
+      "id": "charapre-e72",
+      "before": {
+        "abbr": "幻魔特区スザク3",
+        "title": "幻魔特区スザク3"
+      },
+      "after": {
+        "abbr": "幻魔特区スザク3",
+        "title": "スザクⅢ ソムニウムの輝き"
+      }
+    },
+    {
+      "id": "charapre-e71",
+      "before": {
+        "abbr": "聖サタニック女学院1",
+        "title": "聖サタニック女学院1"
+      },
+      "after": {
+        "abbr": "聖サタニック女学院1",
+        "title": "聖サタニック女学院"
+      }
+    },
+    {
+      "id": "charapre-e69",
+      "before": {
+        "abbr": "覇眼戦線2",
+        "title": "覇眼戦線2"
+      },
+      "after": {
+        "abbr": "覇眼戦線2",
+        "title": "覇眼戦線2 はじまりの眼"
+      }
+    },
+    {
+      "id": "charapre-e67",
+      "before": {
+        "abbr": "黄昏メアレス1",
+        "title": "黄昏メアレス1"
+      },
+      "after": {
+        "abbr": "黄昏メアレス1",
+        "title": "黄昏メアレス"
+      }
+    },
+    {
+      "id": "charapre-e62",
+      "before": {
+        "abbr": "天上岬2",
+        "title": "天上岬2"
+      },
+      "after": {
+        "abbr": "天上岬2",
+        "title": "天上岬の調香師"
+      }
+    },
+    {
+      "id": "charapre-e57",
+      "before": {
+        "abbr": "双翼のロストエデン1",
+        "title": "双翼のロストエデン1"
+      },
+      "after": {
+        "abbr": "双翼のロストエデン1",
+        "title": "双翼のロストエデン"
+      }
+    },
+    {
+      "id": "charapre-e56",
+      "before": {
+        "abbr": "八百万神秘譚2",
+        "title": "八百万神秘譚2"
+      },
+      "after": {
+        "abbr": "八百万神秘譚2",
+        "title": "八百万神秘譚2 れえすの行方は神のみぞ知る"
+      }
+    },
+    {
+      "id": "charapre-e54",
+      "before": {
+        "abbr": "空戦のドルキマス1",
+        "title": "空戦のドルキマス1"
+      },
+      "after": {
+        "abbr": "空戦のドルキマス1",
+        "title": "空戦のドルキマス 沈まぬ翼"
+      }
+    },
+    {
+      "id": "charapre-e53",
+      "before": {
+        "abbr": "UG",
+        "title": "UG"
+      },
+      "after": {
+        "abbr": "UG",
+        "title": "超魔道列伝 アルティメットガールズ"
+      }
+    },
+    {
+      "id": "charapre-e51",
+      "before": {
+        "abbr": "クロムマグナ5",
+        "title": "クロムマグナ5"
+      },
+      "after": {
+        "abbr": "クロムマグナ5",
+        "title": "クロム・マグナ魔道学園Ⅴ 鋼鉄のラストバトル"
+      }
+    },
+    {
+      "id": "charapre-e49",
+      "before": {
+        "abbr": "幻魔特区スザク2",
+        "title": "幻魔特区スザク2"
+      },
+      "after": {
+        "abbr": "幻魔特区スザク2",
+        "title": "スザクⅡ カリュプスの槍"
+      }
+    },
+    {
+      "id": "charapre-e47",
+      "before": {
+        "abbr": "八百万神秘譚1",
+        "title": "八百万神秘譚1"
+      },
+      "after": {
+        "abbr": "八百万神秘譚1",
+        "title": "八百万神秘譚"
+      }
+    },
+    {
+      "id": "charapre-e42",
+      "before": {
+        "abbr": "エターナルクロノス2",
+        "title": "エターナルクロノス2"
+      },
+      "after": {
+        "abbr": "エターナルクロノス2",
+        "title": "エターナル・クロノスⅡ"
+      }
+    },
+    {
+      "id": "charapre-e41",
+      "before": {
+        "abbr": "幻魔特区スザク1",
+        "title": "幻魔特区スザク1"
+      },
+      "after": {
+        "abbr": "幻魔特区スザク1",
+        "title": "幻魔特区スザク"
+      }
+    },
+    {
+      "id": "charapre-e10",
+      "before": {
+        "abbr": "神竜降臨2",
+        "title": "神竜降臨2"
+      },
+      "after": {
+        "abbr": "神竜降臨2",
+        "title": "神竜降臨Ⅱ"
+      }
+    },
+    {
+      "id": "charapre-e21",
+      "before": {
+        "abbr": "アビスコード",
+        "title": "アビスコード"
+      },
+      "after": {
+        "abbr": "アビスコード",
+        "title": "AbyssCode"
+      }
+    },
+    {
+      "id": "charapre-e4",
+      "before": {
+        "abbr": "ブレイダー",
+        "title": "ブレイダー"
+      },
+      "after": {
+        "abbr": "ブレイダー",
+        "title": "Blader"
+      }
+    },
+    {
+      "id": "charapre-e36",
+      "before": {
+        "abbr": "クロムマグナ4",
+        "title": "クロムマグナ4"
+      },
+      "after": {
+        "abbr": "クロムマグナ4",
+        "title": "クロマグⅣ 片恋☆ラプソディ"
+      }
+    },
+    {
+      "id": "charapre-e34",
+      "before": {
+        "abbr": "覇眼戦線1",
+        "title": "覇眼戦線1"
+      },
+      "after": {
+        "abbr": "覇眼戦線1",
+        "title": "覇眼戦線"
+      }
+    },
+    {
+      "id": "charapre-e32",
+      "before": {
+        "abbr": "訣別のクロニクル",
+        "title": "訣別のクロニクル"
+      },
+      "after": {
+        "abbr": "訣別のクロニクル",
+        "title": "天界の双子 訣別のクロニクル"
+      }
+    },
+    {
+      "id": "charapre-e30",
+      "before": {
+        "abbr": "天上岬1",
+        "title": "天上岬1"
+      },
+      "after": {
+        "abbr": "天上岬1",
+        "title": "天上岬〜とこしえの姫君〜"
+      }
+    },
+    {
+      "id": "charapre-e15",
+      "before": {
+        "abbr": "クロムマグナ3",
+        "title": "クロムマグナ3"
+      },
+      "after": {
+        "abbr": "クロムマグナ3",
+        "title": "クロム・マグナⅢ 臨海学校"
+      }
+    },
+    {
+      "id": "other-e90",
+      "before": {
+        "abbr": "バレンタイン2017",
+        "title": "バレンタイン2017"
+      },
+      "after": {
+        "abbr": "バレンタイン2017",
+        "title": "St.Valentine 2017"
+      }
+    },
+    {
+      "id": "other-e87",
+      "before": {
+        "abbr": "正月2017",
+        "title": "正月2017"
+      },
+      "after": {
+        "abbr": "正月2017",
+        "title": "謹賀新年2017"
+      }
+    },
+    {
+      "id": "other-e86",
+      "before": {
+        "abbr": "その光は淡く碧く第2章",
+        "title": "その光は淡く碧く第2章"
+      },
+      "after": {
+        "abbr": "その光は淡く碧く第2章",
+        "title": "その光は淡く碧く 第二章 儚き聖域"
+      }
+    },
+    {
+      "id": "other-e85",
+      "before": {
+        "abbr": "クリスマス2016",
+        "title": "クリスマス2016"
+      },
+      "after": {
+        "abbr": "クリスマス2016",
+        "title": "Christmas2016"
+      }
+    },
+    {
+      "id": "other-e73",
+      "before": {
+        "abbr": "GP2016",
+        "title": "GP2016"
+      },
+      "after": {
+        "abbr": "GP2016",
+        "title": "第3回 黒ウィズ精霊グランプリ"
+      }
+    },
+    {
+      "id": "other-e70",
+      "before": {
+        "abbr": "ゴールデン2016",
+        "title": "ゴールデン2016"
+      },
+      "after": {
+        "abbr": "ゴールデン2016",
+        "title": "2016GW限定Ver"
+      }
+    },
+    {
+      "id": "other-e66",
+      "before": {
+        "abbr": "3周年記念第2弾",
+        "title": "3周年記念第2弾"
+      },
+      "after": {
+        "abbr": "3周年記念第2弾",
+        "title": "約束の地"
+      }
+    },
+    {
+      "id": "other-e65",
+      "before": {
+        "abbr": "3周年記念",
+        "title": "3周年記念"
+      },
+      "after": {
+        "abbr": "3周年記念",
+        "title": "三周年！ 伝説再臨！"
+      }
+    },
+    {
+      "id": "other-e64",
+      "before": {
+        "abbr": "バレンタイン2016",
+        "title": "バレンタイン2016"
+      },
+      "after": {
+        "abbr": "バレンタイン2016",
+        "title": "St.Valentine 2016"
+      }
+    },
+    {
+      "id": "other-e61",
+      "before": {
+        "abbr": "正月2016",
+        "title": "正月2016"
+      },
+      "after": {
+        "abbr": "正月2016",
+        "title": "謹賀新年2016"
+      }
+    },
+    {
+      "id": "other-e60",
+      "before": {
+        "abbr": "その光は淡く碧く第1章",
+        "title": "その光は淡く碧く第1章"
+      },
+      "after": {
+        "abbr": "その光は淡く碧く第1章",
+        "title": "その光は淡く碧く 第一章 皇帝と剣"
+      }
+    },
+    {
+      "id": "other-e58",
+      "before": {
+        "abbr": "クリスマス2015",
+        "title": "クリスマス2015"
+      },
+      "after": {
+        "abbr": "クリスマス2015",
+        "title": "Christmas2015"
+      }
+    },
+    {
+      "id": "other-e52",
+      "before": {
+        "abbr": "ミス&ミスタークロムマグナ",
+        "title": "ミス&ミスタークロムマグナ"
+      },
+      "after": {
+        "abbr": "ミス&ミスタークロムマグナ",
+        "title": "ミス＆ミスタークロム・マグナ"
+      }
+    },
+    {
+      "id": "other-e46",
+      "before": {
+        "abbr": "Legend with ラグナロク",
+        "title": "Legend with ラグナロク"
+      },
+      "after": {
+        "abbr": "Legend with ラグナロク",
+        "title": "ウィズセレクション Legend with ラグナロク"
+      }
+    },
+    {
+      "id": "other-e45",
+      "before": {
+        "abbr": "ゴールデン2015",
+        "title": "ゴールデン2015"
+      },
+      "after": {
+        "abbr": "ゴールデン2015",
+        "title": "2015GW限定Ver"
+      }
+    },
+    {
+      "id": "other-e43",
+      "before": {
+        "abbr": "双星のアイ",
+        "title": "双星のアイ"
+      },
+      "after": {
+        "abbr": "双星のアイ",
+        "title": "ウィズセレクション Legend with 双星の【アイ】"
+      }
+    },
+    {
+      "id": "other-e37",
+      "before": {
+        "abbr": "バレンタイン2015",
+        "title": "バレンタイン2015"
+      },
+      "after": {
+        "abbr": "バレンタイン2015",
+        "title": "St.Valentine 2015"
+      }
+    },
+    {
+      "id": "other-e33",
+      "before": {
+        "abbr": "正月2015",
+        "title": "正月2015"
+      },
+      "after": {
+        "abbr": "正月2015",
+        "title": "謹賀新年2015"
+      }
+    },
+    {
+      "id": "other-e31",
+      "before": {
+        "abbr": "クリスマス2014",
+        "title": "クリスマス2014"
+      },
+      "after": {
+        "abbr": "クリスマス2014",
+        "title": "Christmas2014"
+      }
+    },
+    {
+      "id": "other-e27",
+      "before": {
+        "abbr": "GP2014",
+        "title": "GP2014"
+      },
+      "after": {
+        "abbr": "GP2014",
+        "title": "第2回 黒ウィズ精霊グランプリ"
+      }
+    },
+    {
+      "id": "other-e25",
+      "before": {
+        "abbr": "ハロウィン2014",
+        "title": "ハロウィン2014"
+      },
+      "after": {
+        "abbr": "ハロウィン2014",
+        "title": "2014ハロウィン限定版Ver"
+      }
+    },
+    {
+      "id": "other-e16",
+      "before": {
+        "abbr": "夏2014",
+        "title": "夏2014"
+      },
+      "after": {
+        "abbr": "夏2014",
+        "title": "2014夏限定Ver"
+      }
+    },
+    {
+      "id": "other-e13",
+      "before": {
+        "abbr": "バレンタイン2014",
+        "title": "バレンタイン2014"
+      },
+      "after": {
+        "abbr": "バレンタイン2014",
+        "title": "St.Valentine 2014"
+      }
+    },
+    {
+      "id": "other-e9",
+      "before": {
+        "abbr": "神竜降臨1",
+        "title": "神竜降臨1"
+      },
+      "after": {
+        "abbr": "神竜降臨1",
+        "title": "神竜降臨！"
+      }
+    },
+    {
+      "id": "other-e17",
+      "before": {
+        "abbr": "正月2014",
+        "title": "正月2014"
+      },
+      "after": {
+        "abbr": "正月2014",
+        "title": "謹賀新年2014"
+      }
+    },
+    {
+      "id": "other-e8",
+      "before": {
+        "abbr": "クリスマス2013",
+        "title": "クリスマス2013"
+      },
+      "after": {
+        "abbr": "クリスマス2013",
+        "title": "Christmas2013"
+      }
+    },
+    {
+      "id": "other-e12",
+      "before": {
+        "abbr": "クロムマグナ2",
+        "title": "クロムマグナ2"
+      },
+      "after": {
+        "abbr": "クロムマグナ2",
+        "title": "クロム・マグナ学園祭"
+      }
+    },
+    {
+      "id": "other-e14",
+      "before": {
+        "abbr": "エターナルクロノス1",
+        "title": "エターナルクロノス1"
+      },
+      "after": {
+        "abbr": "エターナルクロノス1",
+        "title": "時詠みのエターナル・クロノス"
+      }
+    },
+    {
+      "id": "other-e11",
+      "before": {
+        "abbr": "クロムマグナ1",
+        "title": "クロムマグナ1"
+      },
+      "after": {
+        "abbr": "クロムマグナ1",
+        "title": "クロム・マグナ魔道学園"
+      }
+    },
+    {
+      "id": "kollabo-e281",
+      "before": {
+        "abbr": "マジルミエコラボ",
+        "title": "マジルミエコラボ"
+      },
+      "after": {
+        "abbr": "マジルミエコラボ",
+        "title": "株式会社マジルミエコラボ"
+      }
+    },
+    {
+      "id": "kollabo-e264",
+      "before": {
+        "abbr": "ストリートファイター6 コラボ",
+        "title": "ストリートファイター6 コラボ"
+      },
+      "after": {
+        "abbr": "ストリートファイター6 コラボ",
+        "title": "STREET FIGHTER6 コラボ"
+      }
+    },
+    {
+      "id": "kollabo-e185",
+      "before": {
+        "abbr": "銀魂コラボ",
+        "title": "銀魂コラボ"
+      },
+      "after": {
+        "abbr": "銀魂コラボ",
+        "title": "八百八町あやかし捕物帳 超豪華｢銀魂｣こらぼすぺしゃる"
+      }
+    },
+    {
+      "id": "kollabo-e150",
+      "before": {
+        "abbr": "とあるコラボ",
+        "title": "とあるコラボ"
+      },
+      "after": {
+        "abbr": "とあるコラボ",
+        "title": "とある魔術と科学の魔道学園"
+      }
+    },
+    {
+      "id": "kollabo-e134",
+      "before": {
+        "abbr": "コードギアスコラボ",
+        "title": "コードギアスコラボ"
+      },
+      "after": {
+        "abbr": "コードギアスコラボ",
+        "title": "血盟のドルキマス"
+      }
+    },
+    {
+      "id": "recent-e273",
+      "before": {
+        "abbr": "GA2024後半ザウィナーズ",
+        "title": "GA2024後半ザウィナーズ"
+      },
+      "after": {
+        "abbr": "GA2024後半ザウィナーズ",
+        "title": "ゴールデンアワード2024 THE WINNERS"
+      }
+    },
+    {
+      "id": "recent-e251",
+      "before": {
+        "abbr": "空戦のシュヴァルツ2",
+        "title": "空戦のシュヴァルツ2"
+      },
+      "after": {
+        "abbr": "空戦のシュヴァルツ2",
+        "title": "空戦のシュヴァルツII 黒白の戦翼"
+      }
+    },
+    {
+      "id": "charapre-e183",
+      "before": {
+        "abbr": "喰牙RIZE4",
+        "title": "喰牙RIZE4"
+      },
+      "after": {
+        "abbr": "喰牙RIZE4",
+        "title": "喰牙RIZE4 Forbidden Avarice"
+      }
+    },
+    {
+      "id": "charapre-e181",
+      "before": {
+        "abbr": "アイドルシスターズ",
+        "title": "アイドルシスターズ"
+      },
+      "after": {
+        "abbr": "アイドルシスターズ",
+        "title": "アイドルωシスターズ トリニティ！！！ 〜愛の形は全てピュア〜"
+      }
+    },
+    {
+      "id": "charapre-e94",
+      "before": {
+        "abbr": "覇眼戦線3",
+        "title": "覇眼戦線3"
+      },
+      "after": {
+        "abbr": "覇眼戦線3",
+        "title": "覇眼戦線3 聖剣と覇眼"
+      }
+    },
+    {
+      "id": "kollabo-e126",
+      "before": {
+        "abbr": "魔法少女まどか☆マギカコラボ",
+        "title": "魔法少女まどか☆マギカコラボ"
+      },
+      "after": {
+        "abbr": "魔法少女まどか☆マギカコラボ",
+        "title": "魔法少女まどか☆マギカ 異界の物語"
+      }
+    },
+    {
+      "id": "kollabo-e124",
+      "before": {
+        "abbr": "カードキャプターさくらコラボ",
+        "title": "カードキャプターさくらコラボ"
+      },
+      "after": {
+        "abbr": "カードキャプターさくらコラボ",
+        "title": "さくらと黒猫の魔法使い"
+      }
+    },
+    {
+      "id": "kollabo-e75",
+      "before": {
+        "abbr": "エヴァンゲリオンコラボ2",
+        "title": "エヴァンゲリオンコラボ2"
+      },
+      "after": {
+        "abbr": "エヴァンゲリオンコラボ2",
+        "title": "幻想と歪曲の槍"
+      }
+    },
+    {
+      "id": "kollabo-e68",
+      "before": {
+        "abbr": "マクロスコラボ",
+        "title": "マクロスコラボ"
+      },
+      "after": {
+        "abbr": "マクロスコラボ",
+        "title": "マクロス 〜星の繋ぐ精霊〜"
+      }
+    },
+    {
+      "id": "kollabo-e63",
+      "before": {
+        "abbr": "グリココラボ3",
+        "title": "グリココラボ3"
+      },
+      "after": {
+        "abbr": "グリココラボ3",
+        "title": "ハッピースイーツカーニバル"
+      }
+    },
+    {
+      "id": "kollabo-e59",
+      "before": {
+        "abbr": "名探偵コナンコラボ",
+        "title": "名探偵コナンコラボ"
+      },
+      "after": {
+        "abbr": "名探偵コナンコラボ",
+        "title": "魔法世界の来訪者"
+      }
+    },
+    {
+      "id": "kollabo-e50",
+      "before": {
+        "abbr": "グリココラボ2",
+        "title": "グリココラボ2"
+      },
+      "after": {
+        "abbr": "グリココラボ2",
+        "title": "マジカルスイート"
+      }
+    },
+    {
+      "id": "kollabo-e48",
+      "before": {
+        "abbr": "高橋留美子コラボ",
+        "title": "高橋留美子コラボ"
+      },
+      "after": {
+        "abbr": "高橋留美子コラボ",
+        "title": "境界のRINNEと黒猫の魔法使い"
+      }
+    },
+    {
+      "id": "kollabo-e44",
+      "before": {
+        "abbr": "しょこたんコラボ",
+        "title": "しょこたんコラボ"
+      },
+      "after": {
+        "abbr": "しょこたんコラボ",
+        "title": "勇者しょこたんと導きの猫たち"
+      }
+    },
+    {
+      "id": "kollabo-e39",
+      "before": {
+        "abbr": "エヴァンゲリオンコラボ1",
+        "title": "エヴァンゲリオンコラボ1"
+      },
+      "after": {
+        "abbr": "エヴァンゲリオンコラボ1",
+        "title": "ヱヴァンゲリヲン新劇場版コラボ"
+      }
+    },
+    {
+      "id": "kollabo-e38",
+      "before": {
+        "abbr": "白猫コラボ2015",
+        "title": "白猫コラボ2015"
+      },
+      "after": {
+        "abbr": "白猫コラボ2015",
+        "title": "白猫の仲間と冒険にゃ！"
+      }
+    },
+    {
+      "id": "kollabo-e35",
+      "before": {
+        "abbr": "セーラームーンコラボ",
+        "title": "セーラームーンコラボ"
+      },
+      "after": {
+        "abbr": "セーラームーンコラボ",
+        "title": "進撃の巨人、反撃の黒猫！"
+      }
+    },
+    {
+      "id": "kollabo-e1",
+      "before": {
+        "abbr": "黒ウィズPRIDE",
+        "title": "黒ウィズPRIDE"
+      },
+      "after": {
+        "abbr": "黒ウィズPRIDE",
+        "title": "異空間野球 黒ウィズPRIDE"
+      }
+    },
+    {
+      "id": "kollabo-e26",
+      "before": {
+        "abbr": "蒼の三国志コラボ",
+        "title": "蒼の三国志コラボ"
+      },
+      "after": {
+        "abbr": "蒼の三国志コラボ",
+        "title": "蒼の三国志 コラボダンジョン"
+      }
+    }
+  ]
 }

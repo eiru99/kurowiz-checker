@@ -2694,6 +2694,9 @@ function isBetterTitleCandidate(nextTitle, abbr) {
 export function normalizeEventNames(abbr, title) {
     const nextAbbr = sanitizeOcrOutput(abbr ?? '', { preserveSpaces: false });
     const nextTitle = sanitizeOcrOutput(title ?? '', { preserveSpaces: true });
+    if (nextAbbr && nextTitle) {
+        return { abbr: nextAbbr, title: nextTitle };
+    }
     const value = nextAbbr || nextTitle;
     return {
         abbr: nextAbbr || value,
