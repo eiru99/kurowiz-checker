@@ -35,11 +35,18 @@ STORAGE_BUCKET = "spirit-images"
 SPIRIT_IMAGE_SIZE = 128
 
 EVENT_BLOCK_RE = re.compile(
-    r'<h3 class="event-title (?P<gw_id>e\d+)[^"]*">\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
-    r'<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*'
+    r'<h3 class="event-title (?P<gw_id>e\d+)"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
+    r'(?:<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*)?'
     r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
     re.DOTALL,
 )
+WIZSELE_BLOCK_RE = re.compile(
+    r'<h3 id="wizsele"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
+    r'<p class="sub-info">(?P<title>[^<]+)</p>\s*'
+    r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
+    re.DOTALL,
+)
+EVENT_BLOCK_PATTERNS = (EVENT_BLOCK_RE, WIZSELE_BLOCK_RE)
 SPIRIT_IMG_RE = re.compile(
     r"data-original='(?P<url>[^']+)'[^>]*alt='(?P<name>[^']*)'",
     re.DOTALL,
@@ -95,9 +102,10 @@ def download_image(url: str) -> bytes:
 
 
 def find_event_block(html: str, abbr: str) -> re.Match[str]:
-    for match in EVENT_BLOCK_RE.finditer(html):
-        if match.group("abbr").strip() == abbr:
-            return match
+    for pattern in EVENT_BLOCK_PATTERNS:
+        for match in pattern.finditer(html):
+            if match.group("abbr").strip() == abbr:
+                return match
     raise SystemExit(f"イベント '{abbr}' が見つかりません")
 
 
@@ -184,8 +192,10 @@ def main() -> None:
     parser.add_argument("--abbr", required=True, help="イベント略称 (例: かみさんぽっ3)")
     parser.add_argument("--event-id", required=True, help="イベント ID (例: kamisanpo3)")
     parser.add_argument("--section-id", default="latest")
+    parser.add_argument("--sort-order", type=int, default=1)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--local-dir", type=Path, default=ROOT / "images" / "spirits")
+    parser.add_argument("--save-local", action="store_true", help="PC 内 images/spirits に PNG を保存")
     parser.add_argument(
         "--id-slugs",
         type=Path,
@@ -209,7 +219,7 @@ def main() -> None:
             "abbr": abbr,
             "title": title,
             "storage_folder": abbr_to_storage_folder(abbr, event_id=args.event_id),
-            "sort_order": 1,
+            "sort_order": args.sort_order,
         },
         "spirits": [],
     }
@@ -220,7 +230,8 @@ def main() -> None:
         spirit_id = f"{args.event_id}-{slug}"
         file_stem = f"{args.event_id}-{slug}"
         png_bytes = download_image(spirit["image_url"])
-        local_path = save_local_png(args.local_dir, file_stem, png_bytes)
+        if args.save_local:
+            save_local_png(args.local_dir, file_stem, png_bytes)
         detected = detect_spirit_attributes_from_bytes(png_bytes)
         main, sub = normalize_attributes(detected)
         image_path = f"images/spirits/{file_stem}.png"
@@ -229,19 +240,19 @@ def main() -> None:
             webp_bytes = normalize_spirit_image(png_bytes)
             image_path = upload_spirit_image(webp_bytes, result["event"]["storage_folder"])
 
-        result["spirits"].append(
-            {
-                "id": spirit_id,
-                "event_id": args.event_id,
-                "name": name,
-                "main": main,
-                "sub": sub,
-                "image_path": image_path,
-                "local_path": str(local_path.relative_to(ROOT)).replace("\\", "/"),
-                "sort_order": index,
-                "detected": detected,
-            }
-        )
+        spirit_row = {
+            "id": spirit_id,
+            "event_id": args.event_id,
+            "name": name,
+            "main": main,
+            "sub": sub,
+            "image_path": image_path,
+            "sort_order": index,
+            "detected": detected,
+        }
+        if args.save_local:
+            spirit_row["local_path"] = f"images/spirits/{file_stem}.png"
+        result["spirits"].append(spirit_row)
         print(f"[{index}] {name} {main}/{sub} -> {image_path}")
 
     if args.json_out:

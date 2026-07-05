@@ -1,0 +1,675 @@
+{
+  "event": {
+    "id": "charapre-wizsele",
+    "section_id": "charapre",
+    "abbr": "プラチナ/ウィズセレクションガチャ",
+    "title": "喰牙RIZE3/ 天上岬外伝〜とこやみの女王〜/ 神都ピカレスク1/ 機械と少女2/ メアレス1夢現の蝶/ 狼たちと鮮血ずきんさん/ 機械と少女1/ 呪影の少女/ 願いのトリロジー/ 心竜覚醒/ 新生の双翼",
+    "storage_folder": "wizselection",
+    "sort_order": 190
+  },
+  "spirits": [
+    {
+      "id": "charapre-wizsele-シド",
+      "event_id": "charapre-wizsele",
+      "name": "シド",
+      "main": "雷",
+      "sub": "闇",
+      "image_path": "wizselection/2d786c27-8ad4-41fe-b054-33f05f728f0d.webp",
+      "sort_order": 1,
+      "detected": {
+        "main": "雷",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ヒルデ",
+      "event_id": "charapre-wizsele",
+      "name": "ヒルデ",
+      "main": "水",
+      "sub": "雷",
+      "image_path": "wizselection/1b0069c0-07b6-433a-ad33-f09ea8f066d5.webp",
+      "sort_order": 2,
+      "detected": {
+        "main": "水",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エイラ",
+      "event_id": "charapre-wizsele",
+      "name": "エイラ",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/82813383-29f5-4184-891e-70154757bb86.webp",
+      "sort_order": 3,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-フェルチ",
+      "event_id": "charapre-wizsele",
+      "name": "フェルチ",
+      "main": "雷",
+      "sub": "水",
+      "image_path": "wizselection/0ab4372b-1956-4c59-ab73-4452123135d8.webp",
+      "sort_order": 4,
+      "detected": {
+        "main": "雷",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ファム",
+      "event_id": "charapre-wizsele",
+      "name": "ファム",
+      "main": "水",
+      "sub": "水",
+      "image_path": "wizselection/a5a82361-28bd-49c3-82e4-a9446eb82f82.webp",
+      "sort_order": 5,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エテルネ",
+      "event_id": "charapre-wizsele",
+      "name": "エテルネ",
+      "main": "火",
+      "sub": "水",
+      "image_path": "wizselection/54b5c3c2-8731-4e7f-bca6-3e4434164da8.webp",
+      "sort_order": 6,
+      "detected": {
+        "main": "火",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ケネス",
+      "event_id": "charapre-wizsele",
+      "name": "ケネス",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "wizselection/568a5108-75ca-4708-aa68-f477253944b3.webp",
+      "sort_order": 7,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ギャスパー",
+      "event_id": "charapre-wizsele",
+      "name": "ギャスパー",
+      "main": "水",
+      "sub": "水",
+      "image_path": "wizselection/f80e599f-0e1d-4477-b969-36f664890dc2.webp",
+      "sort_order": 8,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ヴィッキー",
+      "event_id": "charapre-wizsele",
+      "name": "ヴィッキー",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/62d0c1ef-865d-41e6-9a1c-b85ad70dea41.webp",
+      "sort_order": 9,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-オルテム",
+      "event_id": "charapre-wizsele",
+      "name": "オルテム",
+      "main": "雷",
+      "sub": "火",
+      "image_path": "wizselection/795f5e5f-7f9e-4a3f-8afa-ecb23838ddea.webp",
+      "sort_order": 10,
+      "detected": {
+        "main": "雷",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-フィオル",
+      "event_id": "charapre-wizsele",
+      "name": "フィオル",
+      "main": "水",
+      "sub": "光",
+      "image_path": "wizselection/b8a3ad9b-2b9b-49ef-b606-89d48d471daa.webp",
+      "sort_order": 11,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エアルム",
+      "event_id": "charapre-wizsele",
+      "name": "エアルム",
+      "main": "火",
+      "sub": "雷",
+      "image_path": "wizselection/b1262854-ac95-4e96-9544-f9ef84aae5a4.webp",
+      "sort_order": 12,
+      "detected": {
+        "main": "火",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ノクス",
+      "event_id": "charapre-wizsele",
+      "name": "ノクス",
+      "main": "雷",
+      "sub": "闇",
+      "image_path": "wizselection/bccad754-d5de-41cc-b47f-f8a20eff09ea.webp",
+      "sort_order": 13,
+      "detected": {
+        "main": "雷",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エリン",
+      "event_id": "charapre-wizsele",
+      "name": "エリン",
+      "main": "水",
+      "sub": "光",
+      "image_path": "wizselection/426a5461-417f-45d2-b907-b807f021c165.webp",
+      "sort_order": 14,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ロザリア",
+      "event_id": "charapre-wizsele",
+      "name": "ロザリア",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/d59c360b-e4e8-41f3-981c-11513aa1ebc2.webp",
+      "sort_order": 15,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-メメリー",
+      "event_id": "charapre-wizsele",
+      "name": "メメリー",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "wizselection/a64d1bfa-5d25-4c40-acb6-98f313f13ccf.webp",
+      "sort_order": 16,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リコラ",
+      "event_id": "charapre-wizsele",
+      "name": "リコラ",
+      "main": "水",
+      "sub": "雷",
+      "image_path": "wizselection/e37c726a-986c-4d6d-b0e0-999e9738275d.webp",
+      "sort_order": 17,
+      "detected": {
+        "main": "水",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ラグール",
+      "event_id": "charapre-wizsele",
+      "name": "ラグール",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/4f17788d-19f8-41c4-8036-5100f520b7fe.webp",
+      "sort_order": 18,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ラス",
+      "event_id": "charapre-wizsele",
+      "name": "ラス",
+      "main": "水",
+      "sub": "雷",
+      "image_path": "wizselection/7dbfa417-ca3b-46b5-a8d0-cf92b49682a1.webp",
+      "sort_order": 19,
+      "detected": {
+        "main": "水",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-クルル",
+      "event_id": "charapre-wizsele",
+      "name": "クルル",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/0759a4f8-8071-4e2c-8d10-9a8500fefaab.webp",
+      "sort_order": 20,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ルツィア",
+      "event_id": "charapre-wizsele",
+      "name": "ルツィア",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "wizselection/89d00a17-c317-4e0c-9e95-eabf81e68377.webp",
+      "sort_order": 21,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リシア",
+      "event_id": "charapre-wizsele",
+      "name": "リシア",
+      "main": "雷",
+      "sub": "光",
+      "image_path": "wizselection/e27111fb-f418-48d0-ae20-cd107e9f7c8f.webp",
+      "sort_order": 22,
+      "detected": {
+        "main": "雷",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-シエオラ",
+      "event_id": "charapre-wizsele",
+      "name": "シエオラ",
+      "main": "水",
+      "sub": "光",
+      "image_path": "wizselection/0894dc40-a2cf-495e-b8b5-1c4e1df0cf70.webp",
+      "sort_order": 23,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-セルマ",
+      "event_id": "charapre-wizsele",
+      "name": "セルマ",
+      "main": "火",
+      "sub": "闇",
+      "image_path": "wizselection/a4796688-1805-40ad-b8bd-b4e66b0eeda4.webp",
+      "sort_order": 24,
+      "detected": {
+        "main": "火",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-サクト",
+      "event_id": "charapre-wizsele",
+      "name": "サクト",
+      "main": "火",
+      "sub": "水",
+      "image_path": "wizselection/d08321e0-557d-456d-aabb-e6def1b26655.webp",
+      "sort_order": 25,
+      "detected": {
+        "main": "火",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リギット",
+      "event_id": "charapre-wizsele",
+      "name": "リギット",
+      "main": "雷",
+      "sub": "闇",
+      "image_path": "wizselection/37dcb446-0c30-4b50-b486-1ec1026568dc.webp",
+      "sort_order": 26,
+      "detected": {
+        "main": "雷",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ハローラ",
+      "event_id": "charapre-wizsele",
+      "name": "ハローラ",
+      "main": "水",
+      "sub": "水",
+      "image_path": "wizselection/18d572f1-7587-451a-affa-25c3bf9f867d.webp",
+      "sort_order": 27,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ザハール",
+      "event_id": "charapre-wizsele",
+      "name": "ザハール",
+      "main": "水",
+      "sub": "闇",
+      "image_path": "wizselection/1908f8ff-08d3-437c-b621-76b02947a515.webp",
+      "sort_order": 28,
+      "detected": {
+        "main": "水",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-イニュー",
+      "event_id": "charapre-wizsele",
+      "name": "イニュー",
+      "main": "雷",
+      "sub": "光",
+      "image_path": "wizselection/af647b8a-9afb-4bb1-91f4-7f7f2279e920.webp",
+      "sort_order": 29,
+      "detected": {
+        "main": "雷",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-アデレード",
+      "event_id": "charapre-wizsele",
+      "name": "アデレード",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/f81e93fd-fe1e-43d1-80de-a34984e754a0.webp",
+      "sort_order": 30,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ガトリン",
+      "event_id": "charapre-wizsele",
+      "name": "ガトリン",
+      "main": "水",
+      "sub": "雷",
+      "image_path": "wizselection/828aabad-ee1d-47f5-b882-b43b12485c0d.webp",
+      "sort_order": 31,
+      "detected": {
+        "main": "水",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ダムザ",
+      "event_id": "charapre-wizsele",
+      "name": "ダムザ",
+      "main": "火",
+      "sub": "水",
+      "image_path": "wizselection/fda01ce5-b4c7-41ad-a19a-fefa4668c578.webp",
+      "sort_order": 32,
+      "detected": {
+        "main": "火",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リエン",
+      "event_id": "charapre-wizsele",
+      "name": "リエン",
+      "main": "雷",
+      "sub": "火",
+      "image_path": "wizselection/fc1ce482-9d84-4011-a65e-d77983a2d052.webp",
+      "sort_order": 33,
+      "detected": {
+        "main": "雷",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ミラノ",
+      "event_id": "charapre-wizsele",
+      "name": "ミラノ",
+      "main": "火",
+      "sub": "光",
+      "image_path": "wizselection/ef6647d9-a410-4df4-b4fc-831359674ec8.webp",
+      "sort_order": 34,
+      "detected": {
+        "main": "火",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ルシエラ",
+      "event_id": "charapre-wizsele",
+      "name": "ルシエラ",
+      "main": "水",
+      "sub": "光",
+      "image_path": "wizselection/196ba2b3-6b9c-4e78-a1f0-9122f0c2c1e3.webp",
+      "sort_order": 35,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-アルドベリク",
+      "event_id": "charapre-wizsele",
+      "name": "アルドベリク",
+      "main": "火",
+      "sub": "闇",
+      "image_path": "wizselection/bd5a10cb-93f3-4f19-b2d9-0eae16fa026d.webp",
+      "sort_order": 36,
+      "detected": {
+        "main": "火",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リセル",
+      "event_id": "charapre-wizsele",
+      "name": "リセル",
+      "main": "雷",
+      "sub": "闇",
+      "image_path": "wizselection/30b00715-9b03-48e8-99e2-4c7bcddab683.webp",
+      "sort_order": 37,
+      "detected": {
+        "main": "雷",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-シール",
+      "event_id": "charapre-wizsele",
+      "name": "シール",
+      "main": "水",
+      "sub": "水",
+      "image_path": "wizselection/5c644bc8-c3ec-41d1-aa04-1e78bcf03927.webp",
+      "sort_order": 38,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-シェイナ",
+      "event_id": "charapre-wizsele",
+      "name": "シェイナ",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/bb9e29f1-7ecd-4bf2-beaa-51200b6d4418.webp",
+      "sort_order": 39,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エリオット",
+      "event_id": "charapre-wizsele",
+      "name": "エリオット",
+      "main": "水",
+      "sub": "水",
+      "image_path": "wizselection/142ae1fa-f640-464c-b6af-b63341c1cc72.webp",
+      "sort_order": 40,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-wizsele-アリエッタ",
+      "event_id": "charapre-wizsele",
+      "name": "アリエッタ",
+      "main": "水",
+      "sub": "火",
+      "image_path": "wizselection/b09d551c-9ffc-4759-87a3-2d7e7557a9e8.webp",
+      "sort_order": 41,
+      "detected": {
+        "main": "水",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ルナリィ",
+      "event_id": "charapre-wizsele",
+      "name": "ルナリィ",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "wizselection/3193625b-b0c8-4e02-8c6f-cdcfaf0c735c.webp",
+      "sort_order": 42,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-マーガレット",
+      "event_id": "charapre-wizsele",
+      "name": "マーガレット",
+      "main": "火",
+      "sub": "光",
+      "image_path": "wizselection/2fe2255f-58f6-4054-9bb6-f03c3ead8a9d.webp",
+      "sort_order": 43,
+      "detected": {
+        "main": "火",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-リツェーレ",
+      "event_id": "charapre-wizsele",
+      "name": "リツェーレ",
+      "main": "雷",
+      "sub": "闇",
+      "image_path": "wizselection/882dc57e-e108-4156-9aa5-e3b0f3944aac.webp",
+      "sort_order": 44,
+      "detected": {
+        "main": "雷",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-クラヴィル",
+      "event_id": "charapre-wizsele",
+      "name": "クラヴィル",
+      "main": "水",
+      "sub": "闇",
+      "image_path": "wizselection/7334bad0-dc84-41bc-8354-9e224e406cc6.webp",
+      "sort_order": 45,
+      "detected": {
+        "main": "水",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-カプレイ",
+      "event_id": "charapre-wizsele",
+      "name": "カプレイ",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "wizselection/22b21f2e-cbea-41f7-8138-f6939724baf2.webp",
+      "sort_order": 46,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-wizsele-エルト",
+      "event_id": "charapre-wizsele",
+      "name": "エルト",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/6e92b49f-e6b8-4ff7-9ed6-2d10b3973979.webp",
+      "sort_order": 47,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ズローヴァ",
+      "event_id": "charapre-wizsele",
+      "name": "ズローヴァ",
+      "main": "火",
+      "sub": "火",
+      "image_path": "wizselection/e1bd8c56-d7c2-4c7b-8424-2cf97bc18c7f.webp",
+      "sort_order": 48,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ラト",
+      "event_id": "charapre-wizsele",
+      "name": "ラト",
+      "main": "火",
+      "sub": "闇",
+      "image_path": "wizselection/dc95f8b3-987a-4df9-91a3-a3668ef2bd52.webp",
+      "sort_order": 49,
+      "detected": {
+        "main": "火",
+        "sub": "闇"
+      }
+    },
+    {
+      "id": "charapre-wizsele-タケル",
+      "event_id": "charapre-wizsele",
+      "name": "タケル",
+      "main": "雷",
+      "sub": "光",
+      "image_path": "wizselection/d57b9aab-c63e-4297-8923-af8a267fa5f1.webp",
+      "sort_order": 50,
+      "detected": {
+        "main": "雷",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-wizsele-ベアトリーゼ",
+      "event_id": "charapre-wizsele",
+      "name": "ベアトリーゼ",
+      "main": "水",
+      "sub": "光",
+      "image_path": "wizselection/8b0dac90-f643-4f4e-bdf4-c8bd12c580eb.webp",
+      "sort_order": 51,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    }
+  ]
+}

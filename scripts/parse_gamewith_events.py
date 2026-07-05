@@ -20,8 +20,14 @@ SECTION_MAP = {
 }
 
 EVENT_BLOCK_RE = re.compile(
-    r'<h3 class="event-title (?P<gw_id>e\d+)[^"]*">\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
+    r'<h3 class="event-title (?P<gw_id>e\d+)"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
     r'(?:<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*)?'
+    r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
+    re.DOTALL,
+)
+WIZSELE_BLOCK_RE = re.compile(
+    r'<h3 id="wizsele"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
+    r'<p class="sub-info">(?P<title>[^<]+)</p>\s*'
     r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
     re.DOTALL,
 )
@@ -48,6 +54,14 @@ def normalize_event_names(abbr: str, title: str) -> tuple[str, str]:
     return value, value
 
 
+def iter_event_blocks(content: str) -> list[re.Match[str]]:
+    blocks: list[re.Match[str]] = []
+    for pattern in (EVENT_BLOCK_RE, WIZSELE_BLOCK_RE):
+        blocks.extend(pattern.finditer(content))
+    blocks.sort(key=lambda match: match.start())
+    return blocks
+
+
 def parse_events(html: str) -> tuple[list[dict], list[dict]]:
     events: list[dict] = []
     issues: list[dict] = []
@@ -64,9 +78,9 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
 
         section_id, _ = SECTION_MAP[sec_key]
         sort_order = 0
-        for match in EVENT_BLOCK_RE.finditer(content):
+        for match in iter_event_blocks(content):
             sort_order += 1
-            gw_id = match.group("gw_id")
+            gw_id = match.groupdict().get("gw_id") or "wizsele"
             abbr = match.group("abbr").strip()
             title = (match.group("title") or "").strip()
             abbr, title = normalize_event_names(abbr, title)

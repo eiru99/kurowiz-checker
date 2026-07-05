@@ -10919,6 +10919,435 @@
               "image": "konomorinosennensakura/9294e652-4924-471a-9678-3f8b4ccb7812.webp"
             }
           ]
+        },
+        {
+          "id": "charapre-e97",
+          "abbr": "DL限定(キャラプレ対象)",
+          "title": "DL限定(キャラプレ対象)",
+          "storageFolder": "dlgentei-kyarapuretaishou",
+          "spirits": [
+            {
+              "id": "charapre-e97-ジェニファー",
+              "name": "ジェニファー",
+              "main": "火",
+              "sub": "光",
+              "image": "dlgentei-kyarapuretaishou/2ccc1501-a485-4d8f-9566-6a0851865310.webp"
+            },
+            {
+              "id": "charapre-e97-ウル",
+              "name": "ウル",
+              "main": "火",
+              "sub": "火",
+              "image": "dlgentei-kyarapuretaishou/8611f2de-efdb-42b1-9d2f-bfa1052adf9f.webp"
+            },
+            {
+              "id": "charapre-e97-アーサー-アリオテス",
+              "name": "アーサー＆アリオテス",
+              "main": "雷",
+              "sub": "雷",
+              "image": "dlgentei-kyarapuretaishou/7a1e9a93-49e3-4a8d-bc49-82e99f667336.webp"
+            },
+            {
+              "id": "charapre-e97-アルル-ヴィクトリア",
+              "name": "アルル＆ヴィクトリア",
+              "main": "雷",
+              "sub": "火",
+              "image": "dlgentei-kyarapuretaishou/d63f7366-f683-4fad-81d4-fa04a7ec1843.webp"
+            },
+            {
+              "id": "charapre-e97-ヤエ-ヒサメ",
+              "name": "ヤエ＆ヒサメ",
+              "main": "水",
+              "sub": "光",
+              "image": "dlgentei-kyarapuretaishou/f73763cb-bfb8-4aa4-92f7-fdc8fb71f9c3.webp"
+            },
+            {
+              "id": "charapre-e97-エニィ-クラン",
+              "name": "エニィ＆クラン",
+              "main": "水",
+              "sub": "水",
+              "image": "dlgentei-kyarapuretaishou/44e568e9-0620-4a87-941e-57e1c0ee3829.webp"
+            },
+            {
+              "id": "charapre-e97-シエオラ-プラーミャ",
+              "name": "シエオラ＆プラーミャ",
+              "main": "火",
+              "sub": "光",
+              "image": "dlgentei-kyarapuretaishou/77c848a3-55d3-4126-a175-648c7ec31a76.webp"
+            },
+            {
+              "id": "charapre-e97-アデレード-ミネバ",
+              "name": "アデレード＆ミネバ",
+              "main": "火",
+              "sub": "光",
+              "image": "dlgentei-kyarapuretaishou/81040f67-c6aa-470d-b461-7d300a292824.webp"
+            }
+          ]
+        },
+        {
+          "id": "charapre-wizsele",
+          "abbr": "プラチナ/ウィズセレクションガチャ",
+          "title": "喰牙RIZE3/ 天上岬外伝〜とこやみの女王〜/ 神都ピカレスク1/ 機械と少女2/ メアレス1夢現の蝶/ 狼たちと鮮血ずきんさん/ 機械と少女1/ 呪影の少女/ 願いのトリロジー/ 心竜覚醒/ 新生の双翼",
+          "storageFolder": "wizselection",
+          "spirits": [
+            {
+              "id": "charapre-wizsele-シド",
+              "name": "シド",
+              "main": "雷",
+              "sub": "闇",
+              "image": "wizselection/2d786c27-8ad4-41fe-b054-33f05f728f0d.webp"
+            },
+            {
+              "id": "charapre-wizsele-ヒルデ",
+              "name": "ヒルデ",
+              "main": "水",
+              "sub": "雷",
+              "image": "wizselection/1b0069c0-07b6-433a-ad33-f09ea8f066d5.webp"
+            },
+            {
+              "id": "charapre-wizsele-エイラ",
+              "name": "エイラ",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/82813383-29f5-4184-891e-70154757bb86.webp"
+            },
+            {
+              "id": "charapre-wizsele-フェルチ",
+              "name": "フェルチ",
+              "main": "雷",
+              "sub": "水",
+              "image": "wizselection/0ab4372b-1956-4c59-ab73-4452123135d8.webp"
+            },
+            {
+              "id": "charapre-wizsele-ファム",
+              "name": "ファム",
+              "main": "水",
+              "sub": "水",
+              "image": "wizselection/a5a82361-28bd-49c3-82e4-a9446eb82f82.webp"
+            },
+            {
+              "id": "charapre-wizsele-エテルネ",
+              "name": "エテルネ",
+              "main": "火",
+              "sub": "水",
+              "image": "wizselection/54b5c3c2-8731-4e7f-bca6-3e4434164da8.webp"
+            },
+            {
+              "id": "charapre-wizsele-ケネス",
+              "name": "ケネス",
+              "main": "雷",
+              "sub": "雷",
+              "image": "wizselection/568a5108-75ca-4708-aa68-f477253944b3.webp"
+            },
+            {
+              "id": "charapre-wizsele-ギャスパー",
+              "name": "ギャスパー",
+              "main": "水",
+              "sub": "水",
+              "image": "wizselection/f80e599f-0e1d-4477-b969-36f664890dc2.webp"
+            },
+            {
+              "id": "charapre-wizsele-ヴィッキー",
+              "name": "ヴィッキー",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/62d0c1ef-865d-41e6-9a1c-b85ad70dea41.webp"
+            },
+            {
+              "id": "charapre-wizsele-オルテム",
+              "name": "オルテム",
+              "main": "雷",
+              "sub": "火",
+              "image": "wizselection/795f5e5f-7f9e-4a3f-8afa-ecb23838ddea.webp"
+            },
+            {
+              "id": "charapre-wizsele-フィオル",
+              "name": "フィオル",
+              "main": "水",
+              "sub": "光",
+              "image": "wizselection/b8a3ad9b-2b9b-49ef-b606-89d48d471daa.webp"
+            },
+            {
+              "id": "charapre-wizsele-エアルム",
+              "name": "エアルム",
+              "main": "火",
+              "sub": "雷",
+              "image": "wizselection/b1262854-ac95-4e96-9544-f9ef84aae5a4.webp"
+            },
+            {
+              "id": "charapre-wizsele-ノクス",
+              "name": "ノクス",
+              "main": "雷",
+              "sub": "闇",
+              "image": "wizselection/bccad754-d5de-41cc-b47f-f8a20eff09ea.webp"
+            },
+            {
+              "id": "charapre-wizsele-エリン",
+              "name": "エリン",
+              "main": "水",
+              "sub": "光",
+              "image": "wizselection/426a5461-417f-45d2-b907-b807f021c165.webp"
+            },
+            {
+              "id": "charapre-wizsele-ロザリア",
+              "name": "ロザリア",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/d59c360b-e4e8-41f3-981c-11513aa1ebc2.webp"
+            },
+            {
+              "id": "charapre-wizsele-メメリー",
+              "name": "メメリー",
+              "main": "雷",
+              "sub": "雷",
+              "image": "wizselection/a64d1bfa-5d25-4c40-acb6-98f313f13ccf.webp"
+            },
+            {
+              "id": "charapre-wizsele-リコラ",
+              "name": "リコラ",
+              "main": "水",
+              "sub": "雷",
+              "image": "wizselection/e37c726a-986c-4d6d-b0e0-999e9738275d.webp"
+            },
+            {
+              "id": "charapre-wizsele-ラグール",
+              "name": "ラグール",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/4f17788d-19f8-41c4-8036-5100f520b7fe.webp"
+            },
+            {
+              "id": "charapre-wizsele-ラス",
+              "name": "ラス",
+              "main": "水",
+              "sub": "雷",
+              "image": "wizselection/7dbfa417-ca3b-46b5-a8d0-cf92b49682a1.webp"
+            },
+            {
+              "id": "charapre-wizsele-クルル",
+              "name": "クルル",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/0759a4f8-8071-4e2c-8d10-9a8500fefaab.webp"
+            },
+            {
+              "id": "charapre-wizsele-ルツィア",
+              "name": "ルツィア",
+              "main": "雷",
+              "sub": "雷",
+              "image": "wizselection/89d00a17-c317-4e0c-9e95-eabf81e68377.webp"
+            },
+            {
+              "id": "charapre-wizsele-リシア",
+              "name": "リシア",
+              "main": "雷",
+              "sub": "光",
+              "image": "wizselection/e27111fb-f418-48d0-ae20-cd107e9f7c8f.webp"
+            },
+            {
+              "id": "charapre-wizsele-シエオラ",
+              "name": "シエオラ",
+              "main": "水",
+              "sub": "光",
+              "image": "wizselection/0894dc40-a2cf-495e-b8b5-1c4e1df0cf70.webp"
+            },
+            {
+              "id": "charapre-wizsele-セルマ",
+              "name": "セルマ",
+              "main": "火",
+              "sub": "闇",
+              "image": "wizselection/a4796688-1805-40ad-b8bd-b4e66b0eeda4.webp"
+            },
+            {
+              "id": "charapre-wizsele-サクト",
+              "name": "サクト",
+              "main": "火",
+              "sub": "水",
+              "image": "wizselection/d08321e0-557d-456d-aabb-e6def1b26655.webp"
+            },
+            {
+              "id": "charapre-wizsele-リギット",
+              "name": "リギット",
+              "main": "雷",
+              "sub": "闇",
+              "image": "wizselection/37dcb446-0c30-4b50-b486-1ec1026568dc.webp"
+            },
+            {
+              "id": "charapre-wizsele-ハローラ",
+              "name": "ハローラ",
+              "main": "水",
+              "sub": "水",
+              "image": "wizselection/18d572f1-7587-451a-affa-25c3bf9f867d.webp"
+            },
+            {
+              "id": "charapre-wizsele-ザハール",
+              "name": "ザハール",
+              "main": "水",
+              "sub": "闇",
+              "image": "wizselection/1908f8ff-08d3-437c-b621-76b02947a515.webp"
+            },
+            {
+              "id": "charapre-wizsele-イニュー",
+              "name": "イニュー",
+              "main": "雷",
+              "sub": "光",
+              "image": "wizselection/af647b8a-9afb-4bb1-91f4-7f7f2279e920.webp"
+            },
+            {
+              "id": "charapre-wizsele-アデレード",
+              "name": "アデレード",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/f81e93fd-fe1e-43d1-80de-a34984e754a0.webp"
+            },
+            {
+              "id": "charapre-wizsele-ガトリン",
+              "name": "ガトリン",
+              "main": "水",
+              "sub": "雷",
+              "image": "wizselection/828aabad-ee1d-47f5-b882-b43b12485c0d.webp"
+            },
+            {
+              "id": "charapre-wizsele-ダムザ",
+              "name": "ダムザ",
+              "main": "火",
+              "sub": "水",
+              "image": "wizselection/fda01ce5-b4c7-41ad-a19a-fefa4668c578.webp"
+            },
+            {
+              "id": "charapre-wizsele-リエン",
+              "name": "リエン",
+              "main": "雷",
+              "sub": "火",
+              "image": "wizselection/fc1ce482-9d84-4011-a65e-d77983a2d052.webp"
+            },
+            {
+              "id": "charapre-wizsele-ミラノ",
+              "name": "ミラノ",
+              "main": "火",
+              "sub": "光",
+              "image": "wizselection/ef6647d9-a410-4df4-b4fc-831359674ec8.webp"
+            },
+            {
+              "id": "charapre-wizsele-ルシエラ",
+              "name": "ルシエラ",
+              "main": "水",
+              "sub": "光",
+              "image": "wizselection/196ba2b3-6b9c-4e78-a1f0-9122f0c2c1e3.webp"
+            },
+            {
+              "id": "charapre-wizsele-アルドベリク",
+              "name": "アルドベリク",
+              "main": "火",
+              "sub": "闇",
+              "image": "wizselection/bd5a10cb-93f3-4f19-b2d9-0eae16fa026d.webp"
+            },
+            {
+              "id": "charapre-wizsele-リセル",
+              "name": "リセル",
+              "main": "雷",
+              "sub": "闇",
+              "image": "wizselection/30b00715-9b03-48e8-99e2-4c7bcddab683.webp"
+            },
+            {
+              "id": "charapre-wizsele-シール",
+              "name": "シール",
+              "main": "水",
+              "sub": "水",
+              "image": "wizselection/5c644bc8-c3ec-41d1-aa04-1e78bcf03927.webp"
+            },
+            {
+              "id": "charapre-wizsele-シェイナ",
+              "name": "シェイナ",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/bb9e29f1-7ecd-4bf2-beaa-51200b6d4418.webp"
+            },
+            {
+              "id": "charapre-wizsele-エリオット",
+              "name": "エリオット",
+              "main": "水",
+              "sub": "水",
+              "image": "wizselection/142ae1fa-f640-464c-b6af-b63341c1cc72.webp"
+            },
+            {
+              "id": "charapre-wizsele-アリエッタ",
+              "name": "アリエッタ",
+              "main": "水",
+              "sub": "火",
+              "image": "wizselection/b09d551c-9ffc-4759-87a3-2d7e7557a9e8.webp"
+            },
+            {
+              "id": "charapre-wizsele-ルナリィ",
+              "name": "ルナリィ",
+              "main": "雷",
+              "sub": "雷",
+              "image": "wizselection/3193625b-b0c8-4e02-8c6f-cdcfaf0c735c.webp"
+            },
+            {
+              "id": "charapre-wizsele-マーガレット",
+              "name": "マーガレット",
+              "main": "火",
+              "sub": "光",
+              "image": "wizselection/2fe2255f-58f6-4054-9bb6-f03c3ead8a9d.webp"
+            },
+            {
+              "id": "charapre-wizsele-リツェーレ",
+              "name": "リツェーレ",
+              "main": "雷",
+              "sub": "闇",
+              "image": "wizselection/882dc57e-e108-4156-9aa5-e3b0f3944aac.webp"
+            },
+            {
+              "id": "charapre-wizsele-クラヴィル",
+              "name": "クラヴィル",
+              "main": "水",
+              "sub": "闇",
+              "image": "wizselection/7334bad0-dc84-41bc-8354-9e224e406cc6.webp"
+            },
+            {
+              "id": "charapre-wizsele-カプレイ",
+              "name": "カプレイ",
+              "main": "雷",
+              "sub": "雷",
+              "image": "wizselection/22b21f2e-cbea-41f7-8138-f6939724baf2.webp"
+            },
+            {
+              "id": "charapre-wizsele-エルト",
+              "name": "エルト",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/6e92b49f-e6b8-4ff7-9ed6-2d10b3973979.webp"
+            },
+            {
+              "id": "charapre-wizsele-ズローヴァ",
+              "name": "ズローヴァ",
+              "main": "火",
+              "sub": "火",
+              "image": "wizselection/e1bd8c56-d7c2-4c7b-8424-2cf97bc18c7f.webp"
+            },
+            {
+              "id": "charapre-wizsele-ラト",
+              "name": "ラト",
+              "main": "火",
+              "sub": "闇",
+              "image": "wizselection/dc95f8b3-987a-4df9-91a3-a3668ef2bd52.webp"
+            },
+            {
+              "id": "charapre-wizsele-タケル",
+              "name": "タケル",
+              "main": "雷",
+              "sub": "光",
+              "image": "wizselection/d57b9aab-c63e-4297-8923-af8a267fa5f1.webp"
+            },
+            {
+              "id": "charapre-wizsele-ベアトリーゼ",
+              "name": "ベアトリーゼ",
+              "main": "水",
+              "sub": "光",
+              "image": "wizselection/8b0dac90-f643-4f4e-bdf4-c8bd12c580eb.webp"
+            }
+          ]
         }
       ]
     },

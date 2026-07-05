@@ -1,0 +1,124 @@
+{
+  "event": {
+    "id": "charapre-e97",
+    "section_id": "charapre",
+    "abbr": "DL限定(キャラプレ対象)",
+    "title": "DL限定(キャラプレ対象)",
+    "storage_folder": "dlgentei-kyarapuretaishou",
+    "sort_order": 189
+  },
+  "spirits": [
+    {
+      "id": "charapre-e97-ジェニファー",
+      "event_id": "charapre-e97",
+      "name": "ジェニファー",
+      "main": "火",
+      "sub": "光",
+      "image_path": "dlgentei-kyarapuretaishou/2ccc1501-a485-4d8f-9566-6a0851865310.webp",
+      "local_path": "images/spirits/charapre-e97-ジェニファー.png",
+      "sort_order": 1,
+      "detected": {
+        "main": "火",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-e97-ウル",
+      "event_id": "charapre-e97",
+      "name": "ウル",
+      "main": "火",
+      "sub": "火",
+      "image_path": "dlgentei-kyarapuretaishou/8611f2de-efdb-42b1-9d2f-bfa1052adf9f.webp",
+      "local_path": "images/spirits/charapre-e97-ウル.png",
+      "sort_order": 2,
+      "detected": {
+        "main": "火",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-e97-アーサー-アリオテス",
+      "event_id": "charapre-e97",
+      "name": "アーサー＆アリオテス",
+      "main": "雷",
+      "sub": "雷",
+      "image_path": "dlgentei-kyarapuretaishou/7a1e9a93-49e3-4a8d-bc49-82e99f667336.webp",
+      "local_path": "images/spirits/charapre-e97-アーサー-アリオテス.png",
+      "sort_order": 3,
+      "detected": {
+        "main": "雷",
+        "sub": "雷"
+      }
+    },
+    {
+      "id": "charapre-e97-アルル-ヴィクトリア",
+      "event_id": "charapre-e97",
+      "name": "アルル＆ヴィクトリア",
+      "main": "雷",
+      "sub": "火",
+      "image_path": "dlgentei-kyarapuretaishou/d63f7366-f683-4fad-81d4-fa04a7ec1843.webp",
+      "local_path": "images/spirits/charapre-e97-アルル-ヴィクトリア.png",
+      "sort_order": 4,
+      "detected": {
+        "main": "雷",
+        "sub": "火"
+      }
+    },
+    {
+      "id": "charapre-e97-ヤエ-ヒサメ",
+      "event_id": "charapre-e97",
+      "name": "ヤエ＆ヒサメ",
+      "main": "水",
+      "sub": "光",
+      "image_path": "dlgentei-kyarapuretaishou/f73763cb-bfb8-4aa4-92f7-fdc8fb71f9c3.webp",
+      "local_path": "images/spirits/charapre-e97-ヤエ-ヒサメ.png",
+      "sort_order": 5,
+      "detected": {
+        "main": "水",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-e97-エニィ-クラン",
+      "event_id": "charapre-e97",
+      "name": "エニィ＆クラン",
+      "main": "水",
+      "sub": "水",
+      "image_path": "dlgentei-kyarapuretaishou/44e568e9-0620-4a87-941e-57e1c0ee3829.webp",
+      "local_path": "images/spirits/charapre-e97-エニィ-クラン.png",
+      "sort_order": 6,
+      "detected": {
+        "main": "水",
+        "sub": "水"
+      }
+    },
+    {
+      "id": "charapre-e97-シエオラ-プラーミャ",
+      "event_id": "charapre-e97",
+      "name": "シエオラ＆プラーミャ",
+      "main": "火",
+      "sub": "光",
+      "image_path": "dlgentei-kyarapuretaishou/77c848a3-55d3-4126-a175-648c7ec31a76.webp",
+      "local_path": "images/spirits/charapre-e97-シエオラ-プラーミャ.png",
+      "sort_order": 7,
+      "detected": {
+        "main": "火",
+        "sub": "光"
+      }
+    },
+    {
+      "id": "charapre-e97-アデレード-ミネバ",
+      "event_id": "charapre-e97",
+      "name": "アデレード＆ミネバ",
+      "main": "火",
+      "sub": "光",
+      "image_path": "dlgentei-kyarapuretaishou/81040f67-c6aa-470d-b461-7d300a292824.webp",
+      "local_path": "images/spirits/charapre-e97-アデレード-ミネバ.png",
+      "sort_order": 8,
+      "detected": {
+        "main": "火",
+        "sub": "光"
+      }
+    }
+  ]
+}

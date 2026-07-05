@@ -146,7 +146,8 @@ export async function fetchCatalogRows(database) {
 }
 
 const STORAGE_FOLDER_OVERRIDES = {
-    kamisanpo3: 'kamisanpo3'
+    kamisanpo3: 'kamisanpo3',
+    'charapre-wizsele': 'wizselection'
 };
 
 export function abbrToStorageFolder(abbr, eventId = null) {

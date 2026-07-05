@@ -9,6 +9,7 @@ from pykakasi import kakasi
 
 STORAGE_FOLDER_OVERRIDES: dict[str, str] = {
     "kamisanpo3": "kamisanpo3",
+    "charapre-wizsele": "wizselection",
 }
 
 _kakasi = kakasi()
