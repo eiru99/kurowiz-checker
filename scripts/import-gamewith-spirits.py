@@ -18,6 +18,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 import requests
 from PIL import Image
 
+from parse_gamewith_events import normalize_event_names
 from spirit_attribute_detect import detect_spirit_attributes_from_bytes, normalize_attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,9 +34,9 @@ STORAGE_BUCKET = "spirit-images"
 SPIRIT_IMAGE_SIZE = 128
 
 EVENT_BLOCK_RE = re.compile(
-    r'<h3 class="event-title[^"]*">\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
+    r'<h3 class="event-title (?P<gw_id>e\d+)[^"]*">\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
     r'<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*'
-    r'<ol class="w-checker-group">(?P<spirits>.*?)</ol>',
+    r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
     re.DOTALL,
 )
 SPIRIT_IMG_RE = re.compile(
@@ -195,7 +196,7 @@ def main() -> None:
 
     html = args.source.read_text(encoding="utf-8")
     block = find_event_block(html, args.abbr)
-    title = block.group("title").strip()
+    abbr, title = normalize_event_names(args.abbr.strip(), (block.group("title") or "").strip())
     spirits = parse_spirits(block.group("spirits"))
     id_slugs = json.loads(args.id_slugs.read_text(encoding="utf-8")) if args.id_slugs else {}
 
@@ -203,7 +204,7 @@ def main() -> None:
         "event": {
             "id": args.event_id,
             "section_id": args.section_id,
-            "abbr": args.abbr.strip(),
+            "abbr": abbr,
             "title": title,
             "sort_order": 1,
         },

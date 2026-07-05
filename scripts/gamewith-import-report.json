@@ -1,0 +1,18 @@
+{
+  "imported_count": 157,
+  "failed_count": 0,
+  "skipped_existing_count": 152,
+  "skipped_abbrs": [
+    "かみさんぽっ3"
+  ],
+  "issues": [
+    {
+      "type": "missing_title",
+      "section_id": "download",
+      "abbr": "DL限定",
+      "spirit_count": 48
+    }
+  ],
+  "failures": [],
+  "warnings": []
+}

@@ -2691,19 +2691,24 @@ function isBetterTitleCandidate(nextTitle, abbr) {
     return true;
 }
 
+export function normalizeEventNames(abbr, title) {
+    const nextAbbr = sanitizeOcrOutput(abbr ?? '', { preserveSpaces: false });
+    const nextTitle = sanitizeOcrOutput(title ?? '', { preserveSpaces: true });
+    const value = nextAbbr || nextTitle;
+    return {
+        abbr: nextAbbr || value,
+        title: nextTitle || value
+    };
+}
+
 function finalizeEventHeaderResult(result) {
-    const abbr = sanitizeOcrOutput(result.abbr ?? '', { preserveSpaces: false });
-    let title = sanitizeOcrOutput(result.title ?? '', { preserveSpaces: true });
+    let { abbr, title } = normalizeEventNames(result.abbr, result.title);
 
-    if (title && abbr && title === abbr) {
-        title = '';
+    if (abbr && title && title !== abbr && !isBetterTitleCandidate(title, abbr)) {
+        title = abbr;
     }
 
-    if (!isBetterTitleCandidate(title, abbr)) {
-        title = '';
-    }
-
-    return { abbr, title };
+    return normalizeEventNames(abbr, title);
 }
 
 export function debugEventOcrAnalysis(image, layout = null) {
@@ -2946,11 +2951,7 @@ export async function extractEventNamesLenient(image, existingLayout = null) {
 
     ({ abbr, title } = maybeSwapAbbrAndTitle(abbr, title));
 
-    if (title && abbr && title === abbr) {
-        title = '';
-    }
-
-    return { abbr, title };
+    return normalizeEventNames(abbr, title);
 }
 
 /**

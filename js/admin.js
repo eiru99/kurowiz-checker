@@ -11,10 +11,11 @@ import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
     getEventNameOcrRegionsAsync,
+    normalizeEventNames,
     prepareEventOcrLayout,
     recognizeHeaderTitleBand,
     recognizeTextFromImageRectLenient
-} from './event-ocr.js?v=20250705n';
+} from './event-ocr.js?v=20250705o';
 import {
     blobToSpiritFile,
     cropAndNormalizeSpiritImage,
@@ -524,20 +525,14 @@ function ensureNewEventModeForScreenshot() {
 }
 
 function applyRecognizedEventNames(abbr, title) {
-    let filled = false;
+    const normalized = normalizeEventNames(abbr, title);
+    if (!normalized.abbr) return false;
 
-    if (abbr) {
-        eventAbbrInput.value = abbr;
-        eventAbbrInput.dispatchEvent(new Event('input', { bubbles: true }));
-        filled = true;
-    }
-    if (title) {
-        eventTitleInput.value = title;
-        eventTitleInput.dispatchEvent(new Event('input', { bubbles: true }));
-        filled = true;
-    }
-
-    return filled;
+    eventAbbrInput.value = normalized.abbr;
+    eventAbbrInput.dispatchEvent(new Event('input', { bubbles: true }));
+    eventTitleInput.value = normalized.title;
+    eventTitleInput.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
 }
 
 async function fillEventNamesFromImage(image) {
@@ -1106,10 +1101,12 @@ async function resolveEventId() {
         return eventId;
     }
 
-    const abbr = eventAbbrInput.value.trim();
-    const title = eventTitleInput.value.trim();
+    const { abbr, title } = normalizeEventNames(
+        eventAbbrInput.value.trim(),
+        eventTitleInput.value.trim()
+    );
 
-    if (!abbr || !title) {
+    if (!abbr) {
         throw new Error('新規イベントの略称・正式名を入力してください。');
     }
 

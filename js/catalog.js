@@ -4,6 +4,31 @@ import { prepareSpiritImageFile } from './spirit-image.js';
 /** 画面上にセクション見出しを出さないカテゴリ */
 export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre']);
 
+const SUPABASE_PAGE_SIZE = 1000;
+
+async function fetchAllTableRows(database, tableName, orderColumn = 'sort_order') {
+    const rows = [];
+    let from = 0;
+
+    while (true) {
+        const to = from + SUPABASE_PAGE_SIZE - 1;
+        const { data, error } = await database
+            .from(tableName)
+            .select('*')
+            .order(orderColumn)
+            .range(from, to);
+
+        if (error) throw error;
+        if (!data?.length) break;
+
+        rows.push(...data);
+        if (data.length < SUPABASE_PAGE_SIZE) break;
+        from += SUPABASE_PAGE_SIZE;
+    }
+
+    return rows;
+}
+
 export function flattenCatalog(catalogData) {
     const byId = new Map();
     const ids = [];
@@ -69,24 +94,15 @@ function buildCatalogFromRows(sections, events, spirits) {
 }
 
 async function loadCatalogFromSupabase(database) {
-    const [sectionsResult, eventsResult, spiritsResult] = await Promise.all([
-        database.from('catalog_sections').select('*').order('sort_order'),
-        database.from('catalog_events').select('*').order('sort_order'),
-        database.from('catalog_spirits').select('*').order('sort_order')
+    const [sections, events, spirits] = await Promise.all([
+        fetchAllTableRows(database, 'catalog_sections'),
+        fetchAllTableRows(database, 'catalog_events'),
+        fetchAllTableRows(database, 'catalog_spirits')
     ]);
 
-    if (sectionsResult.error) throw sectionsResult.error;
-    if (eventsResult.error) throw eventsResult.error;
-    if (spiritsResult.error) throw spiritsResult.error;
-
-    const sections = sectionsResult.data ?? [];
     if (sections.length === 0) return null;
 
-    return buildCatalogFromRows(
-        sections,
-        eventsResult.data ?? [],
-        spiritsResult.data ?? []
-    );
+    return buildCatalogFromRows(sections, events, spirits);
 }
 
 async function loadCatalogFromJson() {
@@ -109,21 +125,13 @@ export async function loadCatalog(database) {
 }
 
 export async function fetchCatalogRows(database) {
-    const [sectionsResult, eventsResult, spiritsResult] = await Promise.all([
-        database.from('catalog_sections').select('*').order('sort_order'),
-        database.from('catalog_events').select('*').order('sort_order'),
-        database.from('catalog_spirits').select('*').order('sort_order')
+    const [sections, events, spirits] = await Promise.all([
+        fetchAllTableRows(database, 'catalog_sections'),
+        fetchAllTableRows(database, 'catalog_events'),
+        fetchAllTableRows(database, 'catalog_spirits')
     ]);
 
-    if (sectionsResult.error) throw sectionsResult.error;
-    if (eventsResult.error) throw eventsResult.error;
-    if (spiritsResult.error) throw spiritsResult.error;
-
-    return {
-        sections: sectionsResult.data ?? [],
-        events: eventsResult.data ?? [],
-        spirits: spiritsResult.data ?? []
-    };
+    return { sections, events, spirits };
 }
 
 export function slugify(value) {
