@@ -8,44 +8,60 @@
   },
   "spirits": [
     {
-      "id": "kamisanpo3-カヌエ",
+      "id": "kamisanpo3-kanue",
       "event_id": "kamisanpo3",
       "name": "カヌエ",
       "main": "火",
-      "sub": "光",
-      "image_path": "48fd8179-d971-4f3a-b936-92ecb4feb0a9.webp",
-      "local_path": "images/spirits/kamisanpo3-カヌエ.png",
-      "sort_order": 1
+      "sub": "水",
+      "image_path": "bc27d3a9-7228-4985-8969-df9e660be9d1.webp",
+      "local_path": "images/spirits/kamisanpo3-kanue.png",
+      "sort_order": 1,
+      "detected": {
+        "main": "火",
+        "sub": "水"
+      }
     },
     {
-      "id": "kamisanpo3-ソラ",
+      "id": "kamisanpo3-sora",
       "event_id": "kamisanpo3",
       "name": "ソラ",
-      "main": "水",
-      "sub": "闇",
-      "image_path": "51f09def-b154-47dd-a26f-f7f154c3e0d8.webp",
-      "local_path": "images/spirits/kamisanpo3-ソラ.png",
-      "sort_order": 2
+      "main": "火",
+      "sub": "水",
+      "image_path": "b32ff99c-5355-4ded-89e1-9b0dccdf3bc5.webp",
+      "local_path": "images/spirits/kamisanpo3-sora.png",
+      "sort_order": 2,
+      "detected": {
+        "main": "火",
+        "sub": "水"
+      }
     },
     {
-      "id": "kamisanpo3-シーヴル",
+      "id": "kamisanpo3-shivuru",
       "event_id": "kamisanpo3",
       "name": "シーヴル",
       "main": "雷",
-      "sub": "雷",
-      "image_path": "82419483-5d0a-480d-ad41-8fc4e1ca4559.webp",
-      "local_path": "images/spirits/kamisanpo3-シーヴル.png",
-      "sort_order": 3
+      "sub": "水",
+      "image_path": "1456065c-065f-4043-8fa6-0620acf082eb.webp",
+      "local_path": "images/spirits/kamisanpo3-shivuru.png",
+      "sort_order": 3,
+      "detected": {
+        "main": "雷",
+        "sub": "水"
+      }
     },
     {
-      "id": "kamisanpo3-ホリー",
+      "id": "kamisanpo3-holly",
       "event_id": "kamisanpo3",
       "name": "ホリー",
       "main": "水",
       "sub": "火",
-      "image_path": "9b733513-0ac2-4f17-b6c2-6330011228e6.webp",
-      "local_path": "images/spirits/kamisanpo3-ホリー.png",
-      "sort_order": 4
+      "image_path": "6bbfafaf-b506-433d-bb84-97815a5b6738.webp",
+      "local_path": "images/spirits/kamisanpo3-holly.png",
+      "sort_order": 4,
+      "detected": {
+        "main": "水",
+        "sub": "火"
+      }
     }
   ]
 }

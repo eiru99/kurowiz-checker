@@ -11,8 +11,14 @@ import sys
 import uuid
 from pathlib import Path
 
+SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
 import requests
 from PIL import Image
+
+from spirit_attribute_detect import detect_spirit_attributes_from_bytes, normalize_attributes
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "data-from-gamewith" / "data-from-gamewith-code.html"
@@ -111,6 +117,62 @@ def save_local_png(local_dir: Path, file_stem: str, png_bytes: bytes) -> Path:
     return path
 
 
+def supabase_headers(*, prefer: str | None = None) -> dict[str, str]:
+    headers = {
+        "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+        "apikey": SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+    }
+    if prefer:
+        headers["Prefer"] = prefer
+    return headers
+
+
+def sync_catalog_to_supabase(result: dict) -> None:
+    event = result["event"]
+    event_response = requests.post(
+        f"{SUPABASE_URL}/rest/v1/catalog_events",
+        headers=supabase_headers(prefer="resolution=merge-duplicates"),
+        json={
+            "id": event["id"],
+            "section_id": event["section_id"],
+            "abbr": event["abbr"],
+            "title": event["title"],
+            "sort_order": event["sort_order"],
+        },
+        timeout=60,
+    )
+    event_response.raise_for_status()
+
+    delete_response = requests.delete(
+        f"{SUPABASE_URL}/rest/v1/catalog_spirits",
+        headers=supabase_headers(),
+        params={"event_id": f"eq.{event['id']}"},
+        timeout=60,
+    )
+    delete_response.raise_for_status()
+
+    spirit_rows = [
+        {
+            "id": spirit["id"],
+            "event_id": spirit["event_id"],
+            "name": spirit["name"],
+            "main": spirit["main"],
+            "sub": spirit["sub"],
+            "image_path": spirit["image_path"],
+            "sort_order": spirit["sort_order"],
+        }
+        for spirit in result["spirits"]
+    ]
+    spirits_response = requests.post(
+        f"{SUPABASE_URL}/rest/v1/catalog_spirits",
+        headers=supabase_headers(),
+        json=spirit_rows,
+        timeout=60,
+    )
+    spirits_response.raise_for_status()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--abbr", required=True, help="イベント略称 (例: かみさんぽっ3)")
@@ -119,16 +181,12 @@ def main() -> None:
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--local-dir", type=Path, default=ROOT / "images" / "spirits")
     parser.add_argument(
-        "--attrs",
-        type=Path,
-        help='属性 JSON。例: {"カヌエ":["火","光"],"ソラ":["水","闇"]}',
-    )
-    parser.add_argument(
         "--id-slugs",
         type=Path,
         help='精霊 ID 用スラッグ JSON。例: {"カヌエ":"kanue","ソラ":"sora"}',
     )
     parser.add_argument("--upload", action="store_true", help="Supabase Storage にアップロード")
+    parser.add_argument("--sync-db", action="store_true", help="Supabase catalog_events / catalog_spirits に反映")
     parser.add_argument("--json-out", type=Path, help="取り込み結果を JSON で出力")
     args = parser.parse_args()
 
@@ -136,7 +194,6 @@ def main() -> None:
     block = find_event_block(html, args.abbr)
     title = block.group("title").strip()
     spirits = parse_spirits(block.group("spirits"))
-    attrs = json.loads(args.attrs.read_text(encoding="utf-8")) if args.attrs else {}
     id_slugs = json.loads(args.id_slugs.read_text(encoding="utf-8")) if args.id_slugs else {}
 
     result = {
@@ -157,7 +214,8 @@ def main() -> None:
         file_stem = f"{args.event_id}-{slug}"
         png_bytes = download_image(spirit["image_url"])
         local_path = save_local_png(args.local_dir, file_stem, png_bytes)
-        main, sub = attrs.get(name, ["火", "火"])
+        detected = detect_spirit_attributes_from_bytes(png_bytes)
+        main, sub = normalize_attributes(detected)
         image_path = f"images/spirits/{file_stem}.png"
 
         if args.upload:
@@ -174,13 +232,18 @@ def main() -> None:
                 "image_path": image_path,
                 "local_path": str(local_path.relative_to(ROOT)).replace("\\", "/"),
                 "sort_order": index,
+                "detected": detected,
             }
         )
-        print(f"[{index}] {name} -> {image_path}")
+        print(f"[{index}] {name} {main}/{sub} -> {image_path}")
 
     if args.json_out:
         args.json_out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Wrote {args.json_out}")
+
+    if args.sync_db:
+        sync_catalog_to_supabase(result)
+        print("Synced catalog to Supabase")
 
     print(json.dumps(result, ensure_ascii=False, indent=2))
 

@@ -14,29 +14,29 @@
               "id": "kamisanpo3-kanue",
               "name": "カヌエ",
               "main": "火",
-              "sub": "光",
-              "image": "images/spirits/kamisanpo3-カヌエ.png"
+              "sub": "水",
+              "image": "images/spirits/kamisanpo3-kanue.png"
             },
             {
               "id": "kamisanpo3-sora",
               "name": "ソラ",
-              "main": "水",
-              "sub": "闇",
-              "image": "images/spirits/kamisanpo3-ソラ.png"
+              "main": "火",
+              "sub": "水",
+              "image": "images/spirits/kamisanpo3-sora.png"
             },
             {
               "id": "kamisanpo3-shivuru",
               "name": "シーヴル",
               "main": "雷",
-              "sub": "雷",
-              "image": "images/spirits/kamisanpo3-シーヴル.png"
+              "sub": "水",
+              "image": "images/spirits/kamisanpo3-shivuru.png"
             },
             {
               "id": "kamisanpo3-holly",
               "name": "ホリー",
               "main": "水",
               "sub": "火",
-              "image": "images/spirits/kamisanpo3-ホリー.png"
+              "image": "images/spirits/kamisanpo3-holly.png"
             }
           ]
         }

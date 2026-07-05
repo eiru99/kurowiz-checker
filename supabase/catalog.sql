@@ -133,10 +133,10 @@ INSERT INTO public.catalog_events (id, section_id, abbr, title, sort_order) VALU
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.catalog_spirits (id, event_id, name, main, sub, image_path, sort_order) VALUES
-    ('kamisanpo3-kanue', 'kamisanpo3', 'カヌエ', '火', '光', 'images/spirits/kamisanpo3-カヌエ.png', 1),
-    ('kamisanpo3-sora', 'kamisanpo3', 'ソラ', '水', '闇', 'images/spirits/kamisanpo3-ソラ.png', 2),
-    ('kamisanpo3-shivuru', 'kamisanpo3', 'シーヴル', '雷', '雷', 'images/spirits/kamisanpo3-シーヴル.png', 3),
-    ('kamisanpo3-holly', 'kamisanpo3', 'ホリー', '水', '火', 'images/spirits/kamisanpo3-ホリー.png', 4),
+    ('kamisanpo3-kanue', 'kamisanpo3', 'カヌエ', '火', '水', 'images/spirits/kamisanpo3-kanue.png', 1),
+    ('kamisanpo3-sora', 'kamisanpo3', 'ソラ', '火', '水', 'images/spirits/kamisanpo3-sora.png', 2),
+    ('kamisanpo3-shivuru', 'kamisanpo3', 'シーヴル', '雷', '水', 'images/spirits/kamisanpo3-shivuru.png', 3),
+    ('kamisanpo3-holly', 'kamisanpo3', 'ホリー', '水', '火', 'images/spirits/kamisanpo3-holly.png', 4),
     ('anniversary13-gatlin', 'anniversary13', '未来を照らす歌姫 ガトリン・Ｇ・Ｕ', '火', '光', 'images/spirits/anniversary13-gatlin.png', 1),
     ('anniversary12-aldverik', 'anniversary12', '漆黒 of 魔王 アルドベリク', '闇', '火', 'images/spirits/anniversary12-aldverik.png', 1),
     ('anniversary10-eny', 'anniversary10', '世界の中心の少女 エニィ', '水', '火', 'images/spirits/anniversary10-eny.png', 1),
