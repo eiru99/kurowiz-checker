@@ -901,41 +901,6 @@
           ]
         },
         {
-          "id": "recent-uwwg",
-          "abbr": "UWWG",
-          "title": "UWWG",
-          "spirits": [
-            {
-              "id": "recent-uwwg-リルム",
-              "name": "リルム",
-              "main": "雷",
-              "sub": "雷",
-              "image": "recent-uwwg/e6089f6a-9f19-4e30-b95d-11ee28831837.webp"
-            },
-            {
-              "id": "recent-uwwg-ソフィ",
-              "name": "ソフィ",
-              "main": "水",
-              "sub": "雷",
-              "image": "recent-uwwg/f28c1442-f293-4460-9f90-d70ef368e91b.webp"
-            },
-            {
-              "id": "recent-uwwg-アリエッタ",
-              "name": "アリエッタ",
-              "main": "水",
-              "sub": "水",
-              "image": "recent-uwwg/2bf752b2-83b8-4748-913d-7813c52fbdff.webp"
-            },
-            {
-              "id": "recent-uwwg-レナ",
-              "name": "レナ",
-              "main": "火",
-              "sub": "火",
-              "image": "recent-uwwg/d65870c0-9a3c-4e19-ac02-00abcbaa3e91.webp"
-            }
-          ]
-        },
-        {
           "id": "recent-e289",
           "abbr": "UWWG",
           "title": "爆・超魔道列伝 アルティメットワイルドウエスタンガールズ！",
@@ -1338,48 +1303,6 @@
               "main": "火",
               "sub": "闇",
               "image": "recent-e278/a586bcea-65e1-4fa2-bbdc-310bc426b1eb.webp"
-            }
-          ]
-        },
-        {
-          "id": "recent-ashura2",
-          "abbr": "ASHURA2",
-          "title": "ASHURA2",
-          "spirits": [
-            {
-              "id": "recent-ashura2-リョウガ",
-              "name": "リョウガ",
-              "main": "雷",
-              "sub": "闇",
-              "image": "recent-ashura2/9bb072dc-9aa8-430d-a341-9d191ad0ff92.webp"
-            },
-            {
-              "id": "recent-ashura2-キリヤ",
-              "name": "キリヤ",
-              "main": "雷",
-              "sub": "闇",
-              "image": "recent-ashura2/012259e0-5163-4c7c-b070-2c3c78ac87a4.webp"
-            },
-            {
-              "id": "recent-ashura2-ユキハナ",
-              "name": "ユキハナ",
-              "main": "水",
-              "sub": "雷",
-              "image": "recent-ashura2/1b47e912-781c-4b57-8e8e-effc7637bdaa.webp"
-            },
-            {
-              "id": "recent-ashura2-シュリ",
-              "name": "シュリ",
-              "main": "水",
-              "sub": "火",
-              "image": "recent-ashura2/7e757cd2-1ab6-40ed-b16a-8db2a9c077e6.webp"
-            },
-            {
-              "id": "recent-ashura2-ミメイ",
-              "name": "ミメイ",
-              "main": "火",
-              "sub": "闇",
-              "image": "recent-ashura2/8d7fadf5-43f0-487f-b625-d744519ee60c.webp"
             }
           ]
         },
@@ -1797,41 +1720,6 @@
           ]
         },
         {
-          "id": "recent-ung",
-          "abbr": "UNG",
-          "title": "UNG",
-          "spirits": [
-            {
-              "id": "recent-ung-アリエッタ",
-              "name": "アリエッタ",
-              "main": "光",
-              "sub": "光",
-              "image": "recent-ung/bb407bab-0824-43e1-84c9-539723e23a08.webp"
-            },
-            {
-              "id": "recent-ung-エリス",
-              "name": "エリス",
-              "main": "雷",
-              "sub": "闇",
-              "image": "recent-ung/5954b4f9-1888-4593-ad30-a95b368f5bf0.webp"
-            },
-            {
-              "id": "recent-ung-イーニア",
-              "name": "イーニア",
-              "main": "水",
-              "sub": "水",
-              "image": "recent-ung/7b970cda-bb05-47be-81e4-b7625664fd13.webp"
-            },
-            {
-              "id": "recent-ung-レナ",
-              "name": "レナ",
-              "main": "火",
-              "sub": "光",
-              "image": "recent-ung/167e96ba-2a96-4256-b577-9eb7d26fe95b.webp"
-            }
-          ]
-        },
-        {
           "id": "recent-e266",
           "abbr": "ポポラの里のものがたり",
           "title": "ポポラの里のものがたり ようこそ！氷華祭",
@@ -2199,48 +2087,6 @@
               "main": "闇",
               "sub": "闇",
               "image": "recent-e260/f95d1d62-69c3-445c-94d2-e238a870e787.webp"
-            }
-          ]
-        },
-        {
-          "id": "recent-ashura1",
-          "abbr": "ASHURA1",
-          "title": "ASHURA1",
-          "spirits": [
-            {
-              "id": "recent-ashura1-ユキハナ",
-              "name": "ユキハナ",
-              "main": "雷",
-              "sub": "光",
-              "image": "recent-ashura1/0b34b880-6002-4efd-9eb9-6deb13e53d3b.webp"
-            },
-            {
-              "id": "recent-ashura1-ミメイ",
-              "name": "ミメイ",
-              "main": "光",
-              "sub": "光",
-              "image": "recent-ashura1/4b2aa532-fefa-40e5-9b42-412e8c3401ed.webp"
-            },
-            {
-              "id": "recent-ashura1-リョウガ",
-              "name": "リョウガ",
-              "main": "闇",
-              "sub": "闇",
-              "image": "recent-ashura1/10256f45-c256-4fd0-89a2-72d62ed4ea12.webp"
-            },
-            {
-              "id": "recent-ashura1-シュリ",
-              "name": "シュリ",
-              "main": "闇",
-              "sub": "闇",
-              "image": "recent-ashura1/adc01d67-4669-413a-8f6e-b9ded2ba16f3.webp"
-            },
-            {
-              "id": "recent-ashura1-キリヤ",
-              "name": "キリヤ",
-              "main": "闇",
-              "sub": "闇",
-              "image": "recent-ashura1/757efb05-368d-41e8-b675-ec0ae1778e9e.webp"
             }
           ]
         },
@@ -2709,41 +2555,6 @@
               "main": "火",
               "sub": "闇",
               "image": "charapre-e243/c345b754-695c-4168-87cf-9548e07c6625.webp"
-            }
-          ]
-        },
-        {
-          "id": "charapre-ugg",
-          "abbr": "UGG",
-          "title": "UGG",
-          "spirits": [
-            {
-              "id": "charapre-ugg-リルム",
-              "name": "リルム",
-              "main": "雷",
-              "sub": "火",
-              "image": "charapre-ugg/2b9901c0-4f93-4336-987b-ed3bc187600a.webp"
-            },
-            {
-              "id": "charapre-ugg-ソフィ",
-              "name": "ソフィ",
-              "main": "雷",
-              "sub": "闇",
-              "image": "charapre-ugg/bdb671fd-678d-45a9-a550-c974d31b908e.webp"
-            },
-            {
-              "id": "charapre-ugg-イーニア",
-              "name": "イーニア",
-              "main": "水",
-              "sub": "雷",
-              "image": "charapre-ugg/3b2fb7ec-4c44-4ca2-a455-8fb7e7ad5301.webp"
-            },
-            {
-              "id": "charapre-ugg-アリエッタ",
-              "name": "アリエッタ",
-              "main": "火",
-              "sub": "光",
-              "image": "charapre-ugg/719fc1df-37f3-468d-89d8-72f3d6ae5502.webp"
             }
           ]
         },
@@ -3756,41 +3567,6 @@
           ]
         },
         {
-          "id": "charapre-uslg",
-          "abbr": "USLG",
-          "title": "USLG",
-          "spirits": [
-            {
-              "id": "charapre-uslg-エリス",
-              "name": "エリス",
-              "main": "雷",
-              "sub": "雷",
-              "image": "charapre-uslg/3af95ec2-9195-4208-9b72-abfee2d42fec.webp"
-            },
-            {
-              "id": "charapre-uslg-ヴィタ",
-              "name": "ヴィタ",
-              "main": "雷",
-              "sub": "雷",
-              "image": "charapre-uslg/5b2ca489-591f-4540-bc29-dc1676cbf37c.webp"
-            },
-            {
-              "id": "charapre-uslg-アリエッタ",
-              "name": "アリエッタ",
-              "main": "水",
-              "sub": "水",
-              "image": "charapre-uslg/dd7adfa8-6cdd-46b0-85fd-16e0bb17c6d3.webp"
-            },
-            {
-              "id": "charapre-uslg-レナ",
-              "name": "レナ",
-              "main": "火",
-              "sub": "火",
-              "image": "charapre-uslg/c29ff7a4-6739-471a-b3cc-7d56ec77c9ef.webp"
-            }
-          ]
-        },
-        {
           "id": "charapre-e214",
           "abbr": "ディアブロクリニック1",
           "title": "Diablo Clinic",
@@ -4410,55 +4186,6 @@
               "main": "火",
               "sub": "水",
               "image": "charapre-e197/f502a9fe-ee26-4428-8fc0-215ba323cffe.webp"
-            }
-          ]
-        },
-        {
-          "id": "charapre-uug",
-          "abbr": "UUG",
-          "title": "UUG",
-          "spirits": [
-            {
-              "id": "charapre-uug-リルム",
-              "name": "リルム",
-              "main": "雷",
-              "sub": "光",
-              "image": "charapre-uug/a444bd66-d64c-46fb-ba03-d6b31a4af2ad.webp"
-            },
-            {
-              "id": "charapre-uug-ソフィ",
-              "name": "ソフィ",
-              "main": "雷",
-              "sub": "光",
-              "image": "charapre-uug/9830f912-196b-4900-8407-53ec95b715ad.webp"
-            },
-            {
-              "id": "charapre-uug-エリス",
-              "name": "エリス",
-              "main": "水",
-              "sub": "闇",
-              "image": "charapre-uug/3b50a8e1-9df3-4faa-ae8f-a9c4d7b897ce.webp"
-            },
-            {
-              "id": "charapre-uug-イーニア",
-              "name": "イーニア",
-              "main": "水",
-              "sub": "光",
-              "image": "charapre-uug/0d65847c-3810-450c-bb59-d83ffe5bdef3.webp"
-            },
-            {
-              "id": "charapre-uug-レナ",
-              "name": "レナ",
-              "main": "火",
-              "sub": "火",
-              "image": "charapre-uug/db63cbb3-08f9-4a36-a265-e447b7af3408.webp"
-            },
-            {
-              "id": "charapre-uug-アリエッタ",
-              "name": "アリエッタ",
-              "main": "火",
-              "sub": "水",
-              "image": "charapre-uug/e27b99c2-0051-4616-a02e-69161f72e47a.webp"
             }
           ]
         },
@@ -5506,55 +5233,6 @@
           ]
         },
         {
-          "id": "charapre-upg",
-          "abbr": "UPG",
-          "title": "UPG",
-          "spirits": [
-            {
-              "id": "charapre-upg-リルム",
-              "name": "リルム",
-              "main": "雷",
-              "sub": "雷",
-              "image": "charapre-upg/c4818c05-1272-4d94-a16d-774518e1defe.webp"
-            },
-            {
-              "id": "charapre-upg-ソフィ",
-              "name": "ソフィ",
-              "main": "雷",
-              "sub": "光",
-              "image": "charapre-upg/65a15978-1371-4fec-bb30-dd8ed62cc677.webp"
-            },
-            {
-              "id": "charapre-upg-エリス",
-              "name": "エリス",
-              "main": "水",
-              "sub": "水",
-              "image": "charapre-upg/6c1fa9da-b062-498f-bd6e-e29a5e4897e3.webp"
-            },
-            {
-              "id": "charapre-upg-イーニア",
-              "name": "イーニア",
-              "main": "水",
-              "sub": "水",
-              "image": "charapre-upg/243ec8d9-8d36-4129-85cc-cf13436093a6.webp"
-            },
-            {
-              "id": "charapre-upg-レナ",
-              "name": "レナ",
-              "main": "火",
-              "sub": "火",
-              "image": "charapre-upg/69548fca-3128-45e6-9fee-bfa604dca1fe.webp"
-            },
-            {
-              "id": "charapre-upg-アリエッタ",
-              "name": "アリエッタ",
-              "main": "火",
-              "sub": "火",
-              "image": "charapre-upg/1a029de8-079d-4fa3-8200-0a03f165c928.webp"
-            }
-          ]
-        },
-        {
           "id": "charapre-e173",
           "abbr": "UPG",
           "title": "神・超魔道列伝 アルティメットプラネットガールズ！",
@@ -5999,62 +5677,6 @@
               "main": "火",
               "sub": "闇",
               "image": "charapre-e165/97c072da-3fcf-4e5d-83e1-c20ecee8f9b6.webp"
-            }
-          ]
-        },
-        {
-          "id": "charapre-birth-of-new-order3",
-          "abbr": "Birth Of New Order3",
-          "title": "Birth Of New Order3",
-          "spirits": [
-            {
-              "id": "charapre-birth-of-new-order3-ラーシャ",
-              "name": "ラーシャ",
-              "main": "雷",
-              "sub": "光",
-              "image": "charapre-birth-of-new-order3/993d6430-792b-4a4b-bb4e-3f9e8ccceb14.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-クロッシュ",
-              "name": "クロッシュ",
-              "main": "雷",
-              "sub": "闇",
-              "image": "charapre-birth-of-new-order3/9efd2a94-2d29-4cd8-a5e6-851228eae2f7.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-リュオン-イスカ",
-              "name": "リュオン＆イスカ",
-              "main": "水",
-              "sub": "光",
-              "image": "charapre-birth-of-new-order3/506314f5-c885-41d1-ac66-02c45b5e3365.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-リュオン",
-              "name": "リュオン",
-              "main": "水",
-              "sub": "光",
-              "image": "charapre-birth-of-new-order3/2f9d8453-acf8-4ed2-9e97-fc833bb2b28c.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-メルテール",
-              "name": "メルテール",
-              "main": "水",
-              "sub": "闇",
-              "image": "charapre-birth-of-new-order3/10c758aa-9d5b-488c-a270-1ef8d6515504.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-シリス",
-              "name": "シリス",
-              "main": "火",
-              "sub": "光",
-              "image": "charapre-birth-of-new-order3/ba148657-aea8-4580-83bc-2352bf23ff76.webp"
-            },
-            {
-              "id": "charapre-birth-of-new-order3-イスカ",
-              "name": "イスカ",
-              "main": "火",
-              "sub": "闇",
-              "image": "charapre-birth-of-new-order3/2b7d2141-f8f8-4a91-991a-4f18d40b5d4b.webp"
             }
           ]
         },
