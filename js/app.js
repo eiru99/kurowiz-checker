@@ -6,7 +6,7 @@ import {
     matchesJapaneseSearch,
     SECTIONS_WITHOUT_DISPLAY_TITLE
 } from './catalog.js?v=20250705w';
-import { initAdmin, openEventEditDialog } from './admin.js?v=20250706b';
+import { initAdmin, openEventEditDialog } from './admin.js?v=20250706c';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -23,6 +23,7 @@ let ownedSpiritIds = [];
 let mySyncKey = localStorage.getItem('wiz_sync_key');
 let realtimeChannel = null;
 let isSaving = false;
+let pendingScrollToEventId = null;
 
 function createSyncKey() {
     const suffix = Math.floor(100000 + Math.random() * 900000);
@@ -39,7 +40,10 @@ function showMessage(className, message) {
     catalogEl.innerHTML = `<div class="${className}">${message}</div>`;
 }
 
-async function reloadCatalog() {
+async function reloadCatalog(scrollToEventId = null) {
+    if (scrollToEventId) {
+        pendingScrollToEventId = scrollToEventId;
+    }
     showMessage('loading-message', '精霊データを読み込み中...');
     catalog = await loadCatalog(database);
     const flattened = flattenCatalog(catalog);
@@ -188,6 +192,13 @@ function createSpiritTile(spirit) {
     return tile;
 }
 
+function scrollToEventBlock(eventId) {
+    const block = catalogEl.querySelector(`.event-block[data-event-id="${CSS.escape(eventId)}"]`);
+    if (block) {
+        block.scrollIntoView({ block: 'start' });
+    }
+}
+
 function renderCatalog() {
     if (!catalog) return;
 
@@ -228,6 +239,7 @@ function renderCatalog() {
         for (const { event, visibleSpirits } of visibleEvents) {
             const eventBlock = document.createElement('article');
             eventBlock.className = 'event-block';
+            eventBlock.dataset.eventId = event.id;
 
             const header = document.createElement('div');
             header.className = 'event-header';
@@ -269,7 +281,15 @@ function renderCatalog() {
     }
 
     updateStats();
-    window.scrollTo(0, scrollY);
+
+    const scrollTargetEventId = pendingScrollToEventId;
+    pendingScrollToEventId = null;
+
+    if (scrollTargetEventId) {
+        scrollToEventBlock(scrollTargetEventId);
+    } else {
+        window.scrollTo(0, scrollY);
+    }
 }
 
 function ownedSpiritIdsEqual(left, right) {

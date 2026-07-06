@@ -1145,7 +1145,7 @@ async function saveEventTitleEdit() {
         editEventTitleBlock.hidden = true;
 
         if (reloadCatalog) {
-            await reloadCatalog();
+            await reloadCatalog(editingEventId);
         }
     } finally {
         editTitleSaveBtn.disabled = false;
@@ -1328,7 +1328,7 @@ async function submitEventEdit() {
     }
 
     dialog.close();
-    await reloadCatalog();
+    await reloadCatalog(editingEventId);
     alert('イベント内の精霊を更新しました。');
 }
 
