@@ -11,7 +11,7 @@ import {
     sectionIdToCategory,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250707b';
+} from './catalog.js?v=20250707g';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,

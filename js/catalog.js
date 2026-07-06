@@ -100,6 +100,39 @@ function reorderSections(sections) {
     return ordered;
 }
 
+function getHeldMonthSortKey(event) {
+    const year = event.heldYear ?? event.held_year;
+    const month = event.heldMonth ?? event.held_month;
+    if (year && month) {
+        return year * 12 + month;
+    }
+    return null;
+}
+
+function compareEventsByHeldMonth(left, right) {
+    const leftKey = getHeldMonthSortKey(left);
+    const rightKey = getHeldMonthSortKey(right);
+
+    if (leftKey !== null && rightKey !== null && leftKey !== rightKey) {
+        return rightKey - leftKey;
+    }
+    if (leftKey !== null && rightKey === null) return -1;
+    if (leftKey === null && rightKey !== null) return 1;
+
+    const leftOrder = left.sortOrder ?? left.sort_order ?? 0;
+    const rightOrder = right.sortOrder ?? right.sort_order ?? 0;
+    if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+
+    return String(left.id).localeCompare(String(right.id), 'ja');
+}
+
+function sortSectionEventsByHeldMonth(sectionId, events) {
+    if (!NORMAL_SECTION_IDS.has(sectionId) && sectionId !== 'kollabo') {
+        return events;
+    }
+    return [...events].sort(compareEventsByHeldMonth);
+}
+
 function popEventFromSections(sections, eventId) {
     for (const section of sections) {
         const index = (section.events ?? []).findIndex(event => event.id === eventId);
@@ -136,6 +169,10 @@ export function normalizeCatalogLayout(catalog) {
             sections.push(wizSection);
         }
         wizSection.events.push(wizseleEvent);
+    }
+
+    for (const section of sections) {
+        section.events = sortSectionEventsByHeldMonth(section.id, section.events);
     }
 
     return { ...catalog, sections: reorderSections(sections) };
@@ -238,6 +275,7 @@ function buildCatalogFromRows(sections, events, spirits) {
                 category: event.category ?? sectionIdToCategory(event.section_id),
                 heldYear: event.held_year ?? null,
                 heldMonth: event.held_month ?? null,
+                sortOrder: event.sort_order ?? 0,
                 storageFolder: event.storage_folder ?? null,
                 spirits: spiritsByEvent.get(event.id) ?? []
             }))
