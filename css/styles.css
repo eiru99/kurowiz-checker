@@ -816,13 +816,40 @@ button:hover {
     max-height: 360px;
 }
 
+.spirit-queue-info-url-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.spirit-queue-info-url-btn {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    background: #546e7a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.spirit-queue-info-url-btn:hover {
+    background: #37474f;
+}
+
 .spirit-queue-info-url {
+    flex: 1;
+    min-width: 0;
     font-size: 0.8rem;
+    padding: 4px 6px;
 }
 
 .spirit-queue-info-url::placeholder {
     color: #90a4ae;
 }
+
+.spirit-queue-remove {
     padding: 4px 8px;
     font-size: 0.75rem;
     background: #78909c;

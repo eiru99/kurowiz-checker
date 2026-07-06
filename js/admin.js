@@ -116,6 +116,19 @@ function normalizeInfoUrl(value) {
     }
 }
 
+function openInfoUrlFromInput(input) {
+    try {
+        const url = normalizeInfoUrl(input.value);
+        if (!url) {
+            alert('URLを入力してください。');
+            return;
+        }
+        window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+        alert(error.message || 'URLを開けませんでした。');
+    }
+}
+
 function isEventNameAutoOcrEnabled() {
     return Boolean(eventNameAutoOcrToggle?.checked);
 }
@@ -269,6 +282,15 @@ function renderSpiritQueue() {
         fields.append(nameInput, attrs);
 
         if (editingEventId) {
+            const infoUrlRow = document.createElement('div');
+            infoUrlRow.className = 'spirit-queue-info-url-row';
+
+            const infoUrlOpenBtn = document.createElement('button');
+            infoUrlOpenBtn.type = 'button';
+            infoUrlOpenBtn.className = 'spirit-queue-info-url-btn';
+            infoUrlOpenBtn.textContent = 'URL';
+            infoUrlOpenBtn.title = '入力したURLを開く';
+
             const infoUrlInput = document.createElement('input');
             infoUrlInput.type = 'url';
             infoUrlInput.className = 'spirit-queue-info-url';
@@ -278,7 +300,10 @@ function renderSpiritQueue() {
             infoUrlInput.addEventListener('input', () => {
                 item.infoUrl = infoUrlInput.value;
             });
-            fields.append(infoUrlInput);
+            infoUrlOpenBtn.addEventListener('click', () => openInfoUrlFromInput(infoUrlInput));
+
+            infoUrlRow.append(infoUrlOpenBtn, infoUrlInput);
+            fields.append(infoUrlRow);
         }
 
         const removeBtn = document.createElement('button');
