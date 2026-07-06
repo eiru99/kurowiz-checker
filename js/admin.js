@@ -129,6 +129,37 @@ function openInfoUrlFromInput(input) {
     }
 }
 
+function appendInfoUrlField(fields, item) {
+    const infoUrlRow = document.createElement('div');
+    infoUrlRow.className = 'spirit-queue-info-url-row';
+
+    const infoUrlOpenBtn = document.createElement('button');
+    infoUrlOpenBtn.type = 'button';
+    infoUrlOpenBtn.className = 'spirit-queue-info-url-btn';
+    infoUrlOpenBtn.textContent = 'URL';
+    infoUrlOpenBtn.title = '入力したURLを開く';
+
+    const infoUrlInput = document.createElement('input');
+    infoUrlInput.type = 'url';
+    infoUrlInput.className = 'spirit-queue-info-url';
+    infoUrlInput.placeholder = '精霊説明ページのURL';
+    infoUrlInput.value = item.infoUrl ?? '';
+    infoUrlInput.inputMode = 'url';
+    infoUrlInput.addEventListener('input', () => {
+        item.infoUrl = infoUrlInput.value;
+    });
+    infoUrlOpenBtn.addEventListener('click', () => openInfoUrlFromInput(infoUrlInput));
+
+    infoUrlRow.append(infoUrlOpenBtn, infoUrlInput);
+    fields.append(infoUrlRow);
+}
+
+function validateSpiritQueueInfoUrls() {
+    for (const item of spiritQueue) {
+        normalizeInfoUrl(item.infoUrl ?? '');
+    }
+}
+
 function isEventNameAutoOcrEnabled() {
     return Boolean(eventNameAutoOcrToggle?.checked);
 }
@@ -216,7 +247,7 @@ function renderSpiritQueue() {
     spiritQueueList.innerHTML = '';
     updateQueueHeading();
     spiritQueueBlock.hidden = spiritQueue.length === 0;
-    spiritQueueBlock.classList.toggle('is-event-edit', Boolean(editingEventId));
+    spiritQueueBlock.classList.toggle('has-info-url', spiritQueue.length > 0);
 
     for (const item of spiritQueue) {
         const li = document.createElement('li');
@@ -280,31 +311,7 @@ function renderSpiritQueue() {
         }
 
         fields.append(nameInput, attrs);
-
-        if (editingEventId) {
-            const infoUrlRow = document.createElement('div');
-            infoUrlRow.className = 'spirit-queue-info-url-row';
-
-            const infoUrlOpenBtn = document.createElement('button');
-            infoUrlOpenBtn.type = 'button';
-            infoUrlOpenBtn.className = 'spirit-queue-info-url-btn';
-            infoUrlOpenBtn.textContent = 'URL';
-            infoUrlOpenBtn.title = '入力したURLを開く';
-
-            const infoUrlInput = document.createElement('input');
-            infoUrlInput.type = 'url';
-            infoUrlInput.className = 'spirit-queue-info-url';
-            infoUrlInput.placeholder = '精霊説明ページのURL';
-            infoUrlInput.value = item.infoUrl ?? '';
-            infoUrlInput.inputMode = 'url';
-            infoUrlInput.addEventListener('input', () => {
-                item.infoUrl = infoUrlInput.value;
-            });
-            infoUrlOpenBtn.addEventListener('click', () => openInfoUrlFromInput(infoUrlInput));
-
-            infoUrlRow.append(infoUrlOpenBtn, infoUrlInput);
-            fields.append(infoUrlRow);
-        }
+        appendInfoUrlField(fields, item);
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
@@ -379,7 +386,8 @@ function addToSpiritQueue(file, attributes = null) {
         name: '',
         main,
         sub,
-        hideSub: shouldHideSub(main, sub)
+        hideSub: shouldHideSub(main, sub),
+        infoUrl: ''
     });
     renderSpiritQueue();
     updateCropHint();
@@ -1306,6 +1314,8 @@ async function submitSpiritQueue() {
         throw new Error('属性が未検出の精霊があります。属性を選択してください。');
     }
 
+    validateSpiritQueueInfoUrls();
+
     const eventId = await resolveEventId();
     const storageFolder = await resolveUploadStorageFolder(eventId);
     const baseSort = catalogRows.spirits.filter(spirit => spirit.event_id === eventId).length;
@@ -1325,6 +1335,7 @@ async function submitSpiritQueue() {
             main: item.main,
             sub: item.hideSub ? item.main : item.sub,
             image_path: imagePath,
+            info_url: normalizeInfoUrl(item.infoUrl ?? ''),
             sort_order: baseSort + i + 1
         });
 
@@ -1355,9 +1366,7 @@ async function submitEventEdit() {
         throw new Error('属性が未検出の精霊があります。属性を選択してください。');
     }
 
-    for (const item of spiritQueue) {
-        normalizeInfoUrl(item.infoUrl ?? '');
-    }
+    validateSpiritQueueInfoUrls();
 
     for (const spiritId of spiritsToDelete) {
         const { error } = await database.from('catalog_spirits').delete().eq('id', spiritId);

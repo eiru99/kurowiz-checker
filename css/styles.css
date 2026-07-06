@@ -812,7 +812,7 @@ button:hover {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
 }
 
-.spirit-queue-block.is-event-edit .spirit-queue-list {
+.spirit-queue-block.has-info-url .spirit-queue-list {
     max-height: 360px;
 }
 
