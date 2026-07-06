@@ -31,7 +31,8 @@ COLLAB_OVERRIDES: dict[str, tuple[int, int]] = {
     "kollabo-e44": (2015, 4),    # しょこたん
     "kollabo-e39": (2015, 2),    # エヴァ1
     "kollabo-e38": (2015, 2),    # 白猫
-    "kollabo-e35": (2015, 1),    # セーラームーン
+    "kollabo-e35": (2014, 8),    # 進撃の巨人（初回）
+    "kollabo-sailormoon": (2015, 1),  # セーラームーン（初回ガチャ）
     "kollabo-e6": (2014, 6),     # 蒼穹のストライカー
     "kollabo-e1": (2014, 5),     # 黒ウィズPRIDE
     "kollabo-e26": (2013, 12),   # 蒼の三国志
@@ -66,12 +67,16 @@ MANUAL_OVERRIDES: dict[str, tuple[int, int]] = {
     "other-e12": (2014, 7),
     "ソウルバンカー6-mr84gutc": (2026, 6),
     "サマーコレクション2026-mr84pzee": (2026, 7),
-    "kollabo-e35": (2014, 8),    # DBタイトルは進撃の巨人
+    "recent-e306": (2026, 1),    # 追憶のレディアント2
+    "recent-e263": (2024, 4),    # エターナルクロノス4
+    "charapre-e101": (2017, 7),  # エターナルクロノス3
+    "charapre-e233": (2023, 1),  # サタ女4
+    "charapre-e42": (2015, 4),   # エターナルクロノス2
 }
 
-ANNIVERSARY_MONTH = {
-    3: 6, 4: 6, 5: 6, 6: 6, 7: 6, 8: 6, 9: 6, 10: 6, 11: 6, 12: 6, 13: 3,
-}
+# N周年記念 → (2013 + N) 年 3月（7周年=2020/3, 8周年=2021/3, …）
+ANNIVERSARY_BASE_YEAR = 2013
+ANNIVERSARY_MONTH = 3
 
 GA_FRONT_MONTH = 9
 GA_BACK_MONTH = 3
@@ -189,9 +194,7 @@ def heuristic_from_abbr(abbr: str, title: str) -> tuple[int, int] | None:
     if m := re.search(r"Summer Collection\s*(\d{4})", title, re.I):
         return int(m.group(1)), 7
     if m := re.search(r"(\d+)周年", abbr):
-        year = 2013 + int(m.group(1)) - 1  # 1周年=2013
-        month = ANNIVERSARY_MONTH.get(int(m.group(1)), 6)
-        return year, month
+        return ANNIVERSARY_BASE_YEAR + int(m.group(1)), ANNIVERSARY_MONTH
     if m := re.search(r"GA(\d{4})前半", abbr):
         return int(m.group(1)), GA_FRONT_MONTH
     if m := re.search(r"GA(\d{4})後半", abbr):

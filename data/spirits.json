@@ -13,31 +13,110 @@
           "spirits": [
             {
               "id": "kamisanpo3-kanue",
-              "name": "カヌエ",
+              "name": "妖精さんぽ カヌエ・デ・ヤック",
               "main": "火",
               "sub": "水",
               "image": "kamisanpo3/bc27d3a9-7228-4985-8969-df9e660be9d1.webp"
             },
             {
               "id": "kamisanpo3-sora",
-              "name": "ソラ",
+              "name": "甘味三昧の妖精 ソラ・デ・エーレ",
               "main": "火",
               "sub": "水",
               "image": "kamisanpo3/b32ff99c-5355-4ded-89e1-9b0dccdf3bc5.webp"
             },
             {
               "id": "kamisanpo3-shivuru",
-              "name": "シーヴル",
+              "name": "森のエルフ妖精 シーヴル・ロイシィ",
               "main": "雷",
               "sub": "水",
               "image": "kamisanpo3/1456065c-065f-4043-8fa6-0620acf082eb.webp"
             },
             {
               "id": "kamisanpo3-holly",
-              "name": "ホリー",
+              "name": "雨上がりの妖精 ホリー・アマナウ",
               "main": "水",
               "sub": "火",
               "image": "kamisanpo3/6bbfafaf-b506-433d-bb84-97815a5b6738.webp"
+            }
+          ]
+        },
+        {
+          "id": "ソウルバンカー6-mr84gutc",
+          "abbr": "ソウルバンカー6",
+          "title": "SOUL BANKER Episode:Rinida The Little Tiny Work",
+          "storageFolder": "6",
+          "spirits": [
+            {
+              "id": "ソウルバンカー6-mr84gutc-今-華開く魂-リニーダ-ティリルカ-mr84gvca-1",
+              "name": "今、華開く魂 リニーダ&ティリルカ",
+              "main": "火",
+              "sub": "闇",
+              "image": "6/75c2e3f1-79b2-4a47-ae33-6d25a4e216b2.webp"
+            },
+            {
+              "id": "ソウルバンカー6-mr84gutc-宝-ヤーシャラージャ・ローカパーラ-mr84gvqh-2",
+              "name": "宝 ヤーシャラージャ・ローカパーラ",
+              "main": "火",
+              "sub": "闇",
+              "image": "6/0c379ce8-ebda-474e-b29e-e7269dd82f2f.webp"
+            },
+            {
+              "id": "ソウルバンカー6-mr84gutc-苦しむ顔が-ルダン・カカルガ-mr84gvxa-3",
+              "name": "苦しむ顔が ルダン・カカルガ",
+              "main": "雷",
+              "sub": "水",
+              "image": "6/33a2563e-c26f-44ae-b666-652322d82407.webp"
+            },
+            {
+              "id": "ソウルバンカー6-mr84gutc-一箭双雕-サージュ・ソネガン-mr84gw37-4",
+              "name": "一箭双雕 サージュ・ソネガン",
+              "main": "雷",
+              "sub": "水",
+              "image": "6/0edcb101-4fb6-4368-b850-154a8411f8c9.webp"
+            }
+          ]
+        },
+        {
+          "id": "サマーコレクション2026-mr84pzee",
+          "abbr": "サマーコレクション2026",
+          "title": "Summer Collection 2026",
+          "storageFolder": "2026",
+          "spirits": [
+            {
+              "id": "サマーコレクション2026-mr84pzee-しっとりガチ恋-ガトリン・g・u-mr84pzq6-1",
+              "name": "しっとりガチ恋 ガトリン・G・U",
+              "main": "火",
+              "sub": "闇",
+              "image": "2026/52ab58cd-a488-4241-b2bb-e9f31aafe405.webp"
+            },
+            {
+              "id": "サマーコレクション2026-mr84pzee-ナイトプールの妖精-ルミスフィレス-mr84pzyf-2",
+              "name": "ナイトプールの妖精 ルミスフィレス",
+              "main": "雷",
+              "sub": "闇",
+              "image": "2026/93136a7c-a2a1-4f0e-9ed7-7fd79b3197c3.webp"
+            },
+            {
+              "id": "サマーコレクション2026-mr84pzee-海風に揺れる耳と尾-セリアル・ノト-mr84q06h-3",
+              "name": "海風に揺れる耳と尾 セリアル・ノト",
+              "main": "水",
+              "sub": "闇",
+              "image": "2026/a5ef1040-3d7d-4a6c-8f70-0cd14df07d9d.webp"
+            },
+            {
+              "id": "サマーコレクション2026-mr84pzee-久-の海遊び-阿由葉チオ-mr84q0cl-4",
+              "name": "久＆々の海遊び！ 阿由葉チオ",
+              "main": "火",
+              "sub": "闇",
+              "image": "2026/ae1a34ea-6c9c-4535-bb53-b7ad90c45bdc.webp"
+            },
+            {
+              "id": "サマーコレクション2026-mr84pzee-火花纏う夏の乙女-ツバキ・リンドウ-mr84q0i4-5",
+              "name": "火花纏う夏の乙女 ツバキ・リンドウ",
+              "main": "雷",
+              "sub": "水",
+              "image": "2026/50e25f8b-4b21-4a7c-ad17-479b415bf89b.webp"
             }
           ]
         }
@@ -55,28 +134,28 @@
           "spirits": [
             {
               "id": "recent-e312-シエオラ",
-              "name": "シエオラ",
+              "name": "降臨せし幻創の主上 シエオラ",
               "main": "水",
               "sub": "火",
               "image": "shieora/85653ab9-f1bb-4c69-b7f4-910c1b11ceea.webp"
             },
             {
               "id": "recent-e312-プラーミャ",
-              "name": "プラーミャ",
+              "name": "運命断つ緋炎の刃 プラーミャ・シア",
               "main": "火",
               "sub": "水",
               "image": "shieora/7bc2c4fe-e606-4774-9b0a-2d8c98b94df1.webp"
             },
             {
               "id": "recent-e312-セルマ",
-              "name": "セルマ",
+              "name": "不落の帰還者 セルマ・リウェイラ",
               "main": "水",
               "sub": "火",
               "image": "shieora/ba9e599e-e477-4ad8-b2d5-db9a8446858a.webp"
             },
             {
               "id": "recent-e312-リシア",
-              "name": "リシア",
+              "name": "慈愛の殉教者 リシア・アルデイル",
               "main": "雷",
               "sub": "水",
               "image": "shieora/00a012be-74c2-40b8-a3f6-6de9d45abeab.webp"
@@ -91,28 +170,28 @@
           "spirits": [
             {
               "id": "recent-e311-ダンケル",
-              "name": "ダンケル",
+              "name": "吸血覇帝 ダンケル・アダムス",
               "main": "水",
               "sub": "火",
               "image": "kuromaguzero2/29c04d29-e10f-4d9b-a89c-7694c2c7666b.webp"
             },
             {
               "id": "recent-e311-アムベル",
-              "name": "アムベル",
+              "name": "破邪聖光 アムベル・ケイ",
               "main": "火",
               "sub": "水",
               "image": "kuromaguzero2/6f9213f6-2d0f-48d9-8766-5da25d5964ec.webp"
             },
             {
               "id": "recent-e311-エマ",
-              "name": "エマ",
+              "name": "魔雷閃迅 エマ・ユーイング",
               "main": "雷",
               "sub": "水",
               "image": "kuromaguzero2/054d3d42-0374-4774-90bd-29404ac21af0.webp"
             },
             {
               "id": "recent-e311-ヒビキ-サユリ",
-              "name": "ヒビキ&サユリ",
+              "name": "氷焔双刀 ヒビキ&サユリ",
               "main": "火",
               "sub": "水",
               "image": "kuromaguzero2/e5c5eebd-60f7-4b51-9935-1ff9b304000e.webp"
@@ -127,35 +206,35 @@
           "spirits": [
             {
               "id": "recent-e310-ツゥ",
-              "name": "ツゥ",
+              "name": "烈龍烈憑 月田ツゥ",
               "main": "火",
               "sub": "水",
               "image": "oboro-dasuto1/8c2261cb-1d66-4edb-904c-6d4014d7f301.webp"
             },
             {
               "id": "recent-e310-カァヤ",
-              "name": "カァヤ",
+              "name": "悠鷹悠憑 御田カァヤ",
               "main": "雷",
               "sub": "水",
               "image": "oboro-dasuto1/2c359518-21d8-43e3-af81-97867d98c582.webp"
             },
             {
               "id": "recent-e310-チオ",
-              "name": "チオ",
+              "name": "妖蜂妖憑 阿由葉チオ",
               "main": "水",
               "sub": "火",
               "image": "oboro-dasuto1/e0013af8-b002-44fa-8613-fd5bcfd6cc44.webp"
             },
             {
               "id": "recent-e310-ネザ",
-              "name": "ネザ",
+              "name": "閃狐閃憑 沖津ネザ",
               "main": "火",
               "sub": "水",
               "image": "oboro-dasuto1/cdcce34c-c162-4504-b7f0-5fee86177267.webp"
             },
             {
               "id": "recent-e310-ニコナガ",
-              "name": "ニコナガ",
+              "name": "激鬼激憑 響尾ニコナガ",
               "main": "火",
               "sub": "水",
               "image": "oboro-dasuto1/8aca0e80-75ff-4319-b3f8-40c59bfee1d7.webp"
@@ -170,28 +249,28 @@
           "spirits": [
             {
               "id": "recent-e309-アリエッタ",
-              "name": "アリエッタ",
+              "name": "天才の超詠唱 アリエッタ・トワ",
               "main": "水",
               "sub": "火",
               "image": "guroriasumemoriaru3/76542c30-1bad-40b7-9424-e7a0a8464b42.webp"
             },
             {
               "id": "recent-e309-ハデスⅳ",
-              "name": "ハデスⅣ",
+              "name": "冥府の管理者 ハデスⅣ",
               "main": "水",
               "sub": "火",
               "image": "guroriasumemoriaru3/9ac051aa-a228-4de1-b5a4-6e6caa73a3e2.webp"
             },
             {
               "id": "recent-e309-アシュタル",
-              "name": "アシュタル",
+              "name": "影断つ守護者 アシュタル・ラド",
               "main": "火",
               "sub": "水",
               "image": "guroriasumemoriaru3/17323597-4179-4a86-a983-449610d21278.webp"
             },
             {
               "id": "recent-e309-ヴィレス",
-              "name": "ヴィレス",
+              "name": "透宇なる鬼 ヴィレス・ニュナン",
               "main": "水",
               "sub": "火",
               "image": "guroriasumemoriaru3/efc90a81-866c-4b99-b8e0-4e20a425978d.webp"
@@ -206,42 +285,42 @@
           "spirits": [
             {
               "id": "recent-e308-ガトリン",
-              "name": "ガトリン",
+              "name": "慈悲ハート ガトリン・G・U",
               "main": "水",
               "sub": "火",
               "image": "13shuunenkinen/34cdf8b8-dbf0-48cd-b1e5-553f8af41a37.webp"
             },
             {
               "id": "recent-e308-クレティア",
-              "name": "クレティア",
+              "name": "星の祈り クレティア・ブライユ",
               "main": "雷",
               "sub": "水",
               "image": "13shuunenkinen/b9f93430-9f35-4c54-9b32-dca3bd4e20d9.webp"
             },
             {
               "id": "recent-e308-リルム",
-              "name": "リルム",
+              "name": "超マジカル魔法 リルム・ロロット",
               "main": "水",
               "sub": "火",
               "image": "13shuunenkinen/8f2de38f-3ae6-41ff-84cb-32ce529ea852.webp"
             },
             {
               "id": "recent-e308-ミルドレッド",
-              "name": "ミルドレッド",
+              "name": "光の英雄 ミルドレッド・ルーディア",
               "main": "雷",
               "sub": "水",
               "image": "13shuunenkinen/513d0462-1e15-46fc-8bcb-c38df93e32e4.webp"
             },
             {
               "id": "recent-e308-ディオニソスⅻ",
-              "name": "ディオニソスⅫ",
+              "name": "救世の豊穣神 ディオニソスⅫ",
               "main": "火",
               "sub": "光",
               "image": "13shuunenkinen/2eb82744-527b-4c58-9729-478a475a02e9.webp"
             },
             {
               "id": "recent-e308-ディートリヒ",
-              "name": "ディートリヒ",
+              "name": "軍神の帰還　ディートリヒ・ベルク",
               "main": "雷",
               "sub": "水",
               "image": "13shuunenkinen/a042841f-5fea-4a34-abd2-27b71058fc79.webp"
@@ -256,28 +335,28 @@
           "spirits": [
             {
               "id": "recent-e307-ラシュリィ",
-              "name": "ラシュリィ",
+              "name": "甘いひととき ラシュリィ・ミスク",
               "main": "雷",
               "sub": "光",
               "image": "barentain2026/e7e891ab-78b7-473d-90fb-0d3d8e63c5a4.webp"
             },
             {
               "id": "recent-e307-ユキハナ",
-              "name": "ユキハナ",
+              "name": "秘密の贈り物 零夜ユキハナ",
               "main": "水",
               "sub": "光",
               "image": "barentain2026/c25d2b18-900e-4f37-a732-c2450b5e7d77.webp"
             },
             {
               "id": "recent-e307-シーラ",
-              "name": "シーラ",
+              "name": "料理上手の調香師 シーラ・フリール",
               "main": "火",
               "sub": "光",
               "image": "barentain2026/4003f36a-0fbf-4075-aaaf-0d98954a848e.webp"
             },
             {
               "id": "recent-e307-サーシャ",
-              "name": "サーシャ",
+              "name": "星降る夜に サーシャ・スターライト",
               "main": "水",
               "sub": "光",
               "image": "barentain2026/bb456f02-9298-4f6b-842b-fd9bb96e76a2.webp"
@@ -292,28 +371,28 @@
           "spirits": [
             {
               "id": "recent-e306-金アイ",
-              "name": "金アイ",
+              "name": "慈愛満ちる金色の魂　アイ",
               "main": "雷",
               "sub": "光",
               "image": "redianto2/f035333c-8b85-4338-8627-9508efadb4d5.webp"
             },
             {
               "id": "recent-e306-銀アイ",
-              "name": "銀アイ",
+              "name": "業断ち切る銀色の意志 アイ",
               "main": "雷",
               "sub": "光",
               "image": "redianto2/4bfaa957-3db2-4238-b190-848a75283a0a.webp"
             },
             {
               "id": "recent-e306-アーデ-メモリア",
-              "name": "アーデ＆メモリア",
+              "name": "追憶の守護者達 アーデ＆メモリア",
               "main": "火",
               "sub": "光",
               "image": "redianto2/b465f7f9-ac61-4a37-b1c4-5beaf9c48f1b.webp"
             },
             {
               "id": "recent-e306-リツェーレ",
-              "name": "リツェーレ",
+              "name": "異端の革命者 リツェーレ・トノラ",
               "main": "水",
               "sub": "光",
               "image": "redianto2/493bf58e-f0f5-44c0-8c06-d54f599c6cf5.webp"
@@ -328,28 +407,28 @@
           "spirits": [
             {
               "id": "recent-e305-リレイ",
-              "name": "リレイ",
+              "name": "連ね合う虹の閃き 鶴音リレイ",
               "main": "水",
               "sub": "光",
               "image": "rirekoodo3/940f3ed9-63bb-46a1-ae41-a704a976ae6d.webp"
             },
             {
               "id": "recent-e305-ルミスフィレス",
-              "name": "ルミスフィレス",
+              "name": "重ね合う虹の輝き ルミスフィレス",
               "main": "雷",
               "sub": "光",
               "image": "rirekoodo3/e5b073b2-bfe9-4819-b7d2-bf395f4079a3.webp"
             },
             {
               "id": "recent-e305-フェアリーコード",
-              "name": "フェアリーコード",
+              "name": "FairyChord ReReChord",
               "main": "火",
               "sub": "光",
               "image": "rirekoodo3/9f67624e-1571-4ad6-b8a0-f1265aad5115.webp"
             },
             {
               "id": "recent-e305-ユルル",
-              "name": "ユルル",
+              "name": "奏で合う虹の響き ユルル",
               "main": "火",
               "sub": "光",
               "image": "rirekoodo3/9491aff1-c571-46a5-83fa-d70abe865243.webp"
@@ -364,35 +443,35 @@
           "spirits": [
             {
               "id": "recent-e304-キワム",
-              "name": "キワム",
+              "name": "温故知新の迎春 キワム＆クロ",
               "main": "火",
               "sub": "光",
               "image": "shougatsu2026/55998800-4856-4d21-be60-33d1aff6919a.webp"
             },
             {
               "id": "recent-e304-アフロディテ",
-              "name": "アフロディテ",
+              "name": "年明けの美神 アフロディテⅨ",
               "main": "火",
               "sub": "光",
               "image": "shougatsu2026/3207c03b-d8bc-4cd0-9481-127dd2d66eb6.webp"
             },
             {
               "id": "recent-e304-シール",
-              "name": "シール",
+              "name": "新年航路の女神様 シール・サンテ",
               "main": "水",
               "sub": "光",
               "image": "shougatsu2026/53b5d8f0-163f-4ad5-a6c5-e85d11f34f77.webp"
             },
             {
               "id": "recent-e304-ユメウマ",
-              "name": "ユメウマ",
+              "name": "一角獣午天女 ユメウマ・パカラギ",
               "main": "雷",
               "sub": "光",
               "image": "shougatsu2026/d819097a-b9db-49e1-91aa-a1de1892c859.webp"
             },
             {
               "id": "recent-e304-メルティア",
-              "name": "メルティア",
+              "name": "ないしょの願い事 メルティア",
               "main": "雷",
               "sub": "水",
               "image": "shougatsu2026/b2175436-0a9a-462e-bb5b-ec4c47f81285.webp"
@@ -407,28 +486,28 @@
           "spirits": [
             {
               "id": "recent-e303-エウブレナ",
-              "name": "エウブレナ",
+              "name": "聖夜、その手の先に･･････ エウブレナ",
               "main": "水",
               "sub": "光",
               "image": "kurisumasu2025/604e9e7c-9368-4b89-8048-c555a7392d63.webp"
             },
             {
               "id": "recent-e303-アリス-エリカ",
-              "name": "アリス&エリカ",
+              "name": "天まで届く聖夜の光 アリス&エリカ",
               "main": "雷",
               "sub": "光",
               "image": "kurisumasu2025/839c9218-0d53-444c-9409-245539a9d554.webp"
             },
             {
               "id": "recent-e303-タイシ",
-              "name": "タイシ",
+              "name": "心からの贈り物 タイシ・ハナフサ",
               "main": "雷",
               "sub": "光",
               "image": "kurisumasu2025/14867185-2cb9-4482-8df3-44214d7d2ab5.webp"
             },
             {
               "id": "recent-e303-ブルンヒルト",
-              "name": "ブルンヒルト",
+              "name": "聖夜の杯 ケーニギン・ブルンヒルト",
               "main": "火",
               "sub": "雷",
               "image": "kurisumasu2025/e4979082-d8ad-47a0-8aee-709737992caa.webp"
@@ -443,35 +522,35 @@
           "spirits": [
             {
               "id": "recent-e302-ダンタリオン",
-              "name": "ダンタリオン",
+              "name": "終末治療医 ダンタリオン",
               "main": "水",
               "sub": "光",
               "image": "diaburokurinikku3/91bf0cdc-8ae7-4f4f-88c2-9fa02d7e4f16.webp"
             },
             {
               "id": "recent-e302-シャローム",
-              "name": "シャローム",
+              "name": "AbCd-Σς: ≪慈愛光翼 シャローム≫",
               "main": "水",
               "sub": "光",
               "image": "diaburokurinikku3/9bb87ebe-59d5-4191-b923-0f51d28b7d16.webp"
             },
             {
               "id": "recent-e302-フェネクス",
-              "name": "フェネクス",
+              "name": "滅却炎舞 フェネクス",
               "main": "火",
               "sub": "水",
               "image": "diaburokurinikku3/8cd61925-8c2c-462a-b01b-11481e7602d3.webp"
             },
             {
               "id": "recent-e302-バエル",
-              "name": "バエル",
+              "name": "最終医療兵装 バエル",
               "main": "雷",
               "sub": "火",
               "image": "diaburokurinikku3/cb8780bc-ccdf-45e4-83b5-06ed4db98ec8.webp"
             },
             {
               "id": "recent-e302-アスタロト",
-              "name": "アスタロト",
+              "name": "斬哭大公 アスタロト",
               "main": "雷",
               "sub": "光",
               "image": "diaburokurinikku3/fa6f96d8-b4a1-4bea-a3f2-bd4d4402d6da.webp"
@@ -486,28 +565,28 @@
           "spirits": [
             {
               "id": "recent-e301-アデレード",
-              "name": "アデレード",
+              "name": "緋炎斬紅 アデレード・シラー",
               "main": "火",
               "sub": "光",
               "image": "shinryuuzankyou/bc5e15c8-f9bc-4867-b788-aad583737c03.webp"
             },
             {
               "id": "recent-e301-ミネバ",
-              "name": "ミネバ",
+              "name": "斬光瞬影 ヒツユ",
               "main": "水",
               "sub": "雷",
               "image": "shinryuuzankyou/1edefa43-8453-40ad-9b25-15c5d2d940ff.webp"
             },
             {
               "id": "recent-e301-ヒツユ",
-              "name": "ヒツユ",
+              "name": "聯吟の昂竜魔 ミネバ・クロード",
               "main": "雷",
               "sub": "水",
               "image": "shinryuuzankyou/7bda081f-19ad-455c-aee0-53d9501b1b14.webp"
             },
             {
               "id": "recent-e301-リティカ",
-              "name": "リティカ",
+              "name": "白霊竜の清冽の翼 リティカ・パス",
               "main": "雷",
               "sub": "光",
               "image": "shinryuuzankyou/cad5be9b-5c84-4ee4-ab81-0895b18b98ef.webp"
@@ -522,28 +601,28 @@
           "spirits": [
             {
               "id": "recent-e300-ヴィレス",
-              "name": "ヴィレス",
+              "name": "月夜の海賊 ヴィレス・ニュナン",
               "main": "水",
               "sub": "闇",
               "image": "harouin2025/25dffbff-436b-4dbb-929a-7168bc1e0a87.webp"
             },
             {
               "id": "recent-e300-アーシュ",
-              "name": "アーシュ",
+              "name": "黒き花嫁 アーシュ・シンデレラ",
               "main": "水",
               "sub": "火",
               "image": "harouin2025/e102015e-f85c-43cd-8a58-1236c2945504.webp"
             },
             {
               "id": "recent-e300-ルシーニア",
-              "name": "ルシーニア",
+              "name": "悪戯なミイラ ルシーニア・レメディ",
               "main": "火",
               "sub": "水",
               "image": "harouin2025/5e2d2b84-dd08-4f53-a40c-7c4c6383037d.webp"
             },
             {
               "id": "recent-e300-イザヴェリ",
-              "name": "イザヴェリ",
+              "name": "魂を喰らう魔女 イザヴェリ・ヘイズ",
               "main": "火",
               "sub": "雷",
               "image": "harouin2025/43afa10d-3362-4dd1-9923-bf1631ebe60d.webp"
@@ -553,33 +632,33 @@
         {
           "id": "recent-e299",
           "abbr": "八百八町4",
-          "title": "八百八町4",
+          "title": "八百八町あやかし捕物帳4 超奇城!忍術大合戦すぺしゃる",
           "storageFolder": "happyakuhachimachi4",
           "spirits": [
             {
               "id": "recent-e299-コノハ",
-              "name": "コノハ",
+              "name": "木葉旋風 コノハ・ヨリヒメ",
               "main": "雷",
               "sub": "水",
               "image": "happyakuhachimachi4/1a28b187-f7f7-4c50-8476-133e5585f4c8.webp"
             },
             {
               "id": "recent-e299-ミオ",
-              "name": "ミオ",
+              "name": "忍具乱れ咲き ミオ・ツヅラオリ",
               "main": "水",
               "sub": "雷",
               "image": "happyakuhachimachi4/c91a6913-5e92-453f-8b8e-af2a247e1052.webp"
             },
             {
               "id": "recent-e299-ヨミチ",
-              "name": "ヨミチ",
+              "name": "忍刀一閃 ヨミチ・ヨミドノ",
               "main": "火",
               "sub": "闇",
               "image": "happyakuhachimachi4/c5dd439b-1a19-4716-890f-4cdaa8542bc5.webp"
             },
             {
               "id": "recent-e299-アヤツグ",
-              "name": "アヤツグ",
+              "name": "切り拓く心刃 アヤツグ・アシハラ",
               "main": "火",
               "sub": "闇",
               "image": "happyakuhachimachi4/1d46ca4f-ab9b-4fd4-a3e5-e045008a745b.webp"
@@ -705,42 +784,6 @@
               "main": "火",
               "sub": "水",
               "image": "ga2025zenhanzajienereeshonzu/ccc3ea22-026d-48eb-a38b-95425b0248f0.webp"
-            }
-          ]
-        },
-        {
-          "id": "recent-e295",
-          "abbr": "黒猫ハルヒコラボ",
-          "title": "涼宮ハルヒの響命",
-          "storageFolder": "kuronekoharuhikorabo",
-          "spirits": [
-            {
-              "id": "recent-e295-みくる",
-              "name": "みくる",
-              "main": "雷",
-              "sub": "火",
-              "image": "kuronekoharuhikorabo/9c669361-37fe-40bf-ae74-83023c992dce.webp"
-            },
-            {
-              "id": "recent-e295-エニィ",
-              "name": "エニィ",
-              "main": "雷",
-              "sub": "水",
-              "image": "kuronekoharuhikorabo/346787eb-2299-4afc-bb44-f5fb178ff0eb.webp"
-            },
-            {
-              "id": "recent-e295-長門",
-              "name": "長門",
-              "main": "水",
-              "sub": "雷",
-              "image": "kuronekoharuhikorabo/233e3fdf-290c-47af-a67a-e273d6dc7243.webp"
-            },
-            {
-              "id": "recent-e295-ハルヒ",
-              "name": "ハルヒ",
-              "main": "火",
-              "sub": "光",
-              "image": "kuronekoharuhikorabo/e00c549a-1656-4f9b-907b-52f9a8b6fe43.webp"
             }
           ]
         },
@@ -1040,28 +1083,28 @@
           "spirits": [
             {
               "id": "recent-e286-リフィル",
-              "name": "リフィル",
+              "name": "輝刃裂空 サンセット＝リフィル",
               "main": "雷",
               "sub": "光",
               "image": "guroriasumemoriaru2/7f7b6f53-fa69-4f5a-b0fd-a79f084e9b8b.webp"
             },
             {
               "id": "recent-e286-クレティア",
-              "name": "クレティア",
+              "name": "救世の聖女 クレティア・ブライユ",
               "main": "水",
               "sub": "水",
               "image": "guroriasumemoriaru2/6adba24a-513b-481a-91fa-7ddceac36e21.webp"
             },
             {
               "id": "recent-e286-ヴァッカリオ",
-              "name": "ヴァッカリオ",
+              "name": "最強にして最高 ディオニソスⅫ",
               "main": "火",
               "sub": "火",
               "image": "guroriasumemoriaru2/5c96ce54-6c7b-4701-b60e-3f7fb72b599b.webp"
             },
             {
               "id": "recent-e286-アポロニオ",
-              "name": "アポロニオ",
+              "name": "最高にして最強 アポロンⅥ",
               "main": "火",
               "sub": "火",
               "image": "guroriasumemoriaru2/ec268377-3d3f-4620-9109-58731fee9c42.webp"
@@ -1162,28 +1205,28 @@
           "spirits": [
             {
               "id": "recent-e283-アリエッタ",
-              "name": "アリエッタ",
+              "name": "魔道青春 アリエッタ・トワ",
               "main": "光",
               "sub": "光",
               "image": "barentain2025/7d7f9324-d95b-4cc5-bdd1-5403c3f04e13.webp"
             },
             {
               "id": "recent-e283-ミホロ",
-              "name": "ミホロ",
+              "name": "きらめく夜景に微笑んで 織機ミホロ",
               "main": "雷",
               "sub": "水",
               "image": "barentain2025/d3f4a212-7b35-46c3-abd4-18b7844a45e2.webp"
             },
             {
               "id": "recent-e283-ピノ",
-              "name": "ピノ",
+              "name": "あなたへ…… ピノ・マリアンヌ",
               "main": "雷",
               "sub": "水",
               "image": "barentain2025/f646c8b2-cbff-446c-ac62-b22a372cc454.webp"
             },
             {
               "id": "recent-e283-プラーミャ",
-              "name": "プラーミャ",
+              "name": "甘苦い玩弄の虜 プラーミャ・シア",
               "main": "火",
               "sub": "雷",
               "image": "barentain2025/a8483465-76d1-408f-8f31-26de33be98cf.webp"
@@ -1349,28 +1392,28 @@
           "spirits": [
             {
               "id": "recent-e277-グレイス",
-              "name": "グレイス",
+              "name": "大海原へ グレイス・デ・グレイス",
               "main": "雷",
               "sub": "水",
               "image": "kamisanpotsu2/0a55176b-fcfc-4272-b10c-9a7429d44050.webp"
             },
             {
               "id": "recent-e277-シーヴル",
-              "name": "シーヴル",
+              "name": "水に咲く花 シーヴル・ロイシィ",
               "main": "水",
               "sub": "闇",
               "image": "kamisanpotsu2/02c74a69-49d8-4661-8443-18526ddea631.webp"
             },
             {
               "id": "recent-e277-ソラ",
-              "name": "ソラ",
+              "name": "太陽の人魚姫 ソラ・デ・エーレ",
               "main": "火",
               "sub": "闇",
               "image": "kamisanpotsu2/80e9ef26-3853-4930-ade0-23c7061bd73d.webp"
             },
             {
               "id": "recent-e277-カヌエ",
-              "name": "カヌエ",
+              "name": "海のおさんぽ カヌエ・デ・ヤック",
               "main": "火",
               "sub": "雷",
               "image": "kamisanpotsu2/f6e44aef-6390-4416-a8d9-c7348db055e4.webp"
@@ -1385,28 +1428,28 @@
           "spirits": [
             {
               "id": "recent-e276-アッカ",
-              "name": "アッカ",
+              "name": "ホロハロサプライズ アッカ＆ロッカ",
               "main": "雷",
               "sub": "水",
               "image": "harouin2024/291acb95-1df5-49d0-9789-77b96e1fdd2c.webp"
             },
             {
               "id": "recent-e276-イスカ",
-              "name": "イスカ",
+              "name": "祈りの死神 イスカ・ニルヴァ",
               "main": "水",
               "sub": "闇",
               "image": "harouin2024/4bc3a4cc-02b4-4972-b1fd-ed5121b484a8.webp"
             },
             {
               "id": "recent-e276-ディギィ",
-              "name": "ディギィ",
+              "name": "ハピハロデビル ディギィ",
               "main": "火",
               "sub": "水",
               "image": "harouin2024/fd5325f1-3244-4972-84fb-59b5f2c221a2.webp"
             },
             {
               "id": "recent-e276-ヴァッカリオ",
-              "name": "ヴァッカリオ",
+              "name": "吸血英雄 ディオニソスⅫ",
               "main": "火",
               "sub": "闇",
               "image": "harouin2024/22a442c5-c3bd-4765-b3fe-fa152f5bd421.webp"
@@ -1924,28 +1967,28 @@
           "spirits": [
             {
               "id": "recent-e259-ストリー",
-              "name": "ストリー",
+              "name": "遍く異界に慈愛を ストリー・ヒスト",
               "main": "雷",
               "sub": "雷",
               "image": "barentain2024/3842ea9b-b9e9-4099-b5b5-f58b5c976796.webp"
             },
             {
               "id": "recent-e259-ヤチヨ",
-              "name": "ヤチヨ",
+              "name": "心に咲く赤い果実 ヤチヨ・カスガ",
               "main": "水",
               "sub": "水",
               "image": "barentain2024/76325e01-9fb0-4137-93d2-eafd087df610.webp"
             },
             {
               "id": "recent-e259-アーシュ",
-              "name": "アーシュ",
+              "name": "甘くて重い靴 アーシュ・シンデレラ",
               "main": "水",
               "sub": "水",
               "image": "barentain2024/44b47361-59ee-4572-9a51-89675bfbfc5b.webp"
             },
             {
               "id": "recent-e259-フェネクス",
-              "name": "フェネクス",
+              "name": "不死鳥は愛に縛られて フェネクス",
               "main": "火",
               "sub": "闇",
               "image": "barentain2024/635fcabd-4b85-4153-9c5a-a18d15a8f49a.webp"
@@ -2075,28 +2118,28 @@
           "spirits": [
             {
               "id": "recent-e261-リルム",
-              "name": "リルム",
+              "name": "ファーストザッパー リルム・ロロット",
               "main": "光",
               "sub": "光",
               "image": "guroriasumemoriaru/c086a07d-62c0-4f3b-9323-b707a9e195c6.webp"
             },
             {
               "id": "recent-e261-リティカ",
-              "name": "リティカ",
+              "name": "誓いの日 リティカ・パス",
               "main": "光",
               "sub": "光",
               "image": "guroriasumemoriaru/998565eb-ba21-4363-ad16-8ef979a81a6e.webp"
             },
             {
               "id": "recent-e261-ディートリヒ",
-              "name": "ディートリヒ",
+              "name": "戦争の鼓動 ディートリヒ・ベルク",
               "main": "闇",
               "sub": "闇",
               "image": "guroriasumemoriaru/ff108c90-25cd-4e8f-bf0d-fac70d926ac1.webp"
             },
             {
               "id": "recent-e261-アルドベリク",
-              "name": "アルドベリク",
+              "name": "決意の刃 アルドベリク・ゴドー",
               "main": "闇",
               "sub": "闇",
               "image": "guroriasumemoriaru/13d135f4-d606-420b-9b5a-3002651858e7.webp"
@@ -2262,28 +2305,28 @@
           "spirits": [
             {
               "id": "recent-e252-アルドベリク",
-              "name": "アルドベリク",
+              "name": "血夜の魔王 アルドベリク・ゴドー",
               "main": "雷",
               "sub": "闇",
               "image": "harouin2023/97be9608-086d-4178-ba88-5d1cc5857fd5.webp"
             },
             {
               "id": "recent-e252-シエオラ",
-              "name": "シエオラ",
+              "name": "ずっと求めていたぼく シエオラ",
               "main": "水",
               "sub": "闇",
               "image": "harouin2023/aebd1a98-f40d-4638-bb8b-f6fa16504076.webp"
             },
             {
               "id": "recent-e252-ティリルカ",
-              "name": "ティリルカ",
+              "name": "殺戮看守 ティリルカ・ヴァーナキィ",
               "main": "火",
               "sub": "闇",
               "image": "harouin2023/0a76b925-35d4-4aa5-b82d-ef5775d5ad5a.webp"
             },
             {
               "id": "recent-e252-ゴショガワラ-イツミ",
-              "name": "ゴショガワラ/イツミ",
+              "name": "目覚めよ！ 五所川原五美 (ゴショガワラ/イツミ)",
               "main": "火",
               "sub": "闇",
               "image": "harouin2023/af4e5471-f028-4948-b8c3-3c8b8493fce0.webp"
@@ -2455,28 +2498,28 @@
           "spirits": [
             {
               "id": "charapre-e247-ルミスフィレス",
-              "name": "ルミスフィレス",
+              "name": "Tempt the Fates ルミスフィレス",
               "main": "雷",
               "sub": "光",
               "image": "feariikoodo-rirekoodo2/46714f05-c499-4dfd-95e5-0f4aec13f9b1.webp"
             },
             {
               "id": "charapre-e247-リレイ",
-              "name": "リレイ",
+              "name": "Fight / Might / Heart 鶴音リレイ",
               "main": "水",
               "sub": "光",
               "image": "feariikoodo-rirekoodo2/85924b19-fdf7-4182-a497-6b4b208d90fc.webp"
             },
             {
               "id": "charapre-e247-タツマ",
-              "name": "タツマ",
+              "name": "魔を踏みにじる龍の睥睨 早苗タツマ",
               "main": "水",
               "sub": "闇",
               "image": "feariikoodo-rirekoodo2/504f9a54-0870-4aac-bc6d-3a547949470f.webp"
             },
             {
               "id": "charapre-e247-ミホロ",
-              "name": "ミホロ",
+              "name": "Dual Tunage 織機ミホロ",
               "main": "火",
               "sub": "闇",
               "image": "feariikoodo-rirekoodo2/bf6ddcd0-134b-4a9d-ad49-244f9429ad95.webp"
@@ -2527,28 +2570,28 @@
           "spirits": [
             {
               "id": "charapre-e245-ソラ",
-              "name": "ソラ",
+              "name": "冒険する太陽 ソラ・デ・エーレ",
               "main": "雷",
               "sub": "火",
               "image": "kamisanpotsu/2dd55628-61f0-4d92-ad0c-0deb70f7abf0.webp"
             },
             {
               "id": "charapre-e245-ホリー",
-              "name": "ホリー",
+              "name": "夜明けを占う御子 ホリー・アマナウ",
               "main": "水",
               "sub": "光",
               "image": "kamisanpotsu/afef37c6-56ad-4950-9da0-884f4636968c.webp"
             },
             {
               "id": "charapre-e245-シーヴル",
-              "name": "シーヴル",
+              "name": "夜に咲く舞姫 シーヴル・ロイシィ",
               "main": "水",
               "sub": "光",
               "image": "kamisanpotsu/30c66440-873f-4bfe-b567-6a4657152baa.webp"
             },
             {
               "id": "charapre-e245-カヌエ",
-              "name": "カヌエ",
+              "name": "ぽっと出た魔神 カヌエ・デ・ヤック",
               "main": "火",
               "sub": "光",
               "image": "kamisanpotsu/9dccb308-8e34-4de8-a33e-c9947c9f864a.webp"
@@ -2894,28 +2937,28 @@
           "spirits": [
             {
               "id": "charapre-e235-リルム",
-              "name": "リルム",
+              "name": "53.6℃の恋 リルム・ロロット",
               "main": "雷",
               "sub": "光",
               "image": "barentain2023/3eca3f4c-9613-48b6-b448-d69440175580.webp"
             },
             {
               "id": "charapre-e235-セリアル",
-              "name": "セリアル",
+              "name": "甘美なる褒美 セリアル・ノト",
               "main": "雷",
               "sub": "闇",
               "image": "barentain2023/daa745e0-344d-4c43-994e-0ae05ee3a5c2.webp"
             },
             {
               "id": "charapre-e235-ラーシャ",
-              "name": "ラーシャ",
+              "name": "婚約者の訪問 ラーシャ・ルツス",
               "main": "水",
               "sub": "光",
               "image": "barentain2023/1b74428a-9e2f-4782-ac0b-c8ae62480cf4.webp"
             },
             {
               "id": "charapre-e235-エニグマチェリー",
-              "name": "エニグマチェリー",
+              "name": "LOVE開花 エニグマチェリー",
               "main": "火",
               "sub": "火",
               "image": "barentain2023/e43d7ffb-5dee-4e3b-8be0-ce37abeccd0e.webp"
@@ -3527,28 +3570,28 @@
           "spirits": [
             {
               "id": "charapre-e218-ルドヴィカ",
-              "name": "ルドヴィカ",
+              "name": "友情のクイーン ルドヴィカ・ロア",
               "main": "水",
               "sub": "水",
               "image": "kuromumagunamadousensen/f933925a-24b6-4219-87ee-0d14c646a9a0.webp"
             },
             {
               "id": "charapre-e218-イツキ",
-              "name": "イツキ",
+              "name": "決意のキング イツキ・マスグレイヴ",
               "main": "水",
               "sub": "水",
               "image": "kuromumagunamadousensen/5b6d4fc6-5ea7-4cd3-88cb-8a663ec1a50c.webp"
             },
             {
               "id": "charapre-e218-リンカ",
-              "name": "リンカ",
+              "name": "焔義のクイーン リンカ・ワイアット",
               "main": "火",
               "sub": "火",
               "image": "kuromumagunamadousensen/856f350f-e813-426f-b4dd-2dbd21230bb6.webp"
             },
             {
               "id": "charapre-e218-リヴェータ",
-              "name": "リヴェータ",
+              "name": "新番長キング リヴェータ・イレ",
               "main": "火",
               "sub": "火",
               "image": "kuromumagunamadousensen/f135516c-48c5-4e85-8eba-2b6a096cb2e2.webp"
@@ -3563,28 +3606,28 @@
           "spirits": [
             {
               "id": "charapre-e217-ルミスフィレス",
-              "name": "ルミスフィレス",
+              "name": "夜空に咲く虹 ルミスフィレス",
               "main": "雷",
               "sub": "雷",
               "image": "feariikoodo-rirekoodo1/50d24939-bbc4-4d7a-83ab-4b3b4b168686.webp"
             },
             {
               "id": "charapre-e217-リレイ",
-              "name": "リレイ",
+              "name": "心繋ぐ虹 鶴音リレイ",
               "main": "水",
               "sub": "水",
               "image": "feariikoodo-rirekoodo1/c781bcbc-eb72-44d5-8a97-41ad33e88028.webp"
             },
             {
               "id": "charapre-e217-ディギィ",
-              "name": "ディギィ",
+              "name": "虹盛りデビル ディギィ",
               "main": "火",
               "sub": "火",
               "image": "feariikoodo-rirekoodo1/03a9209e-9722-4f3a-bb4e-69ac537e5189.webp"
             },
             {
               "id": "charapre-e217-ソウヤ",
-              "name": "ソウヤ",
+              "name": "月虹の牙 紅鬼ソウヤ",
               "main": "火",
               "sub": "火",
               "image": "feariikoodo-rirekoodo1/5d30267f-ab05-49d4-abfe-4153de23f35c.webp"
@@ -4612,42 +4655,42 @@
           "spirits": [
             {
               "id": "charapre-e190-リザ-リュディ",
-              "name": "リザ＆リュディ",
+              "name": "白翼に包まれて リザ＆リュディ",
               "main": "雷",
               "sub": "闇",
               "image": "barentain2021/eb4295a3-8884-44a7-b318-5d4e748b0e82.webp"
             },
             {
               "id": "charapre-e190-セシーリア",
-              "name": "セシーリア",
+              "name": "夢に遊ぶ夢 セシーリア・ヴェルレ",
               "main": "雷",
               "sub": "雷",
               "image": "barentain2021/4c28d5f3-cfa1-4b9e-ba0f-e4b7335df5dd.webp"
             },
             {
               "id": "charapre-e190-テーラ",
-              "name": "テーラ",
+              "name": "幸せの味 テーラ・プラエ",
               "main": "水",
               "sub": "火",
               "image": "barentain2021/07a00d3f-13e6-46da-ab44-5c77672a9109.webp"
             },
             {
               "id": "charapre-e190-エニィ",
-              "name": "エニィ",
+              "name": "Sweet Triangle エニィ",
               "main": "水",
               "sub": "水",
               "image": "barentain2021/2eb69fd3-c8c7-494a-98ea-bcdda9735ba9.webp"
             },
             {
               "id": "charapre-e190-ツクヨ",
-              "name": "ツクヨ",
+              "name": "新人？めゐど ツクヨ・オトエヒナ",
               "main": "火",
               "sub": "水",
               "image": "barentain2021/70c7cfa1-ba8a-422c-b478-84c7b3eb67d5.webp"
             },
             {
               "id": "charapre-e190-ゴショガワラ",
-              "name": "ゴショガワラ",
+              "name": "ラブリー呑兵衛 五所川原五美 (ゴショガワラ/イツミ)",
               "main": "火",
               "sub": "水",
               "image": "barentain2021/70111a44-0e87-4005-ac02-b24e92e1579c.webp"
@@ -6191,21 +6234,21 @@
           "spirits": [
             {
               "id": "charapre-e157-リンゼ",
-              "name": "リンゼ",
+              "name": "規律の女神見習い リンゼ・ブラウ",
               "main": "雷",
               "sub": "光",
               "image": "megaminoitasu-raha-torutsu/5fb7053c-3dc7-459b-b959-0ca8be397b38.webp"
             },
             {
               "id": "charapre-e157-リタ",
-              "name": "リタ",
+              "name": "こすぷれ女神 リタ・バニスター",
               "main": "水",
               "sub": "水",
               "image": "megaminoitasu-raha-torutsu/8b637f98-4a79-44f6-b9ac-9deb6274fd07.webp"
             },
             {
               "id": "charapre-e157-プリフィカ",
-              "name": "プリフィカ",
+              "name": "黒猫女神 プリフィカ・ランクスター",
               "main": "火",
               "sub": "闇",
               "image": "megaminoitasu-raha-torutsu/f946e0ff-0b73-41d6-9974-c9bafe63ce6c.webp"
@@ -8258,42 +8301,42 @@
           "spirits": [
             {
               "id": "charapre-e109-ソフィ",
-              "name": "ソフィ",
+              "name": "Wild Witch ソフィ・ハーネット",
               "main": "雷",
               "sub": "火",
               "image": "uhg/8801fbb2-abc2-4a45-b63d-5af27a6f33e0.webp"
             },
             {
               "id": "charapre-e109-エリス",
-              "name": "エリス",
+              "name": "呪縛包帯 エリス＝マギア・シャルム",
               "main": "雷",
               "sub": "雷",
               "image": "uhg/8c213228-7287-4a5a-89f0-d37f14ea6def.webp"
             },
             {
               "id": "charapre-e109-リルム",
-              "name": "リルム",
+              "name": "超いたずら魔道士 リルム・ロロット",
               "main": "水",
               "sub": "水",
               "image": "uhg/a1e57623-9468-47f5-bd40-574e9b4577b8.webp"
             },
             {
               "id": "charapre-e109-アリエッタ",
-              "name": "アリエッタ",
+              "name": "花嫁 in 魔道棺桶 アリエッタ・トワ",
               "main": "水",
               "sub": "火",
               "image": "uhg/0cb5dcd0-800d-4bbe-a9c5-0a148e4054b6.webp"
             },
             {
               "id": "charapre-e109-レナ",
-              "name": "レナ",
+              "name": "超爆発的看護屍 レナ・イラプション",
               "main": "火",
               "sub": "火",
               "image": "uhg/2a01d749-9971-4ee1-9b12-2b736041a024.webp"
             },
             {
               "id": "charapre-e109-イーニア",
-              "name": "イーニア",
+              "name": "本性は小悪魔 イーニア・ストラマー",
               "main": "火",
               "sub": "火",
               "image": "uhg/1dd7861f-a8d6-462d-8c36-b4cf42059907.webp"
@@ -9357,42 +9400,42 @@
           "spirits": [
             {
               "id": "charapre-e81-メモリア",
-              "name": "メモリア",
+              "name": "追憶と恒久の巫女 メモリア・リィセ",
               "main": "雷",
               "sub": "光",
               "image": "tsuiokunoredianto/fe1bd19b-d924-4798-88c7-871a95317980.webp"
             },
             {
               "id": "charapre-e81-アイ",
-              "name": "アイ",
+              "name": "追懐を乗り越えて進む アイ",
               "main": "火",
               "sub": "雷",
               "image": "tsuiokunoredianto/9d7506e0-0304-4481-b703-293da5d1f02c.webp"
             },
             {
               "id": "charapre-e81-アイ-2",
-              "name": "アイ",
+              "name": "記憶にあるなにかを探し続ける アイ",
               "main": "水",
               "sub": "雷",
               "image": "tsuiokunoredianto/bf0a32a5-17b3-42bc-920b-3dc1df119de2.webp"
             },
             {
               "id": "charapre-e81-ティシカ",
-              "name": "ティシカ",
+              "name": "遺却の占い魔道士 ティシカ・ブック",
               "main": "火",
               "sub": "火",
               "image": "tsuiokunoredianto/3236d369-abba-467a-922e-bd86c650b816.webp"
             },
             {
               "id": "charapre-e81-アーデ",
-              "name": "アーデ",
+              "name": "忘失の無鉄砲少年 アーデ・トゥイン",
               "main": "雷",
               "sub": "雷",
               "image": "tsuiokunoredianto/07901a8f-223d-4c8f-8142-29baa4e62f16.webp"
             },
             {
               "id": "charapre-e81-ゼドー",
-              "name": "ゼドー",
+              "name": "忘却の肉体魔道士 ゼドー・ナッシュ",
               "main": "水",
               "sub": "雷",
               "image": "tsuiokunoredianto/1cef04c4-a57b-4004-af4f-d311dc6e720f.webp"
@@ -9514,42 +9557,42 @@
           "spirits": [
             {
               "id": "charapre-e78-アメリー",
-              "name": "アメリー",
+              "name": "聖境の敬祷者 アメリー・ベネット",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumagunazero/21f135df-e5a6-489e-9358-c39174481005.webp"
             },
             {
               "id": "charapre-e78-エマ",
-              "name": "エマ",
+              "name": "不可知の密偵 エマ・ユーイング",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumagunazero/18295192-9d04-408c-94c4-94ff19dace82.webp"
             },
             {
               "id": "charapre-e78-ヒビキ",
-              "name": "ヒビキ",
+              "name": "蒼き闘覇者 ヒビキ・マスグレイヴ",
               "main": "水",
               "sub": "水",
               "image": "kuromumagunazero/e2488030-d46c-4d71-9875-66a6fffb45a4.webp"
             },
             {
               "id": "charapre-e78-サユリ",
-              "name": "サユリ",
+              "name": "清冽の焔刃 サユリ・ワイアット",
               "main": "火",
               "sub": "火",
               "image": "kuromumagunazero/50ad6fa6-1a10-47cc-892c-d52578e9457c.webp"
             },
             {
               "id": "charapre-e78-ダンケル",
-              "name": "ダンケル",
+              "name": "魔道学園創立者 ダンケル・アダムス",
               "main": "水",
               "sub": "水",
               "image": "kuromumagunazero/a7d1de98-6e9b-4651-9ec6-faefcc33def5.webp"
             },
             {
               "id": "charapre-e78-アムベル",
-              "name": "アムベル",
+              "name": "優艶なる管理者 アムベル・ケイ",
               "main": "火",
               "sub": "雷",
               "image": "kuromumagunazero/ae1a259f-1374-4715-ae4f-4e019da00634.webp"
@@ -9887,7 +9930,7 @@
         {
           "id": "charapre-e62",
           "abbr": "天上岬2",
-          "title": "天上岬の調香師",
+          "title": "天上岬の調香師 しあわせのラストノート",
           "storageFolder": "tenjoumisaki2",
           "spirits": [
             {
@@ -10135,42 +10178,42 @@
           "spirits": [
             {
               "id": "charapre-e51-リンカ",
-              "name": "リンカ",
+              "name": "誓いの凛炎 リンカ・ワイアット",
               "main": "火",
               "sub": "水",
               "image": "kuromumaguna5/1eaf06b2-0968-4ae5-bcb5-8cb44bee631a.webp"
             },
             {
               "id": "charapre-e51-エマ",
-              "name": "エマ",
+              "name": "双つ刃の潜行者 エマ・ユーイング",
               "main": "水",
               "sub": "水",
               "image": "kuromumaguna5/ebba7daa-e972-4ee5-bbd3-8acd3f2c581e.webp"
             },
             {
               "id": "charapre-e51-アーシア-ニコラ",
-              "name": "アーシア＆ニコラ",
+              "name": "募る想いに彩られ アーシア＆ニコラ",
               "main": "水",
               "sub": "雷",
               "image": "kuromumaguna5/cc5a9f66-6866-4ced-94c6-d4caf489d652.webp"
             },
             {
               "id": "charapre-e51-シャーリー-ヴォルフ",
-              "name": "シャーリー＆ヴォルフ",
+              "name": "機獣の咆哮 シャーリー＆ヴォルフ",
               "main": "雷",
               "sub": "火",
               "image": "kuromumaguna5/d19837a8-335f-4643-89b5-36c581f9d0ed.webp"
             },
             {
               "id": "charapre-e51-miumiu",
-              "name": "MIUMIU",
+              "name": "超絶夏ビキニ MIU☆MIU",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna5/b2da7ab9-af76-4ccc-90c0-e2444cda45f8.webp"
             },
             {
               "id": "charapre-e51-エミリア-カエデ",
-              "name": "エミリア＆カエデ",
+              "name": "常時共闘戦線 エミリア＆カエデ",
               "main": "火",
               "sub": "雷",
               "image": "kuromumaguna5/bf1f02d6-7402-47ad-a05d-384010ceac87.webp"
@@ -10691,42 +10734,42 @@
           "spirits": [
             {
               "id": "charapre-e36-アーシア",
-              "name": "アーシア",
+              "name": "虹色の恋模様 アーシア・ベネット",
               "main": "水",
               "sub": "火",
               "image": "kuromumaguna4/3907a943-2e1d-47e1-bee9-de72c4bbe26d.webp"
             },
             {
               "id": "charapre-e36-リンカ",
-              "name": "リンカ",
+              "name": "胸焦がす乙女心 リンカ・ワイアット",
               "main": "火",
               "sub": "水",
               "image": "kuromumaguna4/2549b443-f57f-4fd2-8348-8264ef2ade33.webp"
             },
             {
               "id": "charapre-e36-エミリア",
-              "name": "エミリア",
+              "name": "恋☆メガトン エミリア・トドロキ",
               "main": "火",
               "sub": "火",
               "image": "kuromumaguna4/d493047a-cd70-4c97-8bc2-15ac4f9f3504.webp"
             },
             {
               "id": "charapre-e36-シャーリー",
-              "name": "シャーリー",
+              "name": "愛と甘美の砲火 シャーリー・コルト",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna4/1bad5bd9-acb6-4a4b-bd81-3ca566811c72.webp"
             },
             {
               "id": "charapre-e36-ヴォルフ",
-              "name": "ヴォルフ",
+              "name": "優しき獣と謳われる ヴォルフ・ロイ",
               "main": "火",
               "sub": "雷",
               "image": "kuromumaguna4/3ece2ed3-ad41-42a8-8da8-b89ce8693ecc.webp"
             },
             {
               "id": "charapre-e36-ニコラ",
-              "name": "ニコラ",
+              "name": "迷走夢想の恋心 ニコラ・モーガン",
               "main": "雷",
               "sub": "水",
               "image": "kuromumaguna4/b7c42b34-82b3-45e6-9255-8aee80fc501b.webp"
@@ -10856,28 +10899,28 @@
           "spirits": [
             {
               "id": "charapre-e15-シャーリー",
-              "name": "シャーリー",
+              "name": "今日も大漁！ シャーリー・コルト",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna3/8048feeb-e6c1-4766-a107-3ad955cbf6eb.webp"
             },
             {
               "id": "charapre-e15-ニコラ-単体遅延",
-              "name": "ニコラ(単体遅延)",
+              "name": "真夏の熱視線 ニコラ・モーガン",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna3/be555d94-dab9-4e9a-b036-5c27bf092b3c.webp"
             },
             {
               "id": "charapre-e15-リンカ",
-              "name": "リンカ",
+              "name": "夏の日の涼風 リンカ・ワイアット",
               "main": "火",
               "sub": "火",
               "image": "kuromumaguna3/cceb2a3e-66ee-4d12-beed-5e78d14995fa.webp"
             },
             {
               "id": "charapre-e15-ヴォルフ",
-              "name": "ヴォルフ",
+              "name": "大海の獣と戯れる ヴォルフ・ロイ",
               "main": "火",
               "sub": "水",
               "image": "kuromumaguna3/7d99ea89-bcca-4396-b6cc-ca223309ec72.webp"
@@ -11027,42 +11070,42 @@
           "spirits": [
             {
               "id": "other-e90-アムベル-エマ",
-              "name": "アムベル＆エマ",
+              "name": "互いを思いやる アムベル＆エマ",
               "main": "火",
               "sub": "雷",
               "image": "barentain2017/f51dc825-ec66-4e20-ac40-53afd00f3e4f.webp"
             },
             {
               "id": "other-e90-ピピア",
-              "name": "ピピア",
+              "name": "星ショコラの恋歌 ピピア・ショトワ",
               "main": "火",
               "sub": "火",
               "image": "barentain2017/0041e208-b82c-4ebf-af7c-dbb45adab3be.webp"
             },
             {
               "id": "other-e90-クレティア",
-              "name": "クレティア",
+              "name": "星と語り合う クレティア・ブライユ",
               "main": "水",
               "sub": "火",
               "image": "barentain2017/a1f2d801-c5de-4d27-9392-e8757af5fd85.webp"
             },
             {
               "id": "other-e90-フレイ",
-              "name": "フレイ",
+              "name": "愛を祝福する妖精姫 フレイ・エレン",
               "main": "水",
               "sub": "水",
               "image": "barentain2017/8b9a664f-24ce-4aff-802e-65139e1a78f3.webp"
             },
             {
               "id": "other-e90-エリス",
-              "name": "エリス",
+              "name": "恋は呪い エリス＝マギア・シャルム",
               "main": "雷",
               "sub": "雷",
               "image": "barentain2017/0136e21d-b23b-4703-9b97-48ce41ad3a59.webp"
             },
             {
               "id": "other-e90-ユッカ",
-              "name": "ユッカ",
+              "name": "V-day ユッカ・エンデ",
               "main": "雷",
               "sub": "水",
               "image": "barentain2017/a7c97daf-8c94-41ea-ac3a-bc028c550bc1.webp"
@@ -11392,35 +11435,35 @@
           "spirits": [
             {
               "id": "other-e64-イヴ",
-              "name": "イヴ",
+              "name": "愛の林檎パイ イヴ・フォルクロール",
               "main": "雷",
               "sub": "水",
               "image": "barentain2016/bebc1d04-d2cd-4ad9-a52b-8786ad8fc334.webp"
             },
             {
               "id": "other-e64-エリアナ",
-              "name": "エリアナ",
+              "name": "常夜のこいびと エリアナ・グロス",
               "main": "水",
               "sub": "光",
               "image": "barentain2016/a7d95ef1-d323-4327-84b4-a44ce1864245.webp"
             },
             {
               "id": "other-e64-ヒカリ-スフィア",
-              "name": "ヒカリ/スフィア",
+              "name": "星降る夜の希望 ヒカリ・スフィア",
               "main": "水",
               "sub": "光",
               "image": "barentain2016/b705243c-ca80-434c-a349-be936061a237.webp"
             },
             {
               "id": "other-e64-マーガレット",
-              "name": "マーガレット",
+              "name": "全力成就ANGEL マーガレット・リル",
               "main": "火",
               "sub": "光",
               "image": "barentain2016/dde0ede9-95fc-49d8-983e-9d2858be859f.webp"
             },
             {
               "id": "other-e64-ノイン",
-              "name": "ノイン",
+              "name": "恋を運ばない大賢者 ノイン・ケーラ",
               "main": "火",
               "sub": "雷",
               "image": "barentain2016/7fdda82c-b83e-4f44-9c59-08c4426cec64.webp"
@@ -11536,14 +11579,14 @@
           "spirits": [
             {
               "id": "other-e52-イツキ",
-              "name": "イツキ",
+              "name": "私だけの笑顔 イツキ・マスグレイヴ",
               "main": "水",
               "sub": "水",
               "image": "misu-misutaakuromumaguna/ac859e2b-7ef9-407c-8fe9-cd95e358ea74.webp"
             },
             {
               "id": "other-e52-アーシア",
-              "name": "アーシア",
+              "name": "僕を見つめる瞳 アーシア・ベネット",
               "main": "水",
               "sub": "水",
               "image": "misu-misutaakuromumaguna/c70a35ce-2b94-474a-8e44-8ba0447b8d11.webp"
@@ -11652,28 +11695,28 @@
           "spirits": [
             {
               "id": "other-e37-ツバキ",
-              "name": "ツバキ",
+              "name": "恋そよぐ雅紅華 ツバキ・リンドウ",
               "main": "雷",
               "sub": "光",
               "image": "barentain2015/f46e2d53-b679-48fb-aa4c-45a65a7a5401.webp"
             },
             {
               "id": "other-e37-レナ",
-              "name": "レナ",
+              "name": "恋と炎の大爆裂 レナ・イラプション",
               "main": "火",
               "sub": "光",
               "image": "barentain2015/f1936a1e-b1d4-43df-ae53-49842bfd9208.webp"
             },
             {
               "id": "other-e37-パニーラ",
-              "name": "パニーラ",
+              "name": "恋花を咲かす乙女 パニーラ・アモー",
               "main": "雷",
               "sub": "火",
               "image": "barentain2015/0966a438-38f5-40d2-871b-726fb9b6dc01.webp"
             },
             {
               "id": "other-e37-ソラナ",
-              "name": "ソラナ",
+              "name": "恋降る空の祈り手 ソラナ・カルナ",
               "main": "水",
               "sub": "光",
               "image": "barentain2015/99efb67a-cb71-4ac9-bee2-744089fa3520.webp"
@@ -11946,49 +11989,49 @@
           "spirits": [
             {
               "id": "other-e13-サーヤ",
-              "name": "サーヤ",
+              "name": "淡く甘い想い出 サーヤ・スズカゼ",
               "main": "水",
               "sub": "水",
               "image": "barentain2014/8e2b025b-54f2-4c1e-933e-c9f933f79f59.webp"
             },
             {
               "id": "other-e13-ユニコ",
-              "name": "ユニコ",
+              "name": "未知なる恋熱 ユニコ・ランドハイア",
               "main": "火",
               "sub": "水",
               "image": "barentain2014/52db4227-cdd3-404c-9cdb-cf1433d1e300.webp"
             },
             {
               "id": "other-e13-フェルチ",
-              "name": "フェルチ",
+              "name": "芳しき恋の香り フェルチ・リリー",
               "main": "雷",
               "sub": "水",
               "image": "barentain2014/0a209383-ff54-4db6-ac7d-fce133698cbe.webp"
             },
             {
               "id": "other-e13-フィリー",
-              "name": "フィリー",
+              "name": "恋心捧げる フィリー・ハイウインド",
               "main": "水",
               "sub": "水",
               "image": "barentain2014/5663a683-a2e5-43dd-866c-8e0555aaa928.webp"
             },
             {
               "id": "other-e13-アイ",
-              "name": "アイ",
+              "name": "そっと絡まる機械の指先 アイ",
               "main": "雷",
               "sub": "火",
               "image": "barentain2014/820cc7c4-94e4-4f4a-9d31-c62a3c74bb6e.webp"
             },
             {
               "id": "other-e13-ミミ-ララ",
-              "name": "ミミ＆ララ",
+              "name": "ミラクルツインハート ミミ＆ララ",
               "main": "火",
               "sub": "光",
               "image": "barentain2014/07e88866-74b7-4450-8be8-b542fe545bfd.webp"
             },
             {
               "id": "other-e13-エトワール",
-              "name": "エトワール",
+              "name": "純真なる甘愛 エトワール・ブリュネ",
               "main": "雷",
               "sub": "火",
               "image": "barentain2014/c225cd16-482d-43d0-a007-da7ba75ddbc1.webp"
@@ -12250,21 +12293,21 @@
           "spirits": [
             {
               "id": "other-e12-miumiu",
-              "name": "MIUMIU",
+              "name": "学園アイドル伝説 MIU☆MIU",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna2/cdf71f57-83d8-40ea-8f59-fbc9f9f99365.webp"
             },
             {
               "id": "other-e12-アーシア",
-              "name": "アーシア",
+              "name": "可憐に咲き誇る アーシア・ベネット",
               "main": "水",
               "sub": "水",
               "image": "kuromumaguna2/f0de72eb-376c-4370-abae-a75bc15b42d4.webp"
             },
             {
               "id": "other-e12-カエデ",
-              "name": "カエデ",
+              "name": "真なる鉄壁 カエデ・ジングウジ",
               "main": "雷",
               "sub": "水",
               "image": "kuromumaguna2/4ea7f720-1db6-41c1-a2db-fcdbf657e5a6.webp"
@@ -12329,28 +12372,28 @@
           "spirits": [
             {
               "id": "other-e11-リンカ",
-              "name": "リンカ",
+              "name": "大義の灼刃 リンカ・ワイアット",
               "main": "火",
               "sub": "火",
               "image": "kuromumaguna1/9af7cbc8-e509-42c7-b49f-f716c999bfdf.webp"
             },
             {
               "id": "other-e11-ヴォルフ",
-              "name": "ヴォルフ",
-              "main": "雷",
+              "name": "猛き獣の統率者 ヴォルフ・ロイ",
+              "main": "火",
               "sub": "火",
               "image": "kuromumaguna1/2049082d-a3c6-4460-a356-b5afb4074a25.webp"
             },
             {
               "id": "other-e11-シャーリー",
-              "name": "シャーリー",
+              "name": "閃雷の銃撃 シャーリー・コルト",
               "main": "雷",
               "sub": "火",
               "image": "kuromumaguna1/a7f2e1c6-4e59-4b04-a121-17bbc24ac18c.webp"
             },
             {
               "id": "other-e11-ニコラ",
-              "name": "ニコラ",
+              "name": "轟雷の機弓 ニコラ・モーガン",
               "main": "雷",
               "sub": "雷",
               "image": "kuromumaguna1/53701d84-f020-4c6d-8636-caeec689de30.webp"
@@ -12385,6 +12428,78 @@
       "id": "kollabo",
       "title": "コラボガチャ",
       "events": [
+        {
+          "id": "recent-e295",
+          "abbr": "黒猫ハルヒコラボ",
+          "title": "涼宮ハルヒの響命",
+          "storageFolder": "kuronekoharuhikorabo",
+          "spirits": [
+            {
+              "id": "recent-e295-みくる",
+              "name": "みくる",
+              "main": "雷",
+              "sub": "火",
+              "image": "kuronekoharuhikorabo/9c669361-37fe-40bf-ae74-83023c992dce.webp"
+            },
+            {
+              "id": "recent-e295-エニィ",
+              "name": "エニィ",
+              "main": "雷",
+              "sub": "水",
+              "image": "kuronekoharuhikorabo/346787eb-2299-4afc-bb44-f5fb178ff0eb.webp"
+            },
+            {
+              "id": "recent-e295-長門",
+              "name": "長門",
+              "main": "水",
+              "sub": "雷",
+              "image": "kuronekoharuhikorabo/233e3fdf-290c-47af-a67a-e273d6dc7243.webp"
+            },
+            {
+              "id": "recent-e295-ハルヒ",
+              "name": "ハルヒ",
+              "main": "火",
+              "sub": "光",
+              "image": "kuronekoharuhikorabo/e00c549a-1656-4f9b-907b-52f9a8b6fe43.webp"
+            }
+          ]
+        },
+        {
+          "id": "ロックマンエグゼコラボ-mr8488jz",
+          "abbr": "ロックマンエグゼコラボ",
+          "title": "ロックマンエグゼ オペレーション幻魔特区",
+          "storageFolder": "event",
+          "spirits": [
+            {
+              "id": "ロックマンエグゼコラボ-mr8488jz-閃光の青き戦士-ロックマン-mr84892n-1",
+              "name": "閃光の青き戦士 ロックマン",
+              "main": "水",
+              "sub": "火",
+              "image": "event/5a3dbc33-0582-4557-9e05-8827570700ad.webp"
+            },
+            {
+              "id": "ロックマンエグゼコラボ-mr8488jz-神速の赤き剣士-ブルース-mr8489cs-2",
+              "name": "神速の赤き剣士 ブルース",
+              "main": "火",
+              "sub": "水",
+              "image": "event/d5259a78-b6e0-4afb-937d-6494ba221b08.webp"
+            },
+            {
+              "id": "ロックマンエグゼコラボ-mr8488jz-孤高にして最強-フォルテ-mr8489ju-3",
+              "name": "孤高にして最強 フォルテ",
+              "main": "雷",
+              "sub": "闇",
+              "image": "event/307d3b4f-4e2e-48ec-86f8-7956f6696ed8.webp"
+            },
+            {
+              "id": "ロックマンエグゼコラボ-mr8488jz-融和の英雄-キワム-アウデアムス-mr8489pc-4",
+              "name": "融和の英雄 キワム&アウデアムス",
+              "main": "雷",
+              "sub": "闇",
+              "image": "event/6dd33f50-7954-4320-936c-f93b3b485761.webp"
+            }
+          ]
+        },
         {
           "id": "kollabo-e281",
           "abbr": "マジルミエコラボ",
@@ -13333,6 +13448,28 @@
           ]
         },
         {
+          "id": "kollabo-sailormoon",
+          "abbr": "セーラームーンコラボ",
+          "title": "SAILORMOON 黒き月の侵略者/2匹の黒猫",
+          "storageFolder": "seeraamuunkorabo",
+          "spirits": [
+            {
+              "id": "kollabo-sailormoon-セーラームーン-ちびうさ",
+              "name": "セーラームーン＆ちびうさ",
+              "main": "雷",
+              "sub": "水",
+              "image": "seeraamuunkorabo/a05c7483-564a-441d-8d5e-c597c4f2c7db.webp"
+            },
+            {
+              "id": "kollabo-sailormoon-セレニティ-エンディミオン",
+              "name": "セレニティ＆エンディミオン",
+              "main": "雷",
+              "sub": "光",
+              "image": "seeraamuunkorabo/c2b7cfa8-818a-42f4-b735-f54ce1a39e5d.webp"
+            }
+          ]
+        },
+        {
           "id": "kollabo-e38",
           "abbr": "白猫コラボ2015",
           "title": "白猫の仲間と冒険にゃ！",
@@ -13384,44 +13521,44 @@
         },
         {
           "id": "kollabo-e35",
-          "abbr": "セーラームーンコラボ",
+          "abbr": "進撃の巨人コラボ",
           "title": "進撃の巨人、反撃の黒猫！",
-          "storageFolder": "seeraamuunkorabo",
+          "storageFolder": "shingekinokyojinkorabo",
           "spirits": [
             {
               "id": "kollabo-e35-エレン",
               "name": "エレン",
               "main": "雷",
               "sub": "火",
-              "image": "seeraamuunkorabo/82230bae-298f-4e32-aa8d-90c4bab7f23f.webp"
+              "image": "shingekinokyojinkorabo/82230bae-298f-4e32-aa8d-90c4bab7f23f.webp"
             },
             {
               "id": "kollabo-e35-リヴァイ",
               "name": "リヴァイ",
               "main": "水",
               "sub": "光",
-              "image": "seeraamuunkorabo/bffc39b0-ae1d-41e1-8389-82a3695ccc90.webp"
+              "image": "shingekinokyojinkorabo/bffc39b0-ae1d-41e1-8389-82a3695ccc90.webp"
             },
             {
               "id": "kollabo-e35-ミカサ",
               "name": "ミカサ",
               "main": "雷",
               "sub": "水",
-              "image": "seeraamuunkorabo/9da97678-4704-412d-968d-8e075e14aad0.webp"
+              "image": "shingekinokyojinkorabo/9da97678-4704-412d-968d-8e075e14aad0.webp"
             },
             {
               "id": "kollabo-e35-ミカサ-2",
               "name": "ミカサ",
               "main": "雷",
               "sub": "火",
-              "image": "seeraamuunkorabo/1416656d-9a02-4039-9fb6-07c9973e3f50.webp"
+              "image": "shingekinokyojinkorabo/1416656d-9a02-4039-9fb6-07c9973e3f50.webp"
             },
             {
               "id": "kollabo-e35-リヴァイ-2",
               "name": "リヴァイ",
               "main": "水",
               "sub": "水",
-              "image": "seeraamuunkorabo/95d33cdd-0546-470c-a083-264c9949e781.webp"
+              "image": "shingekinokyojinkorabo/95d33cdd-0546-470c-a083-264c9949e781.webp"
             }
           ]
         },
@@ -13540,56 +13677,56 @@
           "spirits": [
             {
               "id": "charapre-e97-ジェニファー",
-              "name": "ジェニファー",
+              "name": "大冒険中毒 ジェニファー・アボット",
               "main": "火",
               "sub": "光",
               "image": "dlgentei-kyarapuretaishou/2ccc1501-a485-4d8f-9566-6a0851865310.webp"
             },
             {
               "id": "charapre-e97-ウル",
-              "name": "ウル",
+              "name": "紅涙の破壊嬢 ウル・メルフェゴール",
               "main": "火",
               "sub": "火",
               "image": "dlgentei-kyarapuretaishou/8611f2de-efdb-42b1-9d2f-bfa1052adf9f.webp"
             },
             {
               "id": "charapre-e97-アーサー-アリオテス",
-              "name": "アーサー＆アリオテス",
+              "name": "若き日の聖剣王と覇眼王 《邂逅》",
               "main": "雷",
               "sub": "雷",
               "image": "dlgentei-kyarapuretaishou/7a1e9a93-49e3-4a8d-bc49-82e99f667336.webp"
             },
             {
               "id": "charapre-e97-アルル-ヴィクトリア",
-              "name": "アルル＆ヴィクトリア",
+              "name": "勝利に突撃！ アルル＆ヴィクトリア",
               "main": "雷",
               "sub": "火",
               "image": "dlgentei-kyarapuretaishou/d63f7366-f683-4fad-81d4-fa04a7ec1843.webp"
             },
             {
               "id": "charapre-e97-ヤエ-ヒサメ",
-              "name": "ヤエ＆ヒサメ",
+              "name": "想いは、はるか天高く ヤエ＆ヒサメ",
               "main": "水",
               "sub": "光",
               "image": "dlgentei-kyarapuretaishou/f73763cb-bfb8-4aa4-92f7-fdc8fb71f9c3.webp"
             },
             {
               "id": "charapre-e97-エニィ-クラン",
-              "name": "エニィ＆クラン",
+              "name": "Like Sisters エニィ＆クラン",
               "main": "水",
               "sub": "水",
               "image": "dlgentei-kyarapuretaishou/44e568e9-0620-4a87-941e-57e1c0ee3829.webp"
             },
             {
               "id": "charapre-e97-シエオラ-プラーミャ",
-              "name": "シエオラ＆プラーミャ",
+              "name": "誘う幻想顕界 シエオラ＆プラーミャ",
               "main": "火",
               "sub": "光",
               "image": "dlgentei-kyarapuretaishou/77c848a3-55d3-4126-a175-648c7ec31a76.webp"
             },
             {
               "id": "charapre-e97-アデレード-ミネバ",
-              "name": "アデレード＆ミネバ",
+              "name": "双竜天翔 アデレード＆ミネバ",
               "main": "火",
               "sub": "光",
               "image": "dlgentei-kyarapuretaishou/81040f67-c6aa-470d-b461-7d300a292824.webp"
@@ -13884,7 +14021,7 @@
             },
             {
               "id": "download-e97-エミリア",
-              "name": "エミリア",
+              "name": "「妹」の極み エミリア・トドロキ",
               "main": "火",
               "sub": "火",
               "image": "dlgentei/1d1f5f49-15fa-41dd-9a80-b5a36bb95fe5.webp"
@@ -14108,7 +14245,7 @@
             },
             {
               "id": "charapre-wizsele-シエオラ",
-              "name": "シエオラ",
+              "name": "気高き不可侵の光貌 シエオラ",
               "main": "水",
               "sub": "光",
               "image": "wizselection/0894dc40-a2cf-495e-b8b5-1c4e1df0cf70.webp"

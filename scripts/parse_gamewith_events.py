@@ -25,7 +25,7 @@ EVENT_SECTION_OVERRIDES = {
 
 EVENT_BLOCK_RE = re.compile(
     r'<h3 class="event-title (?P<gw_id>e\d+)"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
-    r'(?:<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*)?'
+    r'(?:<p>(?P<title_block>.*?)</p>\s*)?'
     r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
     re.DOTALL,
 )
@@ -40,6 +40,17 @@ SPIRIT_IMG_RE = re.compile(
     re.DOTALL,
 )
 H2_SPLIT_RE = re.compile(r'<h2 id="([^"]+)">([^<]+)</h2>')
+BOLDER_SPAN_RE = re.compile(
+    r"<span class=['\"]bolder['\"]>(?P<text>[^<]+)</span>",
+    re.DOTALL,
+)
+
+
+def extract_title_from_block(title_block: str | None) -> str:
+    if not title_block:
+        return ""
+    parts = [m.group("text").strip() for m in BOLDER_SPAN_RE.finditer(title_block)]
+    return "/".join(part for part in parts if part)
 
 
 def slugify(value: str) -> str:
@@ -86,7 +97,7 @@ def parse_events(html: str) -> tuple[list[dict], list[dict]]:
             sort_order += 1
             gw_id = match.groupdict().get("gw_id") or "wizsele"
             abbr = match.group("abbr").strip()
-            title = (match.group("title") or "").strip()
+            title = extract_title_from_block(match.groupdict().get("title_block"))
             abbr, title = normalize_event_names(abbr, title)
             target_section_id = EVENT_SECTION_OVERRIDES.get(abbr, section_id)
             if gw_id == "wizsele":

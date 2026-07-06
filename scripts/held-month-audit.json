@@ -1,0 +1,353 @@
+{
+  "suspicious": [
+    {
+      "id": "kollabo-e35",
+      "abbr": "セーラームーンコラボ",
+      "title": "進撃の巨人、反撃の黒猫！",
+      "section_id": "kollabo",
+      "held_year": 2014,
+      "held_month": 8,
+      "category": "コラボ",
+      "chrono_match": [
+        "セーラームーン黒き月の侵略者",
+        2018,
+        3,
+        507
+      ],
+      "reasons": [
+        "年表最良一致「セーラームーン黒き月の侵略者」は 2018/03（score=507）だが DB は 2014/08"
+      ]
+    },
+    {
+      "id": "kollabo-e39",
+      "abbr": "エヴァンゲリオンコラボ1",
+      "title": "ヱヴァンゲリヲン新劇場版コラボ",
+      "section_id": "kollabo",
+      "held_year": 2015,
+      "held_month": 2,
+      "category": "コラボ",
+      "chrono_match": [
+        "エヴァンゲリオン2 幻想と歪曲の槍",
+        2016,
+        7,
+        508
+      ],
+      "reasons": [
+        "年表最良一致「エヴァンゲリオン2 幻想と歪曲の槍」は 2016/07（score=508）だが DB は 2015/02"
+      ]
+    },
+    {
+      "id": "kollabo-e48",
+      "abbr": "高橋留美子コラボ",
+      "title": "境界のRINNEと黒猫の魔法使い",
+      "section_id": "kollabo",
+      "held_year": 2015,
+      "held_month": 6,
+      "category": "コラボ",
+      "chrono_match": [
+        "境界のRINNEと黒猫の魔法使い",
+        2018,
+        4,
+        1000
+      ],
+      "reasons": [
+        "年表最良一致「境界のRINNEと黒猫の魔法使い」は 2018/04（score=1000）だが DB は 2015/06",
+        "DBは別候補「境界のRINNEと黒猫の魔法使い」2015/06と一致、最良スコアは「境界のRINNEと黒猫の魔法使い」2018/04"
+      ]
+    },
+    {
+      "id": "kollabo-e59",
+      "abbr": "名探偵コナンコラボ",
+      "title": "魔法世界の来訪者",
+      "section_id": "kollabo",
+      "held_year": 2015,
+      "held_month": 12,
+      "category": "コラボ",
+      "chrono_match": [
+        "名探偵コナン魔法世界の来訪者",
+        2018,
+        5,
+        508
+      ],
+      "reasons": [
+        "年表最良一致「名探偵コナン魔法世界の来訪者」は 2018/05（score=508）だが DB は 2015/12",
+        "DBは別候補「名探偵コナン魔法世界の来訪者」2015/12と一致、最良スコアは「名探偵コナン魔法世界の来訪者」2018/05"
+      ]
+    },
+    {
+      "id": "kollabo-e63",
+      "abbr": "グリココラボ3",
+      "title": "ハッピースイーツカーニバル",
+      "section_id": "kollabo",
+      "held_year": 2016,
+      "held_month": 5,
+      "category": "コラボ",
+      "chrono_match": [
+        "マジカルグリコクエストⅢ",
+        2017,
+        5,
+        503
+      ],
+      "reasons": [
+        "年表最良一致「マジカルグリコクエストⅢ」は 2017/05（score=503）だが DB は 2016/05"
+      ]
+    },
+    {
+      "id": "kollabo-e76",
+      "abbr": "真夏のグレートクイズウォー",
+      "title": "真夏のグレートクイズウォー",
+      "section_id": "kollabo",
+      "held_year": 2016,
+      "held_month": 7,
+      "category": "コラボ",
+      "chrono_match": [
+        "真夏のグレートクイズウォー",
+        2017,
+        9,
+        1000
+      ],
+      "reasons": [
+        "年表最良一致「真夏のグレートクイズウォー」は 2017/09（score=1000）だが DB は 2016/07",
+        "DBは別候補「真夏のグレートクイズウォー」2016/07と一致、最良スコアは「真夏のグレートクイズウォー」2017/09"
+      ]
+    },
+    {
+      "id": "recent-e306",
+      "abbr": "レディアント2",
+      "title": "追憶のレディアント 銀の慟哭、金の祝福",
+      "section_id": "recent",
+      "held_year": 2016,
+      "held_month": 10,
+      "category": "通常",
+      "chrono_match": [
+        "追憶のレディアント",
+        2016,
+        10,
+        509
+      ],
+      "reasons": [
+        "続編が初回イベントの年表にマッチしている可能性"
+      ]
+    },
+    {
+      "id": "other-e86",
+      "abbr": "その光は淡く碧く第2章",
+      "title": "その光は淡く碧く 第二章 儚き聖域",
+      "section_id": "other",
+      "held_year": 2017,
+      "held_month": 12,
+      "category": "通常",
+      "chrono_match": [
+        "その光は淡く碧く第二章",
+        2017,
+        12,
+        511
+      ],
+      "reasons": [
+        "続編が初回イベントの年表にマッチしている可能性"
+      ]
+    },
+    {
+      "id": "kollabo-e124",
+      "abbr": "カードキャプターさくらコラボ",
+      "title": "さくらと黒猫の魔法使い",
+      "section_id": "kollabo",
+      "held_year": 2018,
+      "held_month": 6,
+      "category": "コラボ",
+      "chrono_match": [
+        "カードキャプターさくらコラボ",
+        2023,
+        2,
+        1000
+      ],
+      "reasons": [
+        "年表最良一致「カードキャプターさくらコラボ」は 2023/02（score=1000）だが DB は 2018/06",
+        "DBは別候補「カードキャプターさくらコラボ」2018/06と一致、最良スコアは「カードキャプターさくらコラボ」2023/02"
+      ]
+    },
+    {
+      "id": "charapre-e166",
+      "abbr": "7周年記念",
+      "title": "7th Anniversary ~エリア13プロローグ~",
+      "section_id": "charapre",
+      "held_year": 2019,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "7周年記念",
+        2020,
+        3,
+        1000
+      ],
+      "reasons": [
+        "年表最良一致「7周年記念」は 2020/03（score=1000）だが DB は 2019/06"
+      ]
+    },
+    {
+      "id": "charapre-e191",
+      "abbr": "8周年記念",
+      "title": "8th Anniversary",
+      "section_id": "charapre",
+      "held_year": 2020,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "8周年記念",
+        2021,
+        3,
+        1000
+      ],
+      "reasons": [
+        "年表最良一致「8周年記念」は 2021/03（score=1000）だが DB は 2020/06"
+      ]
+    },
+    {
+      "id": "charapre-e236",
+      "abbr": "10周年記念前半",
+      "title": "THE LEGENDS of WIZ Ⅰ",
+      "section_id": "charapre",
+      "held_year": 2022,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "THE LEGENDS of WIZ ～蒼穹ノ解放軍～",
+        2025,
+        3,
+        15
+      ],
+      "reasons": [
+        "年表最良一致「THE LEGENDS of WIZ ～蒼穹ノ解放軍～」は 2025/03（score=15）だが DB は 2022/06"
+      ]
+    },
+    {
+      "id": "charapre-e238",
+      "abbr": "10周年記念後半",
+      "title": "THE LEGENDS of WIZ II",
+      "section_id": "charapre",
+      "held_year": 2022,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "THE LEGENDS of WIZ ～蒼穹ノ解放軍～",
+        2025,
+        3,
+        15
+      ],
+      "reasons": [
+        "年表最良一致「THE LEGENDS of WIZ ～蒼穹ノ解放軍～」は 2025/03（score=15）だが DB は 2022/06"
+      ]
+    },
+    {
+      "id": "recent-e262",
+      "abbr": "11周年記念",
+      "title": "THE LEGENDS of WIZ III",
+      "section_id": "recent",
+      "held_year": 2023,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "THE LEGENDS of WIZ ～蒼穹ノ解放軍～",
+        2025,
+        3,
+        15
+      ],
+      "reasons": [
+        "年表最良一致「THE LEGENDS of WIZ ～蒼穹ノ解放軍～」は 2025/03（score=15）だが DB は 2023/06"
+      ]
+    },
+    {
+      "id": "recent-e252",
+      "abbr": "ハロウィン2023",
+      "title": "The Darkness Halloween",
+      "section_id": "recent",
+      "held_year": 2023,
+      "held_month": 10,
+      "category": "通常",
+      "chrono_match": [
+        "Halloween Night(ハロウィンナイト)",
+        2014,
+        10,
+        9
+      ],
+      "reasons": [
+        "年表最良一致「Halloween Night(ハロウィンナイト)」は 2014/10（score=9）だが DB は 2023/10"
+      ]
+    },
+    {
+      "id": "recent-e284",
+      "abbr": "12周年記念",
+      "title": "THE LEGENDS of WIZ Ⅳ",
+      "section_id": "recent",
+      "held_year": 2024,
+      "held_month": 6,
+      "category": "通常",
+      "chrono_match": [
+        "THE LEGENDS of WIZ ～蒼穹ノ解放軍～",
+        2025,
+        3,
+        15
+      ],
+      "reasons": [
+        "年表最良一致「THE LEGENDS of WIZ ～蒼穹ノ解放軍～」は 2025/03（score=15）だが DB は 2024/06"
+      ]
+    },
+    {
+      "id": "recent-e300",
+      "abbr": "ハロウィン2025",
+      "title": "Night of the Halloween Fantasia",
+      "section_id": "recent",
+      "held_year": 2025,
+      "held_month": 10,
+      "category": "通常",
+      "chrono_match": [
+        "Halloween Night(ハロウィンナイト)",
+        2014,
+        10,
+        9
+      ],
+      "reasons": [
+        "年表最良一致「Halloween Night(ハロウィンナイト)」は 2014/10（score=9）だが DB は 2025/10"
+      ]
+    },
+    {
+      "id": "recent-e311",
+      "abbr": "クロマグゼロ2",
+      "title": "クロム・マグナゼロEPISODEⅡ Vanishing Blood",
+      "section_id": "recent",
+      "held_year": 2026,
+      "held_month": 4,
+      "category": "通常",
+      "chrono_match": [
+        "クロムマグナゼロ",
+        2016,
+        8,
+        508
+      ],
+      "reasons": [
+        "年表最良一致「クロムマグナゼロ」は 2016/08（score=508）だが DB は 2026/04",
+        "続編が初回イベントの年表にマッチしている可能性"
+      ]
+    },
+    {
+      "id": "kamisanpo3",
+      "abbr": "かみさんぽっ3",
+      "title": "かみさんぽっ!人と妖精の国アイリー",
+      "section_id": "latest",
+      "held_year": 2026,
+      "held_month": 5,
+      "category": "通常",
+      "chrono_match": [
+        "かみさんぽっ",
+        2023,
+        7,
+        506
+      ],
+      "reasons": [
+        "年表最良一致「かみさんぽっ」は 2023/07（score=506）だが DB は 2026/05",
+        "続編略称が初回イベント名にマッチしている可能性"
+      ]
+    }
+  ],
+  "total": 312
+}

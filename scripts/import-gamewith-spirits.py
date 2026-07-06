@@ -19,7 +19,7 @@ import requests
 from PIL import Image
 
 from romaji_slug import abbr_to_storage_folder
-from parse_gamewith_events import normalize_event_names
+from parse_gamewith_events import extract_title_from_block, normalize_event_names
 from spirit_attribute_detect import detect_spirit_attributes_from_bytes, normalize_attributes
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +36,7 @@ SPIRIT_IMAGE_SIZE = 128
 
 EVENT_BLOCK_RE = re.compile(
     r'<h3 class="event-title (?P<gw_id>e\d+)"[^>]*>\s*(?P<abbr>[^<]+?)<a[^>]*>.*?</a>\s*</h3>\s*'
-    r'(?:<p>\s*<span class=[\'"]bolder[\'"]>(?P<title>[^<]+)</span>\s*</p>\s*)?'
+    r'(?:<p>(?P<title_block>.*?)</p>\s*)?'
     r'<ol class="w-checker-group[^"]*">(?P<spirits>.*?)</ol>',
     re.DOTALL,
 )
@@ -143,17 +143,24 @@ def supabase_headers(*, prefer: str | None = None) -> dict[str, str]:
 
 def sync_catalog_to_supabase(result: dict) -> None:
     event = result["event"]
+    row = {
+        "id": event["id"],
+        "section_id": event["section_id"],
+        "abbr": event["abbr"],
+        "title": event["title"],
+        "storage_folder": event["storage_folder"],
+        "sort_order": event["sort_order"],
+    }
+    if event.get("category"):
+        row["category"] = event["category"]
+    if event.get("held_year"):
+        row["held_year"] = event["held_year"]
+    if event.get("held_month"):
+        row["held_month"] = event["held_month"]
     event_response = requests.post(
         f"{SUPABASE_URL}/rest/v1/catalog_events",
         headers=supabase_headers(prefer="resolution=merge-duplicates"),
-        json={
-            "id": event["id"],
-            "section_id": event["section_id"],
-            "abbr": event["abbr"],
-            "title": event["title"],
-            "storage_folder": event["storage_folder"],
-            "sort_order": event["sort_order"],
-        },
+        json=row,
         timeout=60,
     )
     event_response.raise_for_status()
@@ -191,8 +198,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--abbr", required=True, help="イベント略称 (例: かみさんぽっ3)")
     parser.add_argument("--event-id", required=True, help="イベント ID (例: kamisanpo3)")
+    parser.add_argument("--title", help="正式名称（HTML から取れない場合に指定）")
     parser.add_argument("--section-id", default="latest")
     parser.add_argument("--sort-order", type=int, default=1)
+    parser.add_argument("--held-year", type=int)
+    parser.add_argument("--held-month", type=int)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--local-dir", type=Path, default=ROOT / "images" / "spirits")
     parser.add_argument("--save-local", action="store_true", help="PC 内 images/spirits に PNG を保存")
@@ -208,19 +218,29 @@ def main() -> None:
 
     html = args.source.read_text(encoding="utf-8")
     block = find_event_block(html, args.abbr)
-    abbr, title = normalize_event_names(args.abbr.strip(), (block.group("title") or "").strip())
+    title_from_html = extract_title_from_block(block.groupdict().get("title_block"))
+    title = (args.title or title_from_html).strip()
+    abbr, title = normalize_event_names(args.abbr.strip(), title)
     spirits = parse_spirits(block.group("spirits"))
     id_slugs = json.loads(args.id_slugs.read_text(encoding="utf-8")) if args.id_slugs else {}
 
+    event_row = {
+        "id": args.event_id,
+        "section_id": args.section_id,
+        "abbr": abbr,
+        "title": title,
+        "storage_folder": abbr_to_storage_folder(abbr, event_id=args.event_id),
+        "sort_order": args.sort_order,
+    }
+    if args.section_id == "kollabo":
+        event_row["category"] = "コラボ"
+    if args.held_year:
+        event_row["held_year"] = args.held_year
+    if args.held_month:
+        event_row["held_month"] = args.held_month
+
     result = {
-        "event": {
-            "id": args.event_id,
-            "section_id": args.section_id,
-            "abbr": abbr,
-            "title": title,
-            "storage_folder": abbr_to_storage_folder(abbr, event_id=args.event_id),
-            "sort_order": args.sort_order,
-        },
+        "event": event_row,
         "spirits": [],
     }
 

@@ -10,7 +10,7 @@ UPDATE public.catalog_events SET held_year = 2017, held_month = 10 WHERE id = 'c
 UPDATE public.catalog_events SET held_year = 2017, held_month = 8 WHERE id = 'charapre-e104';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 8 WHERE id = 'charapre-e103';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 7 WHERE id = 'charapre-e102';
-UPDATE public.catalog_events SET held_year = 2016, held_month = 4 WHERE id = 'charapre-e101';
+UPDATE public.catalog_events SET held_year = 2017, held_month = 7 WHERE id = 'charapre-e101';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 6 WHERE id = 'charapre-e100';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 6 WHERE id = 'charapre-e99';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 3 WHERE id = 'charapre-e98';
@@ -35,7 +35,7 @@ UPDATE public.catalog_events SET held_year = 2026, held_month = 3 WHERE id = 're
 UPDATE public.catalog_events SET held_year = 2026, held_month = 4 WHERE id = 'recent-e312';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 3 WHERE id = 'recent-e310';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 3 WHERE id = 'recent-e309';
-UPDATE public.catalog_events SET held_year = 2016, held_month = 10 WHERE id = 'recent-e306';
+UPDATE public.catalog_events SET held_year = 2026, held_month = 1 WHERE id = 'recent-e306';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 1 WHERE id = 'recent-e304';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 1 WHERE id = 'recent-e305';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 12 WHERE id = 'recent-e303';
@@ -69,7 +69,7 @@ UPDATE public.catalog_events SET held_year = 2025, held_month = 4 WHERE id = 're
 UPDATE public.catalog_events SET held_year = 2025, held_month = 4 WHERE id = 'recent-e287';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 3 WHERE id = 'recent-e286';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 3 WHERE id = 'recent-e285';
-UPDATE public.catalog_events SET held_year = 2024, held_month = 6 WHERE id = 'recent-e284';
+UPDATE public.catalog_events SET held_year = 2025, held_month = 3 WHERE id = 'recent-e284';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 2 WHERE id = 'recent-e283';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 1 WHERE id = 'recent-e282';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 1 WHERE id = 'recent-e280';
@@ -86,8 +86,8 @@ UPDATE public.catalog_events SET held_year = 2024, held_month = 7 WHERE id = 're
 UPDATE public.catalog_events SET held_year = 2024, held_month = 6 WHERE id = 'recent-e267';
 UPDATE public.catalog_events SET held_year = 2024, held_month = 5 WHERE id = 'recent-e266';
 UPDATE public.catalog_events SET held_year = 2024, held_month = 5 WHERE id = 'recent-e265';
-UPDATE public.catalog_events SET held_year = 2016, held_month = 4 WHERE id = 'recent-e263';
-UPDATE public.catalog_events SET held_year = 2023, held_month = 6 WHERE id = 'recent-e262';
+UPDATE public.catalog_events SET held_year = 2024, held_month = 4 WHERE id = 'recent-e263';
+UPDATE public.catalog_events SET held_year = 2024, held_month = 3 WHERE id = 'recent-e262';
 UPDATE public.catalog_events SET held_year = 2024, held_month = 2 WHERE id = 'recent-e259';
 UPDATE public.catalog_events SET held_year = 2024, held_month = 1 WHERE id = 'recent-e258';
 UPDATE public.catalog_events SET held_year = 2024, held_month = 1 WHERE id = 'recent-e257';
@@ -105,13 +105,13 @@ UPDATE public.catalog_events SET held_year = 2023, held_month = 7 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2023, held_month = 7 WHERE id = 'charapre-e244';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 6 WHERE id = 'charapre-e243';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 5 WHERE id = 'charapre-e242';
-UPDATE public.catalog_events SET held_year = 2022, held_month = 6 WHERE id = 'charapre-e238';
+UPDATE public.catalog_events SET held_year = 2023, held_month = 3 WHERE id = 'charapre-e238';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 3 WHERE id = 'charapre-e237';
-UPDATE public.catalog_events SET held_year = 2022, held_month = 6 WHERE id = 'charapre-e236';
+UPDATE public.catalog_events SET held_year = 2023, held_month = 3 WHERE id = 'charapre-e236';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 2 WHERE id = 'charapre-e235';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 4 WHERE id = 'charapre-e240';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 4 WHERE id = 'charapre-e239';
-UPDATE public.catalog_events SET held_year = 2016, held_month = 5 WHERE id = 'charapre-e233';
+UPDATE public.catalog_events SET held_year = 2023, held_month = 1 WHERE id = 'charapre-e233';
 UPDATE public.catalog_events SET held_year = 2023, held_month = 1 WHERE id = 'charapre-e232';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 11 WHERE id = 'charapre-e230';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 11 WHERE id = 'charapre-e229';
@@ -129,7 +129,7 @@ UPDATE public.catalog_events SET held_year = 2022, held_month = 5 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2022, held_month = 4 WHERE id = 'charapre-e215';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 3 WHERE id = 'charapre-e214';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 3 WHERE id = 'charapre-e213';
-UPDATE public.catalog_events SET held_year = 2021, held_month = 6 WHERE id = 'charapre-e212';
+UPDATE public.catalog_events SET held_year = 2022, held_month = 3 WHERE id = 'charapre-e212';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 3 WHERE id = 'charapre-e210';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 3 WHERE id = 'charapre-e209';
 UPDATE public.catalog_events SET held_year = 2022, held_month = 1 WHERE id = 'charapre-e208';
@@ -146,7 +146,7 @@ UPDATE public.catalog_events SET held_year = 2021, held_month = 5 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2021, held_month = 5 WHERE id = 'charapre-e195';
 UPDATE public.catalog_events SET held_year = 2021, held_month = 3 WHERE id = 'charapre-e193';
 UPDATE public.catalog_events SET held_year = 2021, held_month = 3 WHERE id = 'charapre-e192';
-UPDATE public.catalog_events SET held_year = 2020, held_month = 6 WHERE id = 'charapre-e191';
+UPDATE public.catalog_events SET held_year = 2021, held_month = 3 WHERE id = 'charapre-e191';
 UPDATE public.catalog_events SET held_year = 2021, held_month = 2 WHERE id = 'charapre-e190';
 UPDATE public.catalog_events SET held_year = 2021, held_month = 1 WHERE id = 'charapre-e189';
 UPDATE public.catalog_events SET held_year = 2021, held_month = 1 WHERE id = 'charapre-e187';
@@ -164,7 +164,7 @@ UPDATE public.catalog_events SET held_year = 2020, held_month = 5 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2020, held_month = 4 WHERE id = 'charapre-e169';
 UPDATE public.catalog_events SET held_year = 2020, held_month = 3 WHERE id = 'charapre-e168';
 UPDATE public.catalog_events SET held_year = 2020, held_month = 3 WHERE id = 'charapre-e167';
-UPDATE public.catalog_events SET held_year = 2019, held_month = 6 WHERE id = 'charapre-e166';
+UPDATE public.catalog_events SET held_year = 2020, held_month = 3 WHERE id = 'charapre-e166';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 7 WHERE id = 'charapre-e127';
 UPDATE public.catalog_events SET held_year = 2020, held_month = 1 WHERE id = 'charapre-e163';
 UPDATE public.catalog_events SET held_year = 2020, held_month = 1 WHERE id = 'charapre-e162';
@@ -185,7 +185,7 @@ UPDATE public.catalog_events SET held_year = 2019, held_month = 5 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2019, held_month = 4 WHERE id = 'charapre-e144';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 3 WHERE id = 'charapre-e143';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 3 WHERE id = 'charapre-e142';
-UPDATE public.catalog_events SET held_year = 2018, held_month = 6 WHERE id = 'charapre-e141';
+UPDATE public.catalog_events SET held_year = 2019, held_month = 3 WHERE id = 'charapre-e141';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 2 WHERE id = 'charapre-e140';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 1 WHERE id = 'charapre-e139';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 5 WHERE id = 'charapre-e138';
@@ -203,7 +203,7 @@ UPDATE public.catalog_events SET held_year = 2018, held_month = 5 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2018, held_month = 5 WHERE id = 'charapre-e121';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 4 WHERE id = 'charapre-e120';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 3 WHERE id = 'charapre-e118';
-UPDATE public.catalog_events SET held_year = 2017, held_month = 6 WHERE id = 'charapre-e117';
+UPDATE public.catalog_events SET held_year = 2018, held_month = 3 WHERE id = 'charapre-e117';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 1 WHERE id = 'charapre-e115';
 UPDATE public.catalog_events SET held_year = 2018, held_month = 1 WHERE id = 'charapre-e114';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 5 WHERE id = 'charapre-e95';
@@ -244,8 +244,8 @@ UPDATE public.catalog_events SET held_year = 2016, held_month = 10 WHERE id = 'c
 UPDATE public.catalog_events SET held_year = 2016, held_month = 12 WHERE id = 'other-e85';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 8 WHERE id = 'other-e73';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 5 WHERE id = 'other-e70';
-UPDATE public.catalog_events SET held_year = 2015, held_month = 6 WHERE id = 'other-e66';
-UPDATE public.catalog_events SET held_year = 2015, held_month = 6 WHERE id = 'other-e65';
+UPDATE public.catalog_events SET held_year = 2016, held_month = 3 WHERE id = 'other-e66';
+UPDATE public.catalog_events SET held_year = 2016, held_month = 3 WHERE id = 'other-e65';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 2 WHERE id = 'other-e64';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 1 WHERE id = 'other-e61';
 UPDATE public.catalog_events SET held_year = 2015, held_month = 12 WHERE id = 'other-e58';
@@ -268,7 +268,7 @@ UPDATE public.catalog_events SET held_year = 2015, held_month = 8 WHERE id = 'ot
 UPDATE public.catalog_events SET held_year = 2013, held_month = 6 WHERE id = 'other-e29';
 UPDATE public.catalog_events SET held_year = 2013, held_month = 8 WHERE id = 'other-e23';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 12 WHERE id = 'other-e93';
-UPDATE public.catalog_events SET held_year = 2016, held_month = 6 WHERE id = 'other-e91';
+UPDATE public.catalog_events SET held_year = 2017, held_month = 3 WHERE id = 'other-e91';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 3 WHERE id = 'charapre-e92';
 UPDATE public.catalog_events SET held_year = 2013, held_month = 10 WHERE id = 'other-e28';
 UPDATE public.catalog_events SET held_year = 2017, held_month = 5 WHERE id = 'other-e20';
@@ -307,7 +307,7 @@ UPDATE public.catalog_events SET held_year = 2018, held_month = 2 WHERE id = 'ch
 UPDATE public.catalog_events SET held_year = 2017, held_month = 5 WHERE id = 'charapre-e89';
 UPDATE public.catalog_events SET held_year = 2016, held_month = 9 WHERE id = 'charapre-e80';
 UPDATE public.catalog_events SET held_year = 2019, held_month = 11 WHERE id = 'charapre-e22';
-UPDATE public.catalog_events SET held_year = 2017, held_month = 7 WHERE id = 'charapre-e42';
+UPDATE public.catalog_events SET held_year = 2015, held_month = 4 WHERE id = 'charapre-e42';
 UPDATE public.catalog_events SET held_year = 2025, held_month = 10 WHERE id = 'recent-e299';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 6 WHERE id = 'ソウルバンカー6-mr84gutc';
 UPDATE public.catalog_events SET held_year = 2026, held_month = 7 WHERE id = 'サマーコレクション2026-mr84pzee';
