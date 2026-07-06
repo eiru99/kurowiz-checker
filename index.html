@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250706h">
+    <link rel="stylesheet" href="css/styles.css?v=20250707a">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -62,6 +62,9 @@
                     </div>
                 </div>
 
+                <label for="admin-edit-event-category">カテゴリ</label>
+                <select id="admin-edit-event-category"></select>
+
                 <div class="edit-title-actions">
                     <button type="button" id="admin-edit-title-save-btn">タイトルを保存</button>
                     <button type="button" id="admin-edit-title-cancel-btn">キャンセル</button>
@@ -115,6 +118,9 @@
                         <span class="edit-event-held-month-sep">月</span>
                     </div>
                 </div>
+
+                <label for="admin-event-category">カテゴリ</label>
+                <select id="admin-event-category"></select>
             </div>
 
             <div id="spirit-details-block" hidden>
@@ -161,6 +167,6 @@
         </form>
     </dialog>
 
-    <script type="module" src="js/app.js?v=20250706i"></script>
+    <script type="module" src="js/app.js?v=20250707a"></script>
 </body>
 </html>

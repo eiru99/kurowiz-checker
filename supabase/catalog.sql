@@ -51,6 +51,9 @@ ALTER TABLE public.catalog_events
 ALTER TABLE public.catalog_events
     ADD COLUMN IF NOT EXISTS held_month integer;
 
+ALTER TABLE public.catalog_events
+    ADD COLUMN IF NOT EXISTS category text NOT NULL DEFAULT '通常';
+
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 

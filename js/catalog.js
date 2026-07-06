@@ -4,6 +4,37 @@ import { prepareSpiritImageFile } from './spirit-image.js';
 /** 画面上にセクション見出しを出さないカテゴリ */
 export const SECTIONS_WITHOUT_DISPLAY_TITLE = new Set(['latest', 'recent', 'charapre', 'other']);
 
+/** イベント編集時に選べる表示カテゴリ（セクション見出しのグループ） */
+export const EVENT_CATEGORIES = ['通常', 'コラボ', 'DL記念', 'ウィズセレ'];
+
+const NORMAL_SECTION_IDS = new Set(['latest', 'recent', 'charapre', 'other']);
+
+const CATEGORY_TO_SECTION_ID = {
+    '通常': 'latest',
+    'コラボ': 'kollabo',
+    'DL記念': 'download',
+    'ウィズセレ': 'wizselection'
+};
+
+/** section_id から表示カテゴリを推定 */
+export function sectionIdToCategory(sectionId) {
+    if (sectionId === 'kollabo') return 'コラボ';
+    if (sectionId === 'download') return 'DL記念';
+    if (sectionId === 'wizselection') return 'ウィズセレ';
+    return '通常';
+}
+
+/** カテゴリ変更時の section_id を決定（通常は既存の通常セクションを維持） */
+export function resolveSectionIdForCategory(category, currentSectionId = null) {
+    if (category === '通常') {
+        if (currentSectionId && NORMAL_SECTION_IDS.has(currentSectionId)) {
+            return currentSectionId;
+        }
+        return CATEGORY_TO_SECTION_ID['通常'];
+    }
+    return CATEGORY_TO_SECTION_ID[category] ?? CATEGORY_TO_SECTION_ID['通常'];
+}
+
 const KATAKANA_TO_HIRAGANA = 0x3041 - 0x30a1;
 
 function getWanakana() {
@@ -204,6 +235,7 @@ function buildCatalogFromRows(sections, events, spirits) {
                 id: event.id,
                 abbr: event.abbr,
                 title: event.title,
+                category: event.category ?? sectionIdToCategory(event.section_id),
                 heldYear: event.held_year ?? null,
                 heldMonth: event.held_month ?? null,
                 storageFolder: event.storage_folder ?? null,

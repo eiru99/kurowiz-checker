@@ -6,9 +6,12 @@ import {
     getSpiritImageUrl,
     abbrToStorageFolder,
     resolveStorageFolder,
+    EVENT_CATEGORIES,
+    resolveSectionIdForCategory,
+    sectionIdToCategory,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250706h';
+} from './catalog.js?v=20250707a';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
@@ -47,6 +50,7 @@ const editEventAbbrInput = document.getElementById('admin-edit-event-abbr');
 const editEventTitleInput = document.getElementById('admin-edit-event-title');
 const editEventYearInput = document.getElementById('admin-edit-event-year');
 const editEventMonthInput = document.getElementById('admin-edit-event-month');
+const editEventCategorySelect = document.getElementById('admin-edit-event-category');
 const editTitleSaveBtn = document.getElementById('admin-edit-title-save-btn');
 const editTitleCancelBtn = document.getElementById('admin-edit-title-cancel-btn');
 const eventModeExisting = document.getElementById('event-mode-existing');
@@ -59,6 +63,7 @@ const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
 const eventYearInput = document.getElementById('admin-event-year');
 const eventMonthInput = document.getElementById('admin-event-month');
+const eventCategorySelect = document.getElementById('admin-event-category');
 const eventNameAutoOcrToggle = document.getElementById('admin-event-name-auto-ocr');
 const spiritNameInput = document.getElementById('admin-spirit-name');
 const editNameBlock = document.getElementById('edit-name-block');
@@ -1146,6 +1151,17 @@ function fillSelectOptions(select, values) {
     }
 }
 
+function fillCategorySelect(select, selectedCategory = '通常') {
+    fillSelectOptions(select, EVENT_CATEGORIES);
+    select.value = EVENT_CATEGORIES.includes(selectedCategory) ? selectedCategory : '通常';
+}
+
+function getNextSortOrderInSection(sectionId) {
+    const inSection = catalogRows.events.filter(event => event.section_id === sectionId);
+    if (inSection.length === 0) return 1;
+    return Math.max(...inSection.map(event => event.sort_order ?? 0)) + 1;
+}
+
 function populateExistingEventSelect() {
     existingEventSelect.innerHTML = '';
     for (const section of catalogRows.sections) {
@@ -1175,6 +1191,7 @@ function populateExistingEventSelect() {
 }
 
 const DEFAULT_SECTION_ID = 'latest';
+const DEFAULT_EVENT_CATEGORY = '通常';
 
 function setEventMode(mode) {
     const isExisting = mode === 'existing';
@@ -1210,6 +1227,10 @@ function fillEditTitleInputs() {
     editEventTitleInput.value = event.title;
     editEventYearInput.value = event.held_year ? String(event.held_year) : '';
     editEventMonthInput.value = event.held_month ? String(event.held_month) : '';
+    fillCategorySelect(
+        editEventCategorySelect,
+        event.category ?? sectionIdToCategory(event.section_id)
+    );
 }
 
 function toggleEditTitlePanel() {
@@ -1229,6 +1250,7 @@ async function saveEventTitleEdit() {
     );
 
     const { heldYear, heldMonth } = readHeldYearMonthFromInputs(editEventYearInput, editEventMonthInput);
+    const category = editEventCategorySelect.value || DEFAULT_EVENT_CATEGORY;
 
     if (!abbr) {
         throw new Error('イベント略称を入力してください。');
@@ -1237,24 +1259,41 @@ async function saveEventTitleEdit() {
     editTitleSaveBtn.disabled = true;
 
     try {
+        const event = catalogRows.events.find(item => item.id === editingEventId);
+        const currentSectionId = event?.section_id ?? DEFAULT_SECTION_ID;
+        const newSectionId = resolveSectionIdForCategory(category, currentSectionId);
+        const sectionChanged = newSectionId !== currentSectionId;
+
+        const updatePayload = {
+            abbr,
+            title,
+            held_year: heldYear,
+            held_month: heldMonth,
+            category
+        };
+
+        if (sectionChanged) {
+            updatePayload.section_id = newSectionId;
+            updatePayload.sort_order = getNextSortOrderInSection(newSectionId);
+        }
+
         const { error } = await database
             .from('catalog_events')
-            .update({
-                abbr,
-                title,
-                held_year: heldYear,
-                held_month: heldMonth
-            })
+            .update(updatePayload)
             .eq('id', editingEventId);
 
         if (error) throw error;
 
-        const event = catalogRows.events.find(item => item.id === editingEventId);
         if (event) {
             event.abbr = abbr;
             event.title = title;
             event.held_year = heldYear;
             event.held_month = heldMonth;
+            event.category = category;
+            if (sectionChanged) {
+                event.section_id = newSectionId;
+                event.sort_order = updatePayload.sort_order;
+            }
         }
 
         dialogTitle.textContent = `${abbr} の精霊を編集`;
@@ -1294,6 +1333,8 @@ function resetForm() {
     populateExistingEventSelect();
     fillSelectOptions(spiritMainSelect, ELEMENTS);
     fillSelectOptions(spiritSubSelect, ELEMENTS);
+    fillCategorySelect(editEventCategorySelect);
+    fillCategorySelect(eventCategorySelect);
     editNameBlock.hidden = true;
     editAttrsBlock.hidden = true;
     document.getElementById('event-mode-fieldset').hidden = false;
@@ -1327,14 +1368,16 @@ async function resolveEventId() {
     }
 
     const { heldYear, heldMonth } = readHeldYearMonthFromInputs(eventYearInput, eventMonthInput);
+    const category = eventCategorySelect.value || DEFAULT_EVENT_CATEGORY;
 
-    const sectionId = DEFAULT_SECTION_ID;
+    const sectionId = resolveSectionIdForCategory(category);
     const eventId = createEventId(abbr);
     const storageFolder = abbrToStorageFolder(abbr, eventId);
-    const sortOrder = catalogRows.events.filter(event => event.section_id === sectionId).length + 1;
+    const sortOrder = getNextSortOrderInSection(sectionId);
     const { error } = await database.from('catalog_events').insert({
         id: eventId,
         section_id: sectionId,
+        category,
         abbr,
         title,
         held_year: heldYear,
