@@ -8,7 +8,7 @@ import {
     resolveStorageFolder,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250705w';
+} from './catalog.js?v=20250706g';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
@@ -45,6 +45,8 @@ const editTitleBtn = document.getElementById('admin-edit-title-btn');
 const editEventTitleBlock = document.getElementById('edit-event-title-block');
 const editEventAbbrInput = document.getElementById('admin-edit-event-abbr');
 const editEventTitleInput = document.getElementById('admin-edit-event-title');
+const editEventYearInput = document.getElementById('admin-edit-event-year');
+const editEventMonthInput = document.getElementById('admin-edit-event-month');
 const editTitleSaveBtn = document.getElementById('admin-edit-title-save-btn');
 const editTitleCancelBtn = document.getElementById('admin-edit-title-cancel-btn');
 const eventModeExisting = document.getElementById('event-mode-existing');
@@ -1165,6 +1167,8 @@ function fillEditTitleInputs() {
     if (!event) return;
     editEventAbbrInput.value = event.abbr;
     editEventTitleInput.value = event.title;
+    editEventYearInput.value = event.held_year ? String(event.held_year) : '';
+    editEventMonthInput.value = event.held_month ? String(event.held_month) : '';
 }
 
 function toggleEditTitlePanel() {
@@ -1183,6 +1187,21 @@ async function saveEventTitleEdit() {
         editEventTitleInput.value.trim()
     );
 
+    const yearValue = editEventYearInput.value.trim();
+    const monthValue = editEventMonthInput.value.trim();
+    const heldYear = yearValue ? Number(yearValue) : null;
+    const heldMonth = monthValue ? Number(monthValue) : null;
+
+    if ((heldYear === null) !== (heldMonth === null)) {
+        throw new Error('開催月は「年」と「月」を両方入力してください。');
+    }
+    if (heldYear !== null && (!Number.isInteger(heldYear) || heldYear < 2010 || heldYear > 2100)) {
+        throw new Error('開催月の「年」が不正です。');
+    }
+    if (heldMonth !== null && (!Number.isInteger(heldMonth) || heldMonth < 1 || heldMonth > 12)) {
+        throw new Error('開催月の「月」が不正です。');
+    }
+
     if (!abbr) {
         throw new Error('イベント略称を入力してください。');
     }
@@ -1192,7 +1211,12 @@ async function saveEventTitleEdit() {
     try {
         const { error } = await database
             .from('catalog_events')
-            .update({ abbr, title })
+            .update({
+                abbr,
+                title,
+                held_year: heldYear,
+                held_month: heldMonth
+            })
             .eq('id', editingEventId);
 
         if (error) throw error;
@@ -1201,6 +1225,8 @@ async function saveEventTitleEdit() {
         if (event) {
             event.abbr = abbr;
             event.title = title;
+            event.held_year = heldYear;
+            event.held_month = heldMonth;
         }
 
         dialogTitle.textContent = `${abbr} の精霊を編集`;

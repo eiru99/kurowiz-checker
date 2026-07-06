@@ -5,8 +5,8 @@ import {
     loadCatalog,
     matchesJapaneseSearch,
     SECTIONS_WITHOUT_DISPLAY_TITLE
-} from './catalog.js?v=20250705w';
-import { initAdmin, openEventEditDialog } from './admin.js?v=20250706f';
+} from './catalog.js?v=20250706g';
+import { initAdmin, openEventEditDialog } from './admin.js?v=20250706g';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -257,7 +257,19 @@ function renderCatalog() {
             editButton.textContent = '編集';
             editButton.addEventListener('click', () => openEventEditDialog(event.id));
 
-            header.append(headerText, editButton);
+            const actions = document.createElement('div');
+            actions.className = 'event-header-actions';
+
+            if (event.heldYear && event.heldMonth) {
+                const held = document.createElement('span');
+                held.className = 'event-held-month';
+                held.textContent = `${event.heldYear}年${event.heldMonth}月`;
+                actions.appendChild(held);
+            }
+
+            actions.appendChild(editButton);
+
+            header.append(headerText, actions);
 
             const row = document.createElement('div');
             row.className = 'spirit-row';

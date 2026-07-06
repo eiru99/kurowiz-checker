@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250706e">
+    <link rel="stylesheet" href="css/styles.css?v=20250706g">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -51,6 +51,16 @@
 
                 <label for="admin-edit-event-title">イベント正式名</label>
                 <input type="text" id="admin-edit-event-title" placeholder="例: かみさんぽっ!人と妖精の国アイリー">
+
+                <div class="edit-event-held-month-row">
+                    <span class="edit-event-held-month-label">開催月</span>
+                    <div class="edit-event-held-month-spinners">
+                        <input type="number" id="admin-edit-event-year" class="edit-event-held-month-spinner" min="2010" max="2100" step="1" placeholder="年">
+                        <span class="edit-event-held-month-sep">年</span>
+                        <input type="number" id="admin-edit-event-month" class="edit-event-held-month-spinner" min="1" max="12" step="1" placeholder="月">
+                        <span class="edit-event-held-month-sep">月</span>
+                    </div>
+                </div>
 
                 <div class="edit-title-actions">
                     <button type="button" id="admin-edit-title-save-btn">タイトルを保存</button>
@@ -141,6 +151,6 @@
         </form>
     </dialog>
 
-    <script type="module" src="js/app.js?v=20250706f"></script>
+    <script type="module" src="js/app.js?v=20250706h"></script>
 </body>
 </html>

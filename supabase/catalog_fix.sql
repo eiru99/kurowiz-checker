@@ -20,6 +20,12 @@ ALTER TABLE public.catalog_sections
 ALTER TABLE public.catalog_events
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 
+ALTER TABLE public.catalog_events
+    ADD COLUMN IF NOT EXISTS held_year integer;
+
+ALTER TABLE public.catalog_events
+    ADD COLUMN IF NOT EXISTS held_month integer;
+
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 

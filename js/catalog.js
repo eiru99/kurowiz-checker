@@ -204,6 +204,8 @@ function buildCatalogFromRows(sections, events, spirits) {
                 id: event.id,
                 abbr: event.abbr,
                 title: event.title,
+                heldYear: event.held_year ?? null,
+                heldMonth: event.held_month ?? null,
                 storageFolder: event.storage_folder ?? null,
                 spirits: spiritsByEvent.get(event.id) ?? []
             }))
