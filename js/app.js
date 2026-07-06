@@ -29,6 +29,7 @@ let realtimeChannel = null;
 let isSaving = false;
 let pendingScrollToEventId = null;
 let pendingScrollToSectionId = null;
+const expandedSearchEventIds = new Set();
 
 const SCROLL_TOP_THRESHOLD = 240;
 
@@ -100,21 +101,25 @@ async function saveCloudData() {
     }
 }
 
-function matchesFilters(spirit, searchText) {
-    const selectedElement = elementFilter.value;
-
-    const matchesSearch = !searchText || [
+function matchesSearchFilter(spirit, searchText) {
+    if (!searchText) return true;
+    return [
         spirit.name,
         spirit.event.abbr,
         spirit.event.title,
         spirit.section.title
     ].some(text => matchesJapaneseSearch(searchText, text));
+}
 
-    const matchesElement = !selectedElement
+function matchesElementFilter(spirit) {
+    const selectedElement = elementFilter.value;
+    return !selectedElement
         || spirit.main === selectedElement
         || spirit.sub === selectedElement;
+}
 
-    return matchesSearch && matchesElement;
+function matchesFilters(spirit, searchText) {
+    return matchesSearchFilter(spirit, searchText) && matchesElementFilter(spirit);
 }
 
 function updateStats() {
@@ -241,14 +246,24 @@ function renderCatalog() {
         const visibleEvents = [];
 
         for (const event of section.events) {
-            const visibleSpirits = event.spirits
+            const eventSpirits = event.spirits
                 .map(spirit => spiritById.get(spirit.id))
-                .filter(spirit => spirit && matchesFilters(spirit, searchText));
+                .filter(spirit => spirit);
 
-            if (visibleSpirits.length > 0) {
-                visibleEvents.push({ event, visibleSpirits });
-                visibleCount += visibleSpirits.length;
-            }
+            const matchingSpirits = eventSpirits.filter(spirit => matchesFilters(spirit, searchText));
+            if (matchingSpirits.length === 0) continue;
+
+            const isExpanded = searchText && expandedSearchEventIds.has(event.id);
+            const displaySpirits = isExpanded
+                ? eventSpirits.filter(spirit => matchesElementFilter(spirit))
+                : matchingSpirits;
+
+            const hasHiddenBySearch = searchText && eventSpirits.some(spirit =>
+                matchesElementFilter(spirit) && !matchesSearchFilter(spirit, searchText)
+            );
+
+            visibleEvents.push({ event, displaySpirits, hasHiddenBySearch });
+            visibleCount += displaySpirits.length;
         }
 
         if (visibleEvents.length === 0) continue;
@@ -267,7 +282,7 @@ function renderCatalog() {
 
         const container = sectionBlock ?? catalogEl;
 
-        for (const { event, visibleSpirits } of visibleEvents) {
+        for (const { event, displaySpirits, hasHiddenBySearch } of visibleEvents) {
             const eventBlock = document.createElement('article');
             eventBlock.className = 'event-block';
             eventBlock.dataset.eventId = event.id;
@@ -300,11 +315,46 @@ function renderCatalog() {
 
             actions.appendChild(editButton);
 
-            header.append(headerText, actions);
+            header.appendChild(headerText);
+
+            if (hasHiddenBySearch) {
+                const isExpanded = expandedSearchEventIds.has(event.id);
+                const toggleLabel = document.createElement('label');
+                toggleLabel.className = 'event-show-all-toggle';
+
+                const toggleText = document.createElement('span');
+                toggleText.className = 'event-show-all-toggle-label';
+                toggleText.textContent = '他精霊も表示';
+
+                const toggleSwitch = document.createElement('span');
+                toggleSwitch.className = 'admin-toggle';
+
+                const toggleInput = document.createElement('input');
+                toggleInput.type = 'checkbox';
+                toggleInput.checked = isExpanded;
+                toggleInput.addEventListener('change', () => {
+                    if (toggleInput.checked) {
+                        expandedSearchEventIds.add(event.id);
+                    } else {
+                        expandedSearchEventIds.delete(event.id);
+                    }
+                    renderCatalog();
+                });
+
+                const toggleSlider = document.createElement('span');
+                toggleSlider.className = 'admin-toggle-slider';
+                toggleSlider.setAttribute('aria-hidden', 'true');
+
+                toggleSwitch.append(toggleInput, toggleSlider);
+                toggleLabel.append(toggleText, toggleSwitch);
+                header.appendChild(toggleLabel);
+            }
+
+            header.appendChild(actions);
 
             const row = document.createElement('div');
             row.className = 'spirit-row';
-            visibleSpirits.forEach(spirit => row.appendChild(createSpiritTile(spirit)));
+            displaySpirits.forEach(spirit => row.appendChild(createSpiritTile(spirit)));
 
             eventBlock.appendChild(header);
             eventBlock.appendChild(row);
@@ -457,6 +507,9 @@ function updateSearchClearButton() {
 }
 
 searchInput.addEventListener('input', () => {
+    if (!searchInput.value.trim()) {
+        expandedSearchEventIds.clear();
+    }
     updateSearchClearButton();
     renderCatalog();
 });
@@ -465,6 +518,7 @@ searchClearBtn.addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
     searchInput.value = '';
+    expandedSearchEventIds.clear();
     updateSearchClearButton();
     searchInput.focus();
     renderCatalog();
