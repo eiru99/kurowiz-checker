@@ -16,6 +16,7 @@ const searchInput = document.getElementById('search');
 const searchClearBtn = document.getElementById('search-clear-btn');
 const controlsMenuBtn = document.getElementById('controls-menu-btn');
 const controlsMenu = document.getElementById('controls-menu');
+const scrollTopBtn = document.getElementById('scroll-top-btn');
 const elementFilter = document.getElementById('filter-element');
 const syncKeyInput = document.getElementById('sync-key-input');
 
@@ -27,6 +28,9 @@ let mySyncKey = localStorage.getItem('wiz_sync_key');
 let realtimeChannel = null;
 let isSaving = false;
 let pendingScrollToEventId = null;
+let pendingScrollToSectionId = null;
+
+const SCROLL_TOP_THRESHOLD = 240;
 
 function createSyncKey() {
     const suffix = Math.floor(100000 + Math.random() * 900000);
@@ -198,8 +202,31 @@ function createSpiritTile(spirit) {
 function scrollToEventBlock(eventId) {
     const block = catalogEl.querySelector(`.event-block[data-event-id="${CSS.escape(eventId)}"]`);
     if (block) {
-        block.scrollIntoView({ block: 'start' });
+        block.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
+
+function scrollToSection(sectionId) {
+    const block = document.getElementById(`section-${sectionId}`);
+    if (block) {
+        block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return true;
+    }
+    return false;
+}
+
+function jumpToSection(sectionId) {
+    if (scrollToSection(sectionId)) return;
+
+    searchInput.value = '';
+    updateSearchClearButton();
+    elementFilter.value = '';
+    pendingScrollToSectionId = sectionId;
+    renderCatalog();
+}
+
+function updateScrollTopButton() {
+    scrollTopBtn.hidden = window.scrollY < SCROLL_TOP_THRESHOLD;
 }
 
 function renderCatalog() {
@@ -230,6 +257,7 @@ function renderCatalog() {
         const sectionBlock = hideSectionTitle ? null : document.createElement('section');
         if (sectionBlock) {
             sectionBlock.className = 'section-block';
+            sectionBlock.id = `section-${section.id}`;
 
             const sectionTitle = document.createElement('h2');
             sectionTitle.className = 'section-title';
@@ -298,10 +326,14 @@ function renderCatalog() {
     updateStats();
 
     const scrollTargetEventId = pendingScrollToEventId;
+    const scrollTargetSectionId = pendingScrollToSectionId;
     pendingScrollToEventId = null;
+    pendingScrollToSectionId = null;
 
     if (scrollTargetEventId) {
         scrollToEventBlock(scrollTargetEventId);
+    } else if (scrollTargetSectionId) {
+        scrollToSection(scrollTargetSectionId);
     } else {
         window.scrollTo(0, scrollY);
     }
@@ -429,12 +461,27 @@ searchInput.addEventListener('input', () => {
     renderCatalog();
 });
 
-searchClearBtn.addEventListener('click', () => {
+searchClearBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     searchInput.value = '';
     updateSearchClearButton();
     searchInput.focus();
     renderCatalog();
 });
+
+document.querySelectorAll('.section-jump-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        jumpToSection(button.dataset.sectionId);
+    });
+});
+
+scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+window.addEventListener('scroll', updateScrollTopButton, { passive: true });
+updateScrollTopButton();
 elementFilter.addEventListener('change', renderCatalog);
 
 async function init() {

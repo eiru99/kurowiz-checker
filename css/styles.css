@@ -98,6 +98,7 @@ input[type='text'] {
     right: 6px;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2;
     width: 24px;
     height: 24px;
     padding: 0;
@@ -179,6 +180,48 @@ input[type='text'] {
     color: #b71c1c;
 }
 
+.section-jump-nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.section-jump-btn {
+    flex: 1;
+    min-width: 72px;
+    background: #eceff1;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    padding: 6px 10px;
+}
+
+.section-jump-btn:hover {
+    background: var(--section-bg);
+}
+
+.scroll-top-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 200;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-top-btn[hidden] {
+    display: none;
+}
+
 button {
     background-color: var(--primary-color);
     color: white;
@@ -218,6 +261,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    scroll-margin-top: 12px;
 }
 
 .section-title {

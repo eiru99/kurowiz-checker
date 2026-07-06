@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250707d">
+    <link rel="stylesheet" href="css/styles.css?v=20250707e">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -40,7 +40,14 @@
                 <button type="button" id="reset-btn" class="controls-menu-item controls-menu-item-danger" role="menuitem">すべてリセット</button>
             </div>
         </div>
+        <nav class="section-jump-nav" aria-label="セクションへ移動">
+            <button type="button" class="section-jump-btn" data-section-id="kollabo">コラボ</button>
+            <button type="button" class="section-jump-btn" data-section-id="download">DL限定</button>
+            <button type="button" class="section-jump-btn" data-section-id="wizselection">ウィズセレ</button>
+        </nav>
     </div>
+
+    <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="トップへ戻る" hidden>↑</button>
 
     <main id="catalog" class="catalog">
         <div class="loading-message">読み込み中...</div>
@@ -177,6 +184,6 @@
         </form>
     </dialog>
 
-    <script type="module" src="js/app.js?v=20250707d"></script>
+    <script type="module" src="js/app.js?v=20250707e"></script>
 </body>
 </html>
