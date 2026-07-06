@@ -302,9 +302,61 @@ button:hover {
     padding: 20px;
 }
 
+.admin-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
 .admin-dialog h2 {
-    margin: 0 0 16px;
+    margin: 0;
     font-size: 1.2rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-edit-title {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background: #546e7a;
+}
+
+.btn-edit-title:hover {
+    background: #37474f;
+}
+
+.edit-event-title-block {
+    padding: 12px;
+    margin-bottom: 14px;
+    background: #f5f7f8;
+    border: 1px solid #cfd8dc;
+    border-radius: 8px;
+}
+
+.edit-title-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.edit-title-actions button[type='button'] {
+    background: #78909c;
+}
+
+.edit-title-actions button[type='button']:hover {
+    background: #607d8b;
+}
+
+#admin-edit-title-save-btn {
+    background: var(--primary-color);
+}
+
+#admin-edit-title-save-btn:hover {
+    background: #3b2463;
 }
 
 .form-group {

@@ -41,6 +41,12 @@ let catalogRows = { sections: [], events: [], spirits: [] };
 const dialog = document.getElementById('admin-dialog');
 const form = document.getElementById('admin-form');
 const dialogTitle = document.getElementById('admin-dialog-title');
+const editTitleBtn = document.getElementById('admin-edit-title-btn');
+const editEventTitleBlock = document.getElementById('edit-event-title-block');
+const editEventAbbrInput = document.getElementById('admin-edit-event-abbr');
+const editEventTitleInput = document.getElementById('admin-edit-event-title');
+const editTitleSaveBtn = document.getElementById('admin-edit-title-save-btn');
+const editTitleCancelBtn = document.getElementById('admin-edit-title-cancel-btn');
 const eventModeExisting = document.getElementById('event-mode-existing');
 const eventModeNew = document.getElementById('event-mode-new');
 const existingEventBlock = document.getElementById('existing-event-block');
@@ -1086,6 +1092,75 @@ function setEventMode(mode) {
     updateOcrSelectButtons();
 }
 
+function hideEditTitleUi() {
+    editTitleBtn.hidden = true;
+    editEventTitleBlock.hidden = true;
+}
+
+function fillEditTitleInputs() {
+    if (!editingEventId) return;
+    const event = catalogRows.events.find(item => item.id === editingEventId);
+    if (!event) return;
+    editEventAbbrInput.value = event.abbr;
+    editEventTitleInput.value = event.title;
+}
+
+function toggleEditTitlePanel() {
+    const willShow = editEventTitleBlock.hidden;
+    if (willShow) {
+        fillEditTitleInputs();
+    }
+    editEventTitleBlock.hidden = !willShow;
+}
+
+async function saveEventTitleEdit() {
+    if (!editingEventId) return;
+
+    const { abbr, title } = normalizeEventNames(
+        editEventAbbrInput.value.trim(),
+        editEventTitleInput.value.trim()
+    );
+
+    if (!abbr) {
+        throw new Error('イベント略称を入力してください。');
+    }
+
+    editTitleSaveBtn.disabled = true;
+
+    try {
+        const { error } = await database
+            .from('catalog_events')
+            .update({ abbr, title })
+            .eq('id', editingEventId);
+
+        if (error) throw error;
+
+        const event = catalogRows.events.find(item => item.id === editingEventId);
+        if (event) {
+            event.abbr = abbr;
+            event.title = title;
+        }
+
+        dialogTitle.textContent = `${abbr} の精霊を編集`;
+        editEventTitleBlock.hidden = true;
+
+        if (reloadCatalog) {
+            await reloadCatalog();
+        }
+    } finally {
+        editTitleSaveBtn.disabled = false;
+    }
+}
+
+async function handleEditTitleSave() {
+    try {
+        await saveEventTitleEdit();
+    } catch (error) {
+        console.error(error);
+        alert(error.message || 'タイトルの保存に失敗しました。');
+    }
+}
+
 function resetForm() {
     editingEventId = null;
     imageReplaceTargetId = null;
@@ -1108,6 +1183,7 @@ function resetForm() {
     document.getElementById('event-mode-fieldset').hidden = false;
     clearOcrSelectMode();
     updateOcrSelectButtons();
+    hideEditTitleUi();
 }
 
 async function refreshCatalogRows() {
@@ -1343,6 +1419,7 @@ export async function openEventEditDialog(eventId) {
         resetForm();
         editingEventId = eventId;
         dialogTitle.textContent = `${event.abbr} の精霊を編集`;
+        editTitleBtn.hidden = false;
         submitButton.textContent = '更新する';
 
         document.getElementById('event-mode-fieldset').hidden = true;
@@ -1384,6 +1461,11 @@ export function initAdmin(db, onReloadCatalog) {
 
     document.getElementById('add-btn').addEventListener('click', openAddDialog);
     document.getElementById('admin-cancel-btn').addEventListener('click', () => dialog.close());
+    editTitleBtn.addEventListener('click', toggleEditTitlePanel);
+    editTitleSaveBtn.addEventListener('click', handleEditTitleSave);
+    editTitleCancelBtn.addEventListener('click', () => {
+        editEventTitleBlock.hidden = true;
+    });
     form.addEventListener('submit', handleSubmit);
     dialog.addEventListener('paste', handleImagePaste);
     imageInput.addEventListener('change', handleImageInputChange);

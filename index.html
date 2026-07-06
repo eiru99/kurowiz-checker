@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250704ae">
+    <link rel="stylesheet" href="css/styles.css?v=20250706a">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -40,7 +40,23 @@
 
     <dialog id="admin-dialog" class="admin-dialog">
         <form id="admin-form" method="dialog">
-            <h2 id="admin-dialog-title">精霊を追加</h2>
+            <div class="admin-dialog-header">
+                <h2 id="admin-dialog-title">精霊を追加</h2>
+                <button type="button" id="admin-edit-title-btn" class="btn-edit-title" hidden>タイトル編集</button>
+            </div>
+
+            <div id="edit-event-title-block" class="form-group edit-event-title-block" hidden>
+                <label for="admin-edit-event-abbr">イベント略称</label>
+                <input type="text" id="admin-edit-event-abbr" placeholder="例: かみさんぽっ3">
+
+                <label for="admin-edit-event-title">イベント正式名</label>
+                <input type="text" id="admin-edit-event-title" placeholder="例: かみさんぽっ!人と妖精の国アイリー">
+
+                <div class="edit-title-actions">
+                    <button type="button" id="admin-edit-title-save-btn">タイトルを保存</button>
+                    <button type="button" id="admin-edit-title-cancel-btn">キャンセル</button>
+                </div>
+            </div>
 
             <fieldset class="form-group" id="event-mode-fieldset">
                 <legend>イベント</legend>
