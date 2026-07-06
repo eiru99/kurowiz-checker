@@ -11,7 +11,7 @@ import {
     sectionIdToCategory,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250707a';
+} from './catalog.js?v=20250707b';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
@@ -1156,10 +1156,26 @@ function fillCategorySelect(select, selectedCategory = '通常') {
     select.value = EVENT_CATEGORIES.includes(selectedCategory) ? selectedCategory : '通常';
 }
 
-function getNextSortOrderInSection(sectionId) {
-    const inSection = catalogRows.events.filter(event => event.section_id === sectionId);
-    if (inSection.length === 0) return 1;
-    return Math.max(...inSection.map(event => event.sort_order ?? 0)) + 1;
+function getTopSortOrderInSection() {
+    return 1;
+}
+
+/** 移動先セクションの既存イベントを1つずつ繰り下げ、先頭に空ける */
+async function bumpSectionSortOrders(sectionId, excludeEventId = null) {
+    const others = catalogRows.events.filter(
+        event => event.section_id === sectionId && event.id !== excludeEventId
+    );
+
+    for (const event of others) {
+        const nextOrder = (event.sort_order ?? 0) + 1;
+        const { error } = await database
+            .from('catalog_events')
+            .update({ sort_order: nextOrder })
+            .eq('id', event.id);
+
+        if (error) throw error;
+        event.sort_order = nextOrder;
+    }
 }
 
 function populateExistingEventSelect() {
@@ -1273,8 +1289,9 @@ async function saveEventTitleEdit() {
         };
 
         if (sectionChanged) {
+            await bumpSectionSortOrders(newSectionId, editingEventId);
             updatePayload.section_id = newSectionId;
-            updatePayload.sort_order = getNextSortOrderInSection(newSectionId);
+            updatePayload.sort_order = getTopSortOrderInSection();
         }
 
         const { error } = await database
@@ -1373,7 +1390,8 @@ async function resolveEventId() {
     const sectionId = resolveSectionIdForCategory(category);
     const eventId = createEventId(abbr);
     const storageFolder = abbrToStorageFolder(abbr, eventId);
-    const sortOrder = getNextSortOrderInSection(sectionId);
+    await bumpSectionSortOrders(sectionId);
+    const sortOrder = getTopSortOrderInSection();
     const { error } = await database.from('catalog_events').insert({
         id: eventId,
         section_id: sectionId,

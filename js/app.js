@@ -5,8 +5,8 @@ import {
     loadCatalog,
     matchesJapaneseSearch,
     SECTIONS_WITHOUT_DISPLAY_TITLE
-} from './catalog.js?v=20250707a';
-import { initAdmin, openEventEditDialog } from './admin.js?v=20250707a';
+} from './catalog.js?v=20250707b';
+import { initAdmin, openEventEditDialog } from './admin.js?v=20250707b';
 
 const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
