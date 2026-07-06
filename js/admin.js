@@ -8,7 +8,7 @@ import {
     resolveStorageFolder,
     SECTIONS_WITHOUT_DISPLAY_TITLE,
     uploadSpiritImage
-} from './catalog.js?v=20250706g';
+} from './catalog.js?v=20250706h';
 import {
     extractEventNamesFromImage,
     ensureEventOcrOpenCv,
@@ -57,6 +57,8 @@ const spiritDetailsBlock = document.getElementById('spirit-details-block');
 const existingEventSelect = document.getElementById('admin-existing-event');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
+const eventYearInput = document.getElementById('admin-event-year');
+const eventMonthInput = document.getElementById('admin-event-month');
 const eventNameAutoOcrToggle = document.getElementById('admin-event-name-auto-ocr');
 const spiritNameInput = document.getElementById('admin-spirit-name');
 const editNameBlock = document.getElementById('edit-name-block');
@@ -160,6 +162,45 @@ function validateSpiritQueueInfoUrls() {
     for (const item of spiritQueue) {
         normalizeInfoUrl(item.infoUrl ?? '');
     }
+}
+
+function getCurrentYearMonth() {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
+}
+
+function attachYearMonthSpinnerDefaults(yearInput, monthInput) {
+    if (!yearInput || !monthInput) return;
+
+    const ensureDefaults = () => {
+        const { year, month } = getCurrentYearMonth();
+        if (!String(yearInput.value ?? '').trim()) yearInput.value = String(year);
+        if (!String(monthInput.value ?? '').trim()) monthInput.value = String(month);
+    };
+
+    yearInput.addEventListener('focus', ensureDefaults);
+    monthInput.addEventListener('focus', ensureDefaults);
+    yearInput.addEventListener('pointerdown', ensureDefaults);
+    monthInput.addEventListener('pointerdown', ensureDefaults);
+}
+
+function readHeldYearMonthFromInputs(yearInput, monthInput) {
+    const yearValue = String(yearInput?.value ?? '').trim();
+    const monthValue = String(monthInput?.value ?? '').trim();
+    const heldYear = yearValue ? Number(yearValue) : null;
+    const heldMonth = monthValue ? Number(monthValue) : null;
+
+    if ((heldYear === null) !== (heldMonth === null)) {
+        throw new Error('開催月は「年」と「月」を両方入力してください。');
+    }
+    if (heldYear !== null && (!Number.isInteger(heldYear) || heldYear < 2010 || heldYear > 2100)) {
+        throw new Error('開催月の「年」が不正です。');
+    }
+    if (heldMonth !== null && (!Number.isInteger(heldMonth) || heldMonth < 1 || heldMonth > 12)) {
+        throw new Error('開催月の「月」が不正です。');
+    }
+
+    return { heldYear, heldMonth };
 }
 
 function isEventNameAutoOcrEnabled() {
@@ -1187,20 +1228,7 @@ async function saveEventTitleEdit() {
         editEventTitleInput.value.trim()
     );
 
-    const yearValue = editEventYearInput.value.trim();
-    const monthValue = editEventMonthInput.value.trim();
-    const heldYear = yearValue ? Number(yearValue) : null;
-    const heldMonth = monthValue ? Number(monthValue) : null;
-
-    if ((heldYear === null) !== (heldMonth === null)) {
-        throw new Error('開催月は「年」と「月」を両方入力してください。');
-    }
-    if (heldYear !== null && (!Number.isInteger(heldYear) || heldYear < 2010 || heldYear > 2100)) {
-        throw new Error('開催月の「年」が不正です。');
-    }
-    if (heldMonth !== null && (!Number.isInteger(heldMonth) || heldMonth < 1 || heldMonth > 12)) {
-        throw new Error('開催月の「月」が不正です。');
-    }
+    const { heldYear, heldMonth } = readHeldYearMonthFromInputs(editEventYearInput, editEventMonthInput);
 
     if (!abbr) {
         throw new Error('イベント略称を入力してください。');
@@ -1298,6 +1326,8 @@ async function resolveEventId() {
         throw new Error('新規イベントの略称・正式名を入力してください。');
     }
 
+    const { heldYear, heldMonth } = readHeldYearMonthFromInputs(eventYearInput, eventMonthInput);
+
     const sectionId = DEFAULT_SECTION_ID;
     const eventId = createEventId(abbr);
     const storageFolder = abbrToStorageFolder(abbr, eventId);
@@ -1307,6 +1337,8 @@ async function resolveEventId() {
         section_id: sectionId,
         abbr,
         title,
+        held_year: heldYear,
+        held_month: heldMonth,
         storage_folder: storageFolder,
         sort_order: sortOrder
     });
@@ -1576,6 +1608,8 @@ export function initAdmin(db, onReloadCatalog) {
     });
 
     eventNameAutoOcrToggle.addEventListener('change', handleEventNameAutoOcrToggle);
+    attachYearMonthSpinnerDefaults(editEventYearInput, editEventMonthInput);
+    attachYearMonthSpinnerDefaults(eventYearInput, eventMonthInput);
 
     imagePreviewStage.addEventListener('pointerdown', handleOcrPointerDown);
     imagePreviewStage.addEventListener('pointermove', handleOcrPointerMove);
