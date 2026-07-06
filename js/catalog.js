@@ -190,7 +190,8 @@ function buildCatalogFromRows(sections, events, spirits) {
             name: spirit.name,
             main: spirit.main,
             sub: spirit.sub,
-            image: spirit.image_path
+            image: spirit.image_path,
+            infoUrl: spirit.info_url ?? null
         });
     }
 

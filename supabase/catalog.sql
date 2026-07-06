@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.catalog_spirits (
     main        text        NOT NULL DEFAULT '火',
     sub         text        NOT NULL DEFAULT '火',
     image_path  text,
+    info_url    text,
     sort_order  integer     NOT NULL DEFAULT 0
 );
 
@@ -53,6 +54,9 @@ ALTER TABLE public.catalog_spirits
 
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS image_path text;
+
+ALTER TABLE public.catalog_spirits
+    ADD COLUMN IF NOT EXISTS info_url text;
 
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 

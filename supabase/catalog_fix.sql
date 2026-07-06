@@ -32,6 +32,9 @@ ALTER TABLE public.catalog_spirits
 ALTER TABLE public.catalog_spirits
     ADD COLUMN IF NOT EXISTS image_path text;
 
+ALTER TABLE public.catalog_spirits
+    ADD COLUMN IF NOT EXISTS info_url text;
+
 -- ★ 重要: anon ロールにテーブル権限を付与（Table Editor 手動作成時に不足しがち）
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 

@@ -77,7 +77,7 @@ const adminImageGroup = document.getElementById('admin-image-group');
 let previewObjectUrl = null;
 let pendingCropImage = null;
 let pendingCropObjectUrl = null;
-/** @type {{ id: string, spiritId?: string, file: File | null, objectUrl: string, isExternalUrl?: boolean, name: string, main: string, sub: string, hideSub: boolean, imagePath?: string, sortOrder?: number }[]} */
+/** @type {{ id: string, spiritId?: string, file: File | null, objectUrl: string, isExternalUrl?: boolean, name: string, main: string, sub: string, hideSub: boolean, imagePath?: string, sortOrder?: number, infoUrl?: string }[]} */
 let spiritQueue = [];
 let editingEventId = null;
 let imageReplaceTargetId = null;
@@ -100,6 +100,21 @@ const IMAGE_MIME_EXTENSIONS = {
 };
 
 const DEFAULT_IMAGE_HINT = 'PNG / JPG など（必須）。「自動読み取り」をオンにするとイベント名を取得。スクショは精霊をクリックで切り抜き（複数可）';
+
+function normalizeInfoUrl(value) {
+    const trimmed = String(value ?? '').trim();
+    if (!trimmed) return '';
+
+    try {
+        const url = new URL(trimmed);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            throw new Error('invalid protocol');
+        }
+        return url.href;
+    } catch {
+        throw new Error('説明リンクには http:// または https:// で始まるURLを入力してください。');
+    }
+}
 
 function isEventNameAutoOcrEnabled() {
     return Boolean(eventNameAutoOcrToggle?.checked);
@@ -188,6 +203,7 @@ function renderSpiritQueue() {
     spiritQueueList.innerHTML = '';
     updateQueueHeading();
     spiritQueueBlock.hidden = spiritQueue.length === 0;
+    spiritQueueBlock.classList.toggle('is-event-edit', Boolean(editingEventId));
 
     for (const item of spiritQueue) {
         const li = document.createElement('li');
@@ -251,6 +267,19 @@ function renderSpiritQueue() {
         }
 
         fields.append(nameInput, attrs);
+
+        if (editingEventId) {
+            const infoUrlInput = document.createElement('input');
+            infoUrlInput.type = 'url';
+            infoUrlInput.className = 'spirit-queue-info-url';
+            infoUrlInput.placeholder = '精霊説明ページのURL';
+            infoUrlInput.value = item.infoUrl ?? '';
+            infoUrlInput.inputMode = 'url';
+            infoUrlInput.addEventListener('input', () => {
+                item.infoUrl = infoUrlInput.value;
+            });
+            fields.append(infoUrlInput);
+        }
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
@@ -1301,6 +1330,10 @@ async function submitEventEdit() {
         throw new Error('属性が未検出の精霊があります。属性を選択してください。');
     }
 
+    for (const item of spiritQueue) {
+        normalizeInfoUrl(item.infoUrl ?? '');
+    }
+
     for (const spiritId of spiritsToDelete) {
         const { error } = await database.from('catalog_spirits').delete().eq('id', spiritId);
         if (error) throw error;
@@ -1321,6 +1354,7 @@ async function submitEventEdit() {
             main: item.main,
             sub: item.hideSub ? item.main : item.sub,
             image_path: imagePath,
+            info_url: normalizeInfoUrl(item.infoUrl ?? ''),
             sort_order: i + 1
         }).eq('id', item.spiritId);
 
@@ -1443,7 +1477,8 @@ export async function openEventEditDialog(eventId) {
                 sub: spirit.sub,
                 hideSub: shouldHideSub(spirit.main, spirit.sub),
                 imagePath: spirit.image_path,
-                sortOrder: spirit.sort_order
+                sortOrder: spirit.sort_order,
+                infoUrl: spirit.info_url ?? ''
             });
         }
 
