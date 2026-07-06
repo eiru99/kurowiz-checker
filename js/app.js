@@ -13,6 +13,9 @@ const database = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const catalogEl = document.getElementById('catalog');
 const statsEl = document.getElementById('stats');
 const searchInput = document.getElementById('search');
+const searchClearBtn = document.getElementById('search-clear-btn');
+const controlsMenuBtn = document.getElementById('controls-menu-btn');
+const controlsMenu = document.getElementById('controls-menu');
 const elementFilter = document.getElementById('filter-element');
 const syncKeyInput = document.getElementById('sync-key-input');
 
@@ -378,7 +381,35 @@ document.getElementById('sync-connect-btn').addEventListener('click', async () =
     }
 });
 
+function setControlsMenuOpen(open) {
+    controlsMenu.hidden = !open;
+    controlsMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+controlsMenuBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    setControlsMenuOpen(controlsMenu.hidden);
+});
+
+controlsMenu.addEventListener('click', (event) => {
+    event.stopPropagation();
+});
+
+document.addEventListener('click', () => {
+    if (!controlsMenu.hidden) {
+        setControlsMenuOpen(false);
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !controlsMenu.hidden) {
+        setControlsMenuOpen(false);
+        controlsMenuBtn.focus();
+    }
+});
+
 document.getElementById('reset-btn').addEventListener('click', async () => {
+    setControlsMenuOpen(false);
     if (confirm('クラウド上のデータもすべてリセットされます。よろしいですか？')) {
         const previousOwnedIds = ownedSpiritIds;
         ownedSpiritIds = [];
@@ -389,7 +420,21 @@ document.getElementById('reset-btn').addEventListener('click', async () => {
     }
 });
 
-searchInput.addEventListener('input', renderCatalog);
+function updateSearchClearButton() {
+    searchClearBtn.hidden = !searchInput.value;
+}
+
+searchInput.addEventListener('input', () => {
+    updateSearchClearButton();
+    renderCatalog();
+});
+
+searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    updateSearchClearButton();
+    searchInput.focus();
+    renderCatalog();
+});
 elementFilter.addEventListener('change', renderCatalog);
 
 async function init() {

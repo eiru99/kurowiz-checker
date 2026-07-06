@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250707b">
+    <link rel="stylesheet" href="css/styles.css?v=20250707d">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -22,7 +22,10 @@
             <button type="button" id="add-btn" class="btn-accent">Add</button>
             <span class="hint">※Add は管理用（PIN 入力）。同じ同期コードでスマホ・PC が同期されます</span>
         </div>
-        <input type="text" id="search" placeholder="精霊名・イベント名で検索...">
+        <div class="search-wrap">
+            <input type="text" id="search" placeholder="精霊名・イベント名で検索...">
+            <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="検索をクリア" hidden>×</button>
+        </div>
         <select id="filter-element">
             <option value="">全属性</option>
             <option value="火">火属性</option>
@@ -31,7 +34,12 @@
             <option value="光">光属性</option>
             <option value="闇">闇属性</option>
         </select>
-        <button type="button" id="reset-btn">すべてリセット</button>
+        <div class="controls-menu-wrap">
+            <button type="button" id="controls-menu-btn" class="controls-menu-btn" aria-label="メニュー" aria-haspopup="true" aria-expanded="false">⋮</button>
+            <div id="controls-menu" class="controls-menu" role="menu" hidden>
+                <button type="button" id="reset-btn" class="controls-menu-item controls-menu-item-danger" role="menuitem">すべてリセット</button>
+            </div>
+        </div>
     </div>
 
     <main id="catalog" class="catalog">
@@ -169,6 +177,6 @@
         </form>
     </dialog>
 
-    <script type="module" src="js/app.js?v=20250707b"></script>
+    <script type="module" src="js/app.js?v=20250707d"></script>
 </body>
 </html>
