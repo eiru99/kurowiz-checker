@@ -709,31 +709,35 @@
           "spirits": [
             {
               "id": "recent-e297-ラシュリィ",
-              "name": "ラシュリィ",
+              "name": "聖母の微笑 ラシュリィ・ミスク",
               "main": "雷",
               "sub": "闇",
-              "image": "ga2025kouhanzauinaazu/eb8bd36d-ea09-4899-85b6-95c1baf00e8a.webp"
+              "image": "ga2025kouhanzauinaazu/eb8bd36d-ea09-4899-85b6-95c1baf00e8a.webp",
+              "infoUrl": "https://gamewith.jp/kuronekowiz/article/show/518409"
             },
             {
               "id": "recent-e297-ダンタリオン",
-              "name": "ダンタリオン",
+              "name": "黒衣の魔神 ダンタリオン",
               "main": "雷",
               "sub": "闇",
-              "image": "ga2025kouhanzauinaazu/d738a22d-8ec4-4788-ad5f-ea60388d7302.webp"
+              "image": "ga2025kouhanzauinaazu/d738a22d-8ec4-4788-ad5f-ea60388d7302.webp",
+              "infoUrl": "https://gamewith.jp/kuronekowiz/article/show/518410"
             },
             {
               "id": "recent-e297-ガトリン",
-              "name": "ガトリン",
+              "name": "おすまし☆ナース ガトリン・G・U",
               "main": "水",
               "sub": "光",
-              "image": "ga2025kouhanzauinaazu/242031c1-3f45-4f3c-8412-5b36ae1eefe3.webp"
+              "image": "ga2025kouhanzauinaazu/242031c1-3f45-4f3c-8412-5b36ae1eefe3.webp",
+              "infoUrl": "https://gamewith.jp/kuronekowiz/article/show/518407"
             },
             {
               "id": "recent-e297-キワム",
-              "name": "キワム",
+              "name": "栄光の主従 キワム＆アウデアムス",
               "main": "火",
               "sub": "雷",
-              "image": "ga2025kouhanzauinaazu/99e22ff0-a207-4bac-acbe-613c68932414.webp"
+              "image": "ga2025kouhanzauinaazu/99e22ff0-a207-4bac-acbe-613c68932414.webp",
+              "infoUrl": "https://gamewith.jp/kuronekowiz/article/show/518408"
             }
           ]
         },
