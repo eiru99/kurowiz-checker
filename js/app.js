@@ -137,6 +137,20 @@ function setSpiritTileOwnedState(button, isOwned, spiritName) {
     button.setAttribute('aria-label', `${spiritName} ${isOwned ? '所持' : '未所持'}`);
 }
 
+function isEventFullyOwned(event) {
+    const spirits = event?.spirits ?? [];
+    if (spirits.length === 0) return false;
+    return spirits.every(spirit => ownedSpiritIds.includes(spirit.id));
+}
+
+function updateEventCompleteState(event) {
+    if (!event) return false;
+    const block = catalogEl.querySelector(`.event-block[data-event-id="${CSS.escape(event.id)}"]`);
+    if (!block) return false;
+    block.classList.toggle('event-complete', isEventFullyOwned(event));
+    return true;
+}
+
 function updateSpiritTileOwnedState(spiritId) {
     const spirit = spiritById.get(spiritId);
     const button = catalogEl.querySelector(`button.spirit-tile[data-spirit-id="${spiritId}"]`);
@@ -149,11 +163,20 @@ function updateSpiritTileOwnedState(spiritId) {
 function applyOwnedSpiritIdChanges(previousOwnedIds) {
     const previous = new Set(previousOwnedIds);
     const current = new Set(ownedSpiritIds);
+    const touchedEvents = new Map();
     let updatedDom = false;
 
     for (const spiritId of new Set([...previous, ...current])) {
         if (previous.has(spiritId) === current.has(spiritId)) continue;
         updatedDom = updateSpiritTileOwnedState(spiritId) || updatedDom;
+        const spirit = spiritById.get(spiritId);
+        if (spirit?.event) {
+            touchedEvents.set(spirit.event.id, spirit.event);
+        }
+    }
+
+    for (const event of touchedEvents.values()) {
+        updatedDom = updateEventCompleteState(event) || updatedDom;
     }
 
     updateStats();
@@ -284,7 +307,7 @@ function renderCatalog() {
 
         for (const { event, displaySpirits, hasHiddenBySearch } of visibleEvents) {
             const eventBlock = document.createElement('article');
-            eventBlock.className = 'event-block';
+            eventBlock.className = `event-block${isEventFullyOwned(event) ? ' event-complete' : ''}`;
             eventBlock.dataset.eventId = event.id;
 
             const header = document.createElement('div');
