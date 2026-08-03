@@ -59,6 +59,11 @@ const existingEventBlock = document.getElementById('existing-event-block');
 const newEventBlock = document.getElementById('new-event-block');
 const spiritDetailsBlock = document.getElementById('spirit-details-block');
 const existingEventSelect = document.getElementById('admin-existing-event');
+const existingEventPicker = document.getElementById('admin-existing-event-picker');
+const existingEventTrigger = document.getElementById('admin-existing-event-trigger');
+const existingEventDropdown = document.getElementById('admin-existing-event-dropdown');
+const existingEventSearch = document.getElementById('admin-existing-event-search');
+const existingEventList = document.getElementById('admin-existing-event-list');
 const eventAbbrInput = document.getElementById('admin-event-abbr');
 const eventTitleInput = document.getElementById('admin-event-title');
 const eventYearInput = document.getElementById('admin-event-year');
@@ -1178,32 +1183,150 @@ async function bumpSectionSortOrders(sectionId, excludeEventId = null) {
     }
 }
 
+/** @type {{ id: string, abbr: string, title: string, sectionTitle: string | null }[]} */
+let existingEventOptions = [];
+let existingEventPickerOpen = false;
+
+const EXISTING_EVENT_PLACEHOLDER = 'イベントを選択…';
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+/** 長いイベント名を / や ／ の直後で折り返しやすくする */
+function formatEventOptionHtml(abbr, title) {
+    const label = `${abbr} / ${title}`;
+    return escapeHtml(label).replace(/([/／])/g, '$1<wbr>');
+}
+
+function getExistingEventLabel(eventId) {
+    const item = existingEventOptions.find(event => event.id === eventId);
+    if (!item) return '';
+    return `${item.abbr} / ${item.title}`;
+}
+
+function syncExistingEventTrigger() {
+    const eventId = existingEventSelect.value;
+    const label = getExistingEventLabel(eventId);
+    if (label) {
+        existingEventTrigger.textContent = label;
+        existingEventTrigger.classList.remove('is-placeholder');
+        existingEventTrigger.title = label;
+    } else {
+        existingEventTrigger.textContent = EXISTING_EVENT_PLACEHOLDER;
+        existingEventTrigger.classList.add('is-placeholder');
+        existingEventTrigger.title = '';
+    }
+}
+
+function setExistingEventValue(eventId) {
+    existingEventSelect.value = eventId || '';
+    syncExistingEventTrigger();
+    existingEventList.querySelectorAll('.event-picker-option').forEach(button => {
+        button.classList.toggle('is-selected', button.dataset.eventId === existingEventSelect.value);
+    });
+}
+
+function closeExistingEventPicker() {
+    if (!existingEventPickerOpen) return;
+    existingEventPickerOpen = false;
+    existingEventDropdown.hidden = true;
+    existingEventTrigger.setAttribute('aria-expanded', 'false');
+}
+
+function openExistingEventPicker() {
+    if (existingEventPickerOpen) return;
+    existingEventPickerOpen = true;
+    existingEventDropdown.hidden = false;
+    existingEventTrigger.setAttribute('aria-expanded', 'true');
+    existingEventSearch.value = '';
+    renderExistingEventList('');
+    requestAnimationFrame(() => {
+        existingEventSearch.focus();
+        existingEventSearch.select();
+    });
+}
+
+function toggleExistingEventPicker() {
+    if (existingEventPickerOpen) {
+        closeExistingEventPicker();
+    } else {
+        openExistingEventPicker();
+    }
+}
+
+function renderExistingEventList(filterText = '') {
+    const query = filterText.trim().toLowerCase();
+    existingEventList.innerHTML = '';
+
+    let lastSectionTitle = null;
+    let matchCount = 0;
+
+    for (const item of existingEventOptions) {
+        const haystack = `${item.abbr} ${item.title}`.toLowerCase();
+        if (query && !haystack.includes(query)) continue;
+
+        matchCount += 1;
+
+        if (item.sectionTitle && item.sectionTitle !== lastSectionTitle) {
+            lastSectionTitle = item.sectionTitle;
+            const group = document.createElement('div');
+            group.className = 'event-picker-group';
+            group.textContent = item.sectionTitle;
+            existingEventList.appendChild(group);
+        }
+
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'event-picker-option';
+        option.dataset.eventId = item.id;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', item.id === existingEventSelect.value ? 'true' : 'false');
+        if (item.id === existingEventSelect.value) {
+            option.classList.add('is-selected');
+        }
+        option.innerHTML = formatEventOptionHtml(item.abbr, item.title);
+        option.title = `${item.abbr} / ${item.title}`;
+        option.addEventListener('click', () => {
+            setExistingEventValue(item.id);
+            closeExistingEventPicker();
+        });
+        existingEventList.appendChild(option);
+    }
+
+    if (matchCount === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'event-picker-empty';
+        empty.textContent = query ? '一致するイベントがありません' : 'イベントがありません';
+        existingEventList.appendChild(empty);
+    }
+}
+
 function populateExistingEventSelect() {
-    existingEventSelect.innerHTML = '';
+    existingEventOptions = [];
     for (const section of catalogRows.sections) {
         const sectionEvents = catalogRows.events.filter(event => event.section_id === section.id);
         if (sectionEvents.length === 0) continue;
 
-        if (SECTIONS_WITHOUT_DISPLAY_TITLE.has(section.id)) {
-            for (const event of sectionEvents) {
-                const option = document.createElement('option');
-                option.value = event.id;
-                option.textContent = `${event.abbr} / ${event.title}`;
-                existingEventSelect.appendChild(option);
-            }
-            continue;
-        }
-
-        const group = document.createElement('optgroup');
-        group.label = section.title;
+        const sectionTitle = SECTIONS_WITHOUT_DISPLAY_TITLE.has(section.id) ? null : section.title;
         for (const event of sectionEvents) {
-            const option = document.createElement('option');
-            option.value = event.id;
-            option.textContent = `${event.abbr} / ${event.title}`;
-            group.appendChild(option);
+            existingEventOptions.push({
+                id: event.id,
+                abbr: event.abbr,
+                title: event.title,
+                sectionTitle
+            });
         }
-        existingEventSelect.appendChild(group);
     }
+
+    setExistingEventValue('');
+    closeExistingEventPicker();
+    existingEventSearch.value = '';
+    renderExistingEventList('');
 }
 
 const DEFAULT_SECTION_ID = 'latest';
@@ -1218,7 +1341,11 @@ function setEventMode(mode) {
     newEventBlock.hidden = !isNew;
     spiritDetailsBlock.hidden = !showDetails;
 
-    existingEventSelect.required = isExisting;
+    if (!isExisting) {
+        closeExistingEventPicker();
+    }
+
+    existingEventSelect.required = false;
     eventAbbrInput.required = isNew;
     eventTitleInput.required = isNew;
     if (!isNew) {
@@ -1662,6 +1789,44 @@ export function initAdmin(db, onReloadCatalog) {
         radio.addEventListener('change', () => setEventMode(radio.value));
     });
 
+    existingEventTrigger.addEventListener('click', event => {
+        event.preventDefault();
+        toggleExistingEventPicker();
+    });
+
+    existingEventTrigger.addEventListener('keydown', event => {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openExistingEventPicker();
+        } else if (event.key === 'Escape' && existingEventPickerOpen) {
+            event.preventDefault();
+            closeExistingEventPicker();
+        }
+    });
+
+    existingEventSearch.addEventListener('input', () => {
+        renderExistingEventList(existingEventSearch.value);
+    });
+
+    existingEventSearch.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
+            closeExistingEventPicker();
+            existingEventTrigger.focus();
+        }
+    });
+
+    document.addEventListener('pointerdown', event => {
+        if (!existingEventPickerOpen) return;
+        if (existingEventPicker.contains(event.target)) return;
+        closeExistingEventPicker();
+    });
+
+    dialog.addEventListener('close', () => {
+        closeExistingEventPicker();
+    });
+
     document.querySelectorAll('.btn-ocr-select').forEach(button => {
         button.addEventListener('click', () => {
             runAutoOcrForTarget(button.dataset.ocrTarget, button);
@@ -1682,6 +1847,11 @@ export function initAdmin(db, onReloadCatalog) {
     ensureEventOcrOpenCv().catch(() => {});
 
     dialog.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && existingEventPickerOpen) {
+            event.preventDefault();
+            closeExistingEventPicker();
+            return;
+        }
         if (event.key === 'Escape' && ocrSelectTarget) {
             event.preventDefault();
             clearOcrSelectMode();

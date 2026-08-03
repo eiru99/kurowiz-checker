@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黒ウィズ 限定精霊所持チェッカー</title>
-    <link rel="stylesheet" href="css/styles.css?v=20250707g">
+    <link rel="stylesheet" href="css/styles.css?v=20250804a">
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/dist/wanakana.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -101,8 +101,17 @@
             </fieldset>
 
             <div id="existing-event-block" class="form-group" hidden>
-                <label for="admin-existing-event">既存イベント</label>
-                <select id="admin-existing-event"></select>
+                <label id="admin-existing-event-label" for="admin-existing-event-trigger">既存イベント</label>
+                <div class="event-picker" id="admin-existing-event-picker">
+                    <input type="hidden" id="admin-existing-event" value="">
+                    <button type="button" id="admin-existing-event-trigger" class="event-picker-trigger is-placeholder" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="admin-existing-event-label">
+                        イベントを選択…
+                    </button>
+                    <div id="admin-existing-event-dropdown" class="event-picker-dropdown" hidden>
+                        <input type="search" id="admin-existing-event-search" class="event-picker-search" placeholder="イベント名で検索..." autocomplete="off" aria-label="イベント名で検索">
+                        <div id="admin-existing-event-list" class="event-picker-list" role="listbox" aria-labelledby="admin-existing-event-label"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="new-event-block" class="form-group" hidden>
