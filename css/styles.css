@@ -286,8 +286,8 @@ button:hover {
     overflow: hidden;
     background:
         linear-gradient(#b9f0c0, #b9f0c0) padding-box,
-        linear-gradient(135deg, #c5e1a5, #ffe082 45%, #81c784) border-box;
-    border: 2px solid transparent;
+        linear-gradient(135deg, #aed581, #ffd54f 40%, #ffca28 55%, #7cb342) border-box;
+    border: 3px solid transparent;
 }
 
 .event-block.event-complete::before {
