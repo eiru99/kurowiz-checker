@@ -282,27 +282,24 @@ button:hover {
 }
 
 .event-block.event-complete {
-    position: relative;
-    overflow: hidden;
     background:
-        linear-gradient(#b9f0c0, #b9f0c0) padding-box,
-        linear-gradient(135deg, #aed581, #ffd54f 40%, #ffca28 55%, #7cb342) border-box;
+        linear-gradient(#faf3d8, #faf3d8) padding-box,
+        linear-gradient(
+            135deg,
+            #c9a227 0%,
+            #e6c35c 22%,
+            #f0d78c 40%,
+            #fffaf0 58%,
+            #ffffff 68%,
+            #fff3c4 78%,
+            #e8c547 90%,
+            #c9a227 100%
+        ) border-box;
     border: 3px solid transparent;
 }
 
-.event-block.event-complete::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: #66bb6a;
-    pointer-events: none;
-}
-
 .event-block.event-complete .event-header {
-    border-bottom-color: #a5d6a7;
+    border-bottom-color: #e8d9a8;
 }
 
 .event-header {
