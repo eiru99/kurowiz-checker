@@ -282,12 +282,12 @@ button:hover {
 }
 
 .event-block.event-complete {
-    background: #e8f5e9;
-    border-color: #a5d6a7;
+    background: #b9f0c0;
+    border-color: #81c784;
 }
 
 .event-block.event-complete .event-header {
-    border-bottom-color: #c8e6c9;
+    border-bottom-color: #a5d6a7;
 }
 
 .event-header {
